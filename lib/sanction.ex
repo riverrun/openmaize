@@ -1,0 +1,2 @@
+defmodule Sanction do
+end
