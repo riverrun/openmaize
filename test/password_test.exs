@@ -4,7 +4,7 @@ defmodule Sanction.PasswordTest do
   alias Sanction.Password
 
   defmodule User do
-    defstruct username: "John", password_hash: Password.create_password_hash("password")
+    defstruct id: "John", password_hash: Password.create_password_hash("password")
   end
 
   test "check valid password hash" do
@@ -13,10 +13,10 @@ defmodule Sanction.PasswordTest do
   end
 
   test "check invalid password hash" do
-    users = [%User{username: "Fred", password_hash: Password.create_password_hash("pasw0rd")},
-      %User{username: "Tom", password_hash: Password.create_password_hash("pa$sword")},
-      %User{username: "Dick", password_hash: Password.create_password_hash("passw0rd")},
-      %User{username: "Harry", password_hash: Password.create_password_hash("p@sw0rd")}]
+    users = [%User{id: "Fred", password_hash: Password.create_password_hash("pasw0rd")},
+      %User{id: "Tom", password_hash: Password.create_password_hash("pa$sword")},
+      %User{id: "Dick", password_hash: Password.create_password_hash("passw0rd")},
+      %User{id: "Harry", password_hash: Password.create_password_hash("p@sw0rd")}]
     for user <- users do
       assert Password.check_user(user, "password") == nil
     end

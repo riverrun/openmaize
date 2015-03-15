@@ -16,13 +16,12 @@ defmodule Sanction.JWTAuthenticate do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    #get_req_header(conn, "authorization") |> IO.inspect
     case check_token(get_req_header(conn, "authorization")) do
-      {:ok, data} -> send_resp(conn, 200, "")
+      {:ok, data} -> assign(conn, :authenticated_user, data)
       {:error, _message} -> raise InvalidTokenError
     end
   end
 
-  defp check_token([token]), do: Joken.decode(token, Config.secret_key)
+  defp check_token(["Bearer " <> token]), do: Joken.decode(token, Config.secret_key)
   defp check_token(_), do: raise InvalidTokenError
 end
