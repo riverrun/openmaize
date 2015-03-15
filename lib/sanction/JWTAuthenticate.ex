@@ -16,7 +16,7 @@ defmodule Sanction.JWTAuthenticate do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    get_req_header(conn, "authorization") |> IO.inspect
+    #get_req_header(conn, "authorization") |> IO.inspect
     case check_token(get_req_header(conn, "authorization")) do
       {:ok, data} -> send_resp(conn, 200, "")
       {:error, _message} -> raise InvalidTokenError

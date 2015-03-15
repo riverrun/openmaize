@@ -14,11 +14,20 @@ defmodule Sanction.Password do
   end
 
   @doc """
+  Perform a dummy check for no user.
+  """
+  def check_user(nil, _) do
+    Pbkdf2.dummy_checkpw
+    nil
+  end
+  @doc """
   Check the user and user's password.
   """
-  def check_user(nil, _), do: Pbkdf2.dummy_checkpw
   def check_user(user, password) do
-    Pbkdf2.checkpw(password, user.password_hash)
+    case Pbkdf2.checkpw(password, user.password_hash) do
+      true -> user
+      _ -> nil
+    end
   end
 
 end
