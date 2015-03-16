@@ -3,7 +3,7 @@ defmodule Sanction.JWTAuthenticate do
   """
 
   import Plug.Conn
-  alias Sanction.Config
+  import Sanction.Config
 
   @behaviour Plug
 
@@ -22,6 +22,6 @@ defmodule Sanction.JWTAuthenticate do
     end
   end
 
-  defp check_token(["Bearer " <> token]), do: Joken.decode(token, Config.secret_key)
+  defp check_token(["Bearer " <> token]), do: Joken.decode(token, secret_key)
   defp check_token(_), do: raise InvalidTokenError
 end
