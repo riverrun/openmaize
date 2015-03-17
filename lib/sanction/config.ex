@@ -7,7 +7,7 @@ defmodule Sanction.Config do
   end
 
   def secret_key do
-    Application.get_env(:sanction, :secret_key, :crypto.rand_bytes(24))
+    Application.get_env(:sanction, :secret_key)
   end
 
   def token_validity do
