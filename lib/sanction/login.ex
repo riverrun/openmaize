@@ -4,8 +4,9 @@ defmodule Sanction.Login do
   of tokens.
   """
 
+  import Plug.Conn
   import Ecto.Query
-  import Sanction.Config
+  alias Sanction.Config
 
   defmodule InvalidCredentialsError do
     @moduledoc "Error raised when username or password is invalid."
@@ -18,30 +19,31 @@ defmodule Sanction.Login do
   def init(opts), do: opts
 
   def call(conn, opts) do
-    opts |> IO.inspect
-    login(id, password)
+    id = conn.params["id"]
+    password = conn.params["password"]
+    case login_user(id, password) do
+      false -> raise InvalidCredentialsError
+      user -> add_token(user, conn, opts)
+    end
   end
 
-  def login(id, password) do
-    case from(user in user_model,
-        where: user.id == ^id,
-        select: user)
-        |> repo.one
-        |> check_user(password) do
-      true -> add_token(user, conn, opts)
-      _ -> raise InvalidCredentialsError
-    end
+  def login_user(id, password) do
+    from(user in Config.user_model,
+    where: user.id == ^id,
+    select: user)
+    |> Config.repo.one
+    |> check_user(password)
   end
 
   @doc """
   Perform a dummy check for no user.
   """
-  def check_user(nil, _), do: crypto_mod.dummy_checkpw
+  def check_user(nil, _), do: Config.crypto_mod.dummy_checkpw
   @doc """
   Check the user and user's password.
   """
   def check_user(user, password) do
-    crypto_mod.checkpw(password, user.password_hash)
+    Config.crypto_mod.checkpw(password, user.password_hash) and user
   end
 
   def add_token(user, conn, opts) do
@@ -52,13 +54,13 @@ defmodule Sanction.Login do
   def generate_token(user) do
     Map.take(user, [:id])
     |> Map.merge(%{exp: token_expiry_secs})
-    |> Joken.encode(secret_key)
+    |> Joken.encode(Config.secret_key)
   end
 
   defp token_expiry_secs do
     (:calendar.universal_time
     |> :calendar.datetime_to_gregorian_seconds)
-    + token_validity
+    + Config.token_validity
   end 
 
 end

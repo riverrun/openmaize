@@ -2,12 +2,12 @@ defmodule Sanction.TokenTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Sanction.JWTAuthenticate
-  alias Sanction.JWTAuthenticate.InvalidTokenError
+  alias Sanction.Authenticate
+  alias Sanction.Authenticate.InvalidTokenError
 
   def call(conn, _opts) do
     conn
-    |> JWTAuthenticate.call([])
+    |> Authenticate.call([])
     |> send_resp(200, "ok")
   end
 

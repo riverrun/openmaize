@@ -15,7 +15,7 @@ defmodule Sanction.Config do
   end
 
   def secret_key do
-    Application.get_env(:sanction, :secret_key, "you should change this")
+    Application.get_env(:sanction, :secret_key, "you will never guess")
   end
 
   def login_page do
