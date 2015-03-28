@@ -3,7 +3,6 @@ defmodule Sanction.Authenticate do
   """
 
   import Plug.Conn
-  import Sanction.Config
 
   defmodule InvalidTokenError do
     @moduledoc "Error raised when token is invalid."
@@ -16,7 +15,6 @@ defmodule Sanction.Authenticate do
   def init(opts), do: opts
 
   def call(conn, opts) do
-    opts |> IO.inspect
     name = Keyword.get(opts, :name, "access_token")
     token = Map.get(conn.req_cookies, name)
     case check_token(token) do
@@ -25,6 +23,6 @@ defmodule Sanction.Authenticate do
     end
   end
 
-  defp check_token([token]), do: Joken.decode(token, secret_key)
-  defp check_token(_), do: raise InvalidTokenError
+  defp check_token(nil), do: raise InvalidTokenError
+  defp check_token(token), do: Token.decode(token)
 end

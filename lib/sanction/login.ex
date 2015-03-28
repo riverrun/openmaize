@@ -7,6 +7,7 @@ defmodule Sanction.Login do
   import Plug.Conn
   import Ecto.Query
   alias Sanction.Config
+  alias Sanction.Token
 
   defmodule InvalidCredentialsError do
     @moduledoc "Error raised when username or password is invalid."
@@ -19,14 +20,17 @@ defmodule Sanction.Login do
   def init(opts), do: opts
 
   def call(conn, opts) do
-    id = conn.params["id"]
-    password = conn.params["password"]
+    %{id: id, password: password} = Map.take(conn.params, [:id, :password])
     case login_user(id, password) do
       false -> raise InvalidCredentialsError
       user -> add_token(user, conn, opts)
     end
   end
 
+  @doc """
+  Check for the user in the database and check the password if the user
+  is found.
+  """
   def login_user(id, password) do
     from(user in Config.user_model,
     where: user.id == ^id,
@@ -46,21 +50,24 @@ defmodule Sanction.Login do
     Config.crypto_mod.checkpw(password, user.password_hash) and user
   end
 
+  @doc """
+  Generate a token and store it in a cookie.
+  """
   def add_token(user, conn, opts) do
     opts = Keyword.put_new(opts, :http_only, true)
     put_resp_cookie(conn, "access_token", generate_token(user), opts)
   end
 
-  def generate_token(user) do
-    Map.take(user, [:id])
-    |> Map.merge(%{exp: token_expiry_secs})
-    |> Joken.encode(Config.secret_key)
+  defp generate_token(user) do
+    Token.encode(Map.take(user, [:id]), %{exp: token_expiry_secs})
   end
 
   defp token_expiry_secs do
-    (:calendar.universal_time
-    |> :calendar.datetime_to_gregorian_seconds)
-    + Config.token_validity
+    current_time + Config.token_validity
   end 
 
+  defp current_time do
+    {mega, secs, _} = :os.timestamp
+    mega * 1000000 + secs
+  end
 end
