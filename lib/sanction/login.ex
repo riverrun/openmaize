@@ -6,6 +6,7 @@ defmodule Sanction.Login do
 
   import Plug.Conn
   import Ecto.Query
+  alias Comeonin.Pbkdf2
   alias Sanction.Config
   alias Sanction.Token
 
@@ -42,12 +43,12 @@ defmodule Sanction.Login do
   @doc """
   Perform a dummy check for no user.
   """
-  def check_user(nil, _), do: Config.crypto_mod.dummy_checkpw
+  def check_user(nil, _), do: Pbkdf2.dummy_checkpw
   @doc """
   Check the user and user's password.
   """
   def check_user(user, password) do
-    Config.crypto_mod.checkpw(password, user.password_hash) and user
+    Pbkdf2.checkpw(password, user.password_hash) and user
   end
 
   @doc """

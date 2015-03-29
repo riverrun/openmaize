@@ -20,13 +20,11 @@ defmodule Sanction.Token do
 
   def encode(claims) do
     {:ok, joken} = Joken.start_link(@config)
-    {:ok, token} = Joken.encode(joken, claims)
-    token
+    Joken.encode(joken, claims)
   end
 
   def decode(token) do
     {:ok, joken} = Joken.start_link(@config)
-    {:ok, payload} = Joken.decode(joken, token)
-    payload
+    Joken.decode(joken, token)
   end
 end

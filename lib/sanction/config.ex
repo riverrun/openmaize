@@ -10,10 +10,6 @@ defmodule Sanction.Config do
     Application.get_env(:sanction, :repo)
   end
 
-  def crypto_mod do
-    Application.get_env(:sanction, :crypto_mod, Comeonin.Pbkdf2)
-  end
-
   def secret_key do
     Application.get_env(:sanction, :secret_key, "you will never guess")
   end
