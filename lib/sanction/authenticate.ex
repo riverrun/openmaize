@@ -16,12 +16,13 @@ defmodule Sanction.Authenticate do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    case check_token(get_req_header(conn, "authorization")) do
+    conn = fetch_cookies(conn)
+    case check_token(Map.get(conn.req_cookies, "access_token")) do
       {:ok, data} -> assign(conn, :authenticated_user, data)
       {:error, _message} -> raise InvalidTokenError
     end
   end
 
-  defp check_token(["Bearer " <> token]), do: Token.decode(token)
+  defp check_token(token) when is_binary(token), do: Token.decode(token)
   defp check_token(_), do: raise InvalidTokenError
 end
