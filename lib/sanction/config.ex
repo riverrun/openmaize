@@ -10,6 +10,10 @@ defmodule Sanction.Config do
     Application.get_env(:sanction, :repo)
   end
 
+  def storage_method do
+    Application.get_env(:sanction, :storage_method, "sessionStorage")
+  end
+
   def secret_key do
     Application.get_env(:sanction, :secret_key, "you will never guess")
   end

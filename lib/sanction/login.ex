@@ -52,11 +52,16 @@ defmodule Sanction.Login do
   end
 
   @doc """
-  Generate a token and send it in the response.
+  Generate a token and either send it in the response or store it in a cookie.
   """
-  def add_token(user, conn, _opts) do
-    token_string = "{\"access_token\": \"#{generate_token(user)}\"}"
-    send_resp(conn, 200, token_string)
+  def add_token(user, conn, opts) do
+    if Config.storage_method == "cookie" do
+      opts = Keyword.put_new(opts, :http_only, true)
+      put_resp_cookie(conn, "access_token", generate_token(user), opts)
+    else
+      token_string = "{\"access_token\": \"#{generate_token(user)}\"}"
+      send_resp(conn, 200, token_string)
+    end
   end
 
   defp generate_token(user) do

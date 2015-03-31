@@ -11,17 +11,35 @@ defmodule Sanction.AuthenticateTest do
     |> send_resp(200, "ok")
   end
 
-  test "correct token" do
+  test "correct token stored in cookie" do
+    Application.put_env(:sanction, :storage_method, "cookie")
     token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.L4J3kHwl3K5LqAOVqTGskzsUuDsv-rf0xhkSS9g6gYL_SlD7BOYLghItE1U-jHAHpuNnmhlvmmyW4hAIKMgGkw"
     conn = conn(:get, "/") |> put_req_cookie("access_token", token) |> call([])
     assert conn.status == 200
     assert conn.assigns == %{authenticated_user: %{id: "Raymond Luxury Yacht"}}
   end
 
-  test "error for invalid token" do
+  test "error for invalid token stored in cookie" do
+    Application.put_env(:sanction, :storage_method, "cookie")
     token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.eIBGE2fWD8nU0WHuuh8skEG1R789FObmDRiHybI18oMfH1UPuzAuzwUE6P4eQakNIZPMFensifQLoD3r7kzR-Q"
     assert_raise InvalidTokenError, fn ->
       conn(:get, "/") |> put_req_cookie("access_token", token) |> call([])
+    end
+  end
+
+  test "correct token stored in sessionStorage" do
+    Application.put_env(:sanction, :storage_method, "sessionStorage")
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.L4J3kHwl3K5LqAOVqTGskzsUuDsv-rf0xhkSS9g6gYL_SlD7BOYLghItE1U-jHAHpuNnmhlvmmyW4hAIKMgGkw"
+    conn = conn(:get, "/") |> put_req_header("authorization", "Bearer #{token}") |> call([])
+    assert conn.status == 200
+    assert conn.assigns == %{authenticated_user: %{id: "Raymond Luxury Yacht"}}
+  end
+
+  test "error for invalid token stored in sessionStorage" do
+    Application.put_env(:sanction, :storage_method, "sessionStorage")
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.eIBGE2fWD8nU0WHuuh8skEG1R789FObmDRiHybI18oMfH1UPuzAuzwUE6P4eQakNIZPMFensifQLoD3r7kzR-Q"
+    assert_raise InvalidTokenError, fn ->
+      conn(:get, "/") |> put_req_header("authorization", "Bearer #{token}") |> call([])
     end
   end
 
