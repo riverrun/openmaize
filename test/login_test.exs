@@ -19,7 +19,7 @@ defmodule Sanction.LoginTest do
       %User{id: "Dick", password_hash: Signup.create_password_hash("passw0rd")},
       %User{id: "Harry", password_hash: Signup.create_password_hash("p@sw0rd")}]
     for user <- users do
-      assert Login.check_user(user, "password") == false
+      refute Login.check_user(user, "password")
     end
   end
 
