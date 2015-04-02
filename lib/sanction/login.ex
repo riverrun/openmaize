@@ -24,7 +24,7 @@ defmodule Sanction.Login do
     %{id: id, password: password} = Map.take(conn.params, [:id, :password])
     case login_user(id, password) do
       false -> raise InvalidCredentialsError
-      user -> add_token(user, conn, opts)
+      user -> add_token(user, conn, opts, Config.storage_method)
     end
   end
 
@@ -52,20 +52,23 @@ defmodule Sanction.Login do
   end
 
   @doc """
-  Generate a token and either send it in the response or store it in a cookie.
+  Generate a token and store it in a cookie.
   """
-  def add_token(user, conn, opts) do
-    if Config.storage_method == "cookie" do
-      opts = Keyword.put_new(opts, :http_only, true)
-      put_resp_cookie(conn, "access_token", generate_token(user), opts)
-    else
-      token_string = "{\"access_token\": \"#{generate_token(user)}\"}"
-      send_resp(conn, 200, token_string)
-    end
+  def add_token(user, conn, opts, storage) when storage == "cookie" do
+    opts = Keyword.put_new(opts, :http_only, true)
+    put_resp_cookie(conn, "access_token", generate_token(user), opts)
+  end
+  @doc """
+  Generate a token and send it in the response.
+  """
+  def add_token(user, conn, _opts, _storage) do
+    token_string = "{\"access_token\": \"#{generate_token(user)}\"}"
+    send_resp(conn, 200, token_string)
   end
 
-  defp generate_token(user) do
-    Map.take(user, [:id])
+  def generate_token(user) do
+    # need to find a way of allowing users to define what goes in the token
+    Map.take(user, [:id, :role])
     |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode
   end
