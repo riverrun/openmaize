@@ -43,10 +43,17 @@ defmodule Sanction.AuthenticateTest do
     end
   end
 
+  test "correct token with id and role" do
+    Application.put_env(:sanction, :storage_method, "cookie")
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiYWRtaW4iLCJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.ld_sq2pMcQI6lrGT9LGDe59ApE1pOlBjvy0odq789wSaeXfOrH4dbACPLA6LDo8w_B-yXL6Gd49-5_KlcNbbcQ"
+    conn = conn(:get, "/") |> put_req_cookie("access_token", token) |> call([])
+    assert conn.status == 200
+    assert conn.assigns == %{authenticated_user: %{id: "Raymond Luxury Yacht", role: "admin"}}
+  end
+
   test "error for missing token" do
     assert_raise InvalidTokenError, fn ->
       conn(:get, "/") |> call([])
     end
   end
-
 end

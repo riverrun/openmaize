@@ -65,7 +65,9 @@ defmodule Sanction.Login do
   end
 
   defp generate_token(user) do
-    Token.encode(Map.take(user, [:id]), %{exp: token_expiry_secs})
+    Map.take(user, [:id])
+    |> Map.merge(%{exp: token_expiry_secs})
+    |> Token.encode
   end
 
   defp token_expiry_secs do

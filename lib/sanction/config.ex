@@ -11,7 +11,7 @@ defmodule Sanction.Config do
   end
 
   def storage_method do
-    Application.get_env(:sanction, :storage_method, "sessionStorage")
+    Application.get_env(:sanction, :storage_method, "cookie")
   end
 
   def secret_key do
