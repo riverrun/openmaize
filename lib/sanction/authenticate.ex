@@ -5,12 +5,7 @@ defmodule Sanction.Authenticate do
   import Plug.Conn
   alias Sanction.Config
   alias Sanction.Token
-
-  defmodule InvalidTokenError do
-    @moduledoc "Error raised when token is invalid."
-    message = "Invalid token."
-    defexception message: message, plug_status: 401
-  end
+  alias Sanction.Tools
 
   @behaviour Plug
 
@@ -29,8 +24,8 @@ defmodule Sanction.Authenticate do
   defp check_token(token, conn) when is_binary(token) do
     case Token.decode(token) do
       {:ok, data} -> assign(conn, :authenticated_user, data)
-      {:error, _message} -> raise InvalidTokenError
+      {:error, _message} -> Tools.redirect_to_login(conn)
     end
   end
-  defp check_token(_, _), do: raise InvalidTokenError
+  defp check_token(_, conn), do: Tools.redirect_to_login(conn)
 end

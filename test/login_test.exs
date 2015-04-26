@@ -22,10 +22,6 @@ defmodule Sanction.LoginTest do
     users = [
       %User{id: "Fred", password_hash: Signup.create_password_hash("pasw0rd")},
       %User{id: "Tom", password_hash: Signup.create_password_hash("pa$sword")},
-      %User{id: "Dick", password_hash: Signup.create_password_hash("passw0rd")},
-      %User{id: "Harry", password_hash: Signup.create_password_hash("p@sw0rd")},
-      %UserRole{id: "Fred", role: "admin", password_hash: Signup.create_password_hash("pasw0rd")},
-      %UserRole{id: "Tom", role: "admin", password_hash: Signup.create_password_hash("pa$sword")},
       %UserRole{id: "Dick", role: "admin", password_hash: Signup.create_password_hash("passw0rd")},
       %UserRole{id: "Harry", role: "admin", password_hash: Signup.create_password_hash("p@sw0rd")},
       nil

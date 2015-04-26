@@ -10,6 +10,10 @@ defmodule Sanction.Config do
     Application.get_env(:sanction, :repo)
   end
 
+  def crypto do
+    Application.get_env(:sanction, :crypto, Comeonin.Pbkdf2)
+  end
+
   def storage_method do
     Application.get_env(:sanction, :storage_method, "cookie")
   end

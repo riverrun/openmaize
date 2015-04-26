@@ -6,15 +6,9 @@ defmodule Sanction.Login do
 
   import Plug.Conn
   import Ecto.Query
-  alias Comeonin.Pbkdf2
   alias Sanction.Config
   alias Sanction.Token
-
-  defmodule InvalidCredentialsError do
-    @moduledoc "Error raised when username or password is invalid."
-    message = "Invalid username or password."
-    defexception message: message, plug_status: 401
-  end
+  alias Sanction.Tools
 
   @behaviour Plug
 
@@ -23,7 +17,7 @@ defmodule Sanction.Login do
   def call(conn, opts) do
     %{id: id, password: password} = Map.take(conn.params, [:id, :password])
     case login_user(id, password) do
-      false -> raise InvalidCredentialsError
+      false -> Tools.redirect_to_login(conn)
       user -> add_token(user, conn, opts, Config.storage_method)
     end
   end
@@ -43,12 +37,12 @@ defmodule Sanction.Login do
   @doc """
   Perform a dummy check for no user.
   """
-  def check_user(nil, _), do: Pbkdf2.dummy_checkpw
+  def check_user(nil, _), do: Config.crypto.dummy_checkpw
   @doc """
   Check the user and user's password.
   """
   def check_user(user, password) do
-    Pbkdf2.checkpw(password, user.password_hash) and user
+    Config.crypto.checkpw(password, user.password_hash) and user
   end
 
   @doc """
