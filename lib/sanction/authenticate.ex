@@ -1,5 +1,25 @@
 defmodule Sanction.Authenticate do
   @moduledoc """
+  Module to authenticate user.
+
+  JSON Web Tokens (JWTs) are use to authenticate the user.
+  If there is no token or the token is invalid, the user will
+  be redirected to the login page.
+
+  ## Example
+
+  In the main `router.ex` file,
+
+  add the following line to the `pipeline :browser` function:
+
+      plug :heybro_letmein
+
+  and add the following function to the same file:
+
+      def heybro_letmein(conn, opts \\ []) do
+        Sanction.Authenticate.call(conn, opts)
+      end
+
   """
 
   import Plug.Conn
