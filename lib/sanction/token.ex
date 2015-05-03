@@ -1,4 +1,4 @@
-defmodule Sanction.JSON do
+defmodule Openmaize.JSON do
   alias Poison, as: JSON
   @behaviour Joken.Codec
 
@@ -10,13 +10,13 @@ defmodule Sanction.JSON do
     JSON.decode!(binary, keys: :atoms!)
   end
 end
-defmodule Sanction.Token do
+defmodule Openmaize.Token do
   @moduledoc """
   """
 
-  alias Sanction.Config
+  alias Openmaize.Config
 
-  @config %{secret_key: Config.secret_key, algorithm: :HS512, json_module: Sanction.JSON}
+  @config %{secret_key: Config.secret_key, algorithm: :HS512, json_module: Openmaize.JSON}
 
   def encode(claims) do
     {:ok, joken} = Joken.start_link(@config)

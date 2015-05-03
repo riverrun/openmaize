@@ -1,9 +1,9 @@
-defmodule Sanction.LoginTest do
+defmodule Openmaize.LoginTest do
   use ExUnit.Case
 
-  alias Sanction.Signup
-  alias Sanction.Login
-  alias Sanction.Token
+  alias Openmaize.Signup
+  alias Openmaize.Login
+  alias Openmaize.Token
 
   defmodule User do
     defstruct id: "John", password_hash: Signup.create_password_hash("password")

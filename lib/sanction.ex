@@ -1,2 +1,2 @@
-defmodule Sanction do
+defmodule Openmaize do
 end

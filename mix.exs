@@ -1,8 +1,8 @@
-defmodule Sanction.Mixfile do
+defmodule Openmaize.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :sanction,
+    [app: :openmaize,
      version: "0.0.1",
      elixir: "~> 1.0",
      deps: deps]
@@ -18,7 +18,7 @@ defmodule Sanction.Mixfile do
       {:plug, "~> 0.11"},
       {:ecto, "~> 0.9.0"},
       {:postgrex, "~> 0.8"},
-      {:comeonin, "~> 0.3"},
+      {:comeonin, "~> 0.8"},
       {:joken, "~> 0.10"},
       {:poison, "~> 1.3"},
       {:earmark, "~> 0.1", only: :dev},

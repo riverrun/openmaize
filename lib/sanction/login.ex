@@ -1,4 +1,4 @@
-defmodule Sanction.Login do
+defmodule Openmaize.Login do
   @moduledoc """
   Module to handle password authentication and the generation
   of tokens.
@@ -6,9 +6,9 @@ defmodule Sanction.Login do
 
   import Plug.Conn
   import Ecto.Query
-  alias Sanction.Config
-  alias Sanction.Token
-  alias Sanction.Tools
+  alias Openmaize.Config
+  alias Openmaize.Token
+  alias Openmaize.Tools
 
   @behaviour Plug
 

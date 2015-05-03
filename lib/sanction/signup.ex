@@ -1,8 +1,8 @@
-defmodule Sanction.Signup do
+defmodule Openmaize.Signup do
   @moduledoc """
   """
 
-  alias Sanction.Config
+  alias Openmaize.Config
 
   @doc """
   Create a password hash for each new user. This entry should

@@ -1,4 +1,4 @@
-defmodule Sanction.Authenticate do
+defmodule Openmaize.Authenticate do
   @moduledoc """
   Module to authenticate user.
 
@@ -17,15 +17,15 @@ defmodule Sanction.Authenticate do
   and add the following function to the same file:
 
       def heybro_letmein(conn, opts \\ []) do
-        Sanction.Authenticate.call(conn, opts)
+        Openmaize.Authenticate.call(conn, opts)
       end
 
   """
 
   import Plug.Conn
-  alias Sanction.Config
-  alias Sanction.Token
-  alias Sanction.Tools
+  alias Openmaize.Config
+  alias Openmaize.Token
+  alias Openmaize.Tools
 
   @behaviour Plug
 
