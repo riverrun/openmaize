@@ -4,3 +4,4 @@
 /config
 erl_crash.dump
 *.ez
+mix.lock

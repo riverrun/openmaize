@@ -15,12 +15,12 @@ defmodule Openmaize.Mixfile do
   defp deps do
     [
       {:cowboy, "~> 1.0"},
-      {:plug, "~> 0.11"},
+      {:plug, "~> 0.12"},
       {:ecto, "~> 0.9.0"},
       {:postgrex, "~> 0.8"},
       {:comeonin, "~> 0.8"},
-      {:joken, "~> 0.10"},
-      {:poison, "~> 1.3"},
+      {:joken, "~> 0.13"},
+      {:poison, "~> 1.4"},
       {:earmark, "~> 0.1", only: :dev},
       {:ex_doc,  "~> 0.7", only: :dev}
     ]
