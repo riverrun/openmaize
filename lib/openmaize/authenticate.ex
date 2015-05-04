@@ -1,8 +1,8 @@
 defmodule Openmaize.Authenticate do
   @moduledoc """
-  Module to authenticate user.
+  Module to authenticate users.
 
-  JSON Web Tokens (JWTs) are use to authenticate the user.
+  JSON Web Tokens (JWTs) are used to authenticate the user.
   If there is no token or the token is invalid, the user will
   be redirected to the login page.
 
@@ -12,11 +12,11 @@ defmodule Openmaize.Authenticate do
 
   add the following line to the `pipeline :browser` function:
 
-      plug :heybro_letmein
+      plug :open_sesame
 
   and add the following function to the same file:
 
-      def heybro_letmein(conn, opts \\ []) do
+      def open_sesame(conn, opts \\ []) do
         Openmaize.Authenticate.call(conn, opts)
       end
 
