@@ -9,7 +9,7 @@ defmodule Openmaize.Tools do
     uri = "https://" <> conn.host <> Config.login_page
     conn
     |> put_resp_header("location", uri)
-    |> send_resp(301, "")
+    |> put_status(301)
   end
 
 end
