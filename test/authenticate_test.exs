@@ -11,10 +11,10 @@ defmodule Openmaize.AuthenticateTest do
 
   test "correct token stored in cookie" do
     Application.put_env(:openmaize, :storage_method, "cookie")
-    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.L4J3kHwl3K5LqAOVqTGskzsUuDsv-rf0xhkSS9g6gYL_SlD7BOYLghItE1U-jHAHpuNnmhlvmmyW4hAIKMgGkw"
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJuYW1lIjoiUmF5bW9uZCBMdXh1cnkgWWFjaHQifQ.hU4Mkca19Jr2OvkUMg52dMHUsaVJE-8VDGjVrDLUcdIsTDPUivSgiiiuKAHC93Xkrdog5yBAeVU8ZQ3V0QdbJw"
     conn = conn(:get, "/") |> put_req_cookie("access_token", token) |> call
     assert conn.status == 200
-    assert conn.assigns == %{authenticated_user: %{id: "Raymond Luxury Yacht"}}
+    assert conn.assigns == %{authenticated_user: %{name: "Raymond Luxury Yacht"}}
   end
 
   test "redirect for invalid token stored in cookie" do
@@ -28,10 +28,10 @@ defmodule Openmaize.AuthenticateTest do
 
   test "correct token stored in sessionStorage" do
     Application.put_env(:openmaize, :storage_method, "sessionStorage")
-    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.L4J3kHwl3K5LqAOVqTGskzsUuDsv-rf0xhkSS9g6gYL_SlD7BOYLghItE1U-jHAHpuNnmhlvmmyW4hAIKMgGkw"
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJuYW1lIjoiUmF5bW9uZCBMdXh1cnkgWWFjaHQifQ.hU4Mkca19Jr2OvkUMg52dMHUsaVJE-8VDGjVrDLUcdIsTDPUivSgiiiuKAHC93Xkrdog5yBAeVU8ZQ3V0QdbJw"
     conn = conn(:get, "/") |> put_req_header("authorization", "Bearer #{token}") |> call
     assert conn.status == 200
-    assert conn.assigns == %{authenticated_user: %{id: "Raymond Luxury Yacht"}}
+    assert conn.assigns == %{authenticated_user: %{name: "Raymond Luxury Yacht"}}
   end
 
   test "redirect for invalid token stored in sessionStorage" do
@@ -45,10 +45,10 @@ defmodule Openmaize.AuthenticateTest do
 
   test "correct token with id and role" do
     Application.put_env(:openmaize, :storage_method, "cookie")
-    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiYWRtaW4iLCJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.ld_sq2pMcQI6lrGT9LGDe59ApE1pOlBjvy0odq789wSaeXfOrH4dbACPLA6LDo8w_B-yXL6Gd49-5_KlcNbbcQ"
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiYWRtaW4iLCJuYW1lIjoiUmF5bW9uZCBMdXh1cnkgWWFjaHQifQ.y65Mw3fNLAt60IEugvqAMP236Sm3HE_kldT7TNjzmBD6Cu_C3DnYi1pDG7Pqa2THcSszwUrzC4xROOy_hAlqnQ"
     conn = conn(:get, "/") |> put_req_cookie("access_token", token) |> call
     assert conn.status == 200
-    assert conn.assigns == %{authenticated_user: %{id: "Raymond Luxury Yacht", role: "admin"}}
+    assert conn.assigns == %{authenticated_user: %{name: "Raymond Luxury Yacht", role: "admin"}}
   end
 
   test "redirect for missing token" do

@@ -15,8 +15,8 @@ defmodule Openmaize.Login do
   def init(opts), do: opts
 
   def call(conn, opts) do
-    %{id: id, password: password} = Map.take(conn.params, [:id, :password])
-    case login_user(id, password) do
+    %{"name" => name, "password" => password} = Map.get(conn.params, "user")
+    case login_user(name, password) do
       false -> Tools.redirect_to_login(conn)
       user -> add_token(user, conn, opts, Config.storage_method)
     end
@@ -26,9 +26,9 @@ defmodule Openmaize.Login do
   Check for the user in the database and check the password if the user
   is found.
   """
-  def login_user(id, password) do
+  def login_user(name, password) do
     from(user in Config.user_model,
-    where: user.id == ^id,
+    where: user.name == ^name,
     select: user)
     |> Config.repo.one
     |> check_user(password)
@@ -62,7 +62,7 @@ defmodule Openmaize.Login do
 
   def generate_token(user) do
     # need to find a way of allowing users to define what goes in the token
-    Map.take(user, [:id, :role])
+    Map.take(user, [:name, :role])
     |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode
   end

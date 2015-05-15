@@ -5,9 +5,13 @@ defmodule Openmaize.Tools do
   import Plug.Conn
   alias Openmaize.Config
 
-  def redirect_to_login(conn) do
-    uri = "#{conn.scheme}://#{conn.host}#{Config.login_page}"
+  def redirect(conn, address) do
+    uri = "#{conn.scheme}://#{conn.host}#{address}"
     conn |> put_resp_header("location", uri) |> put_status(301)
+  end
+
+  def redirect_to_login(conn) do
+    redirect(conn, Config.login_page)
   end
 
 end
