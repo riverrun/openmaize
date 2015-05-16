@@ -11,7 +11,7 @@ defmodule Openmaize.Tools do
   end
 
   def redirect_to_login(conn) do
-    redirect(conn, Config.login_page)
+    redirect(conn, Config.login_page) |> halt
   end
 
 end
