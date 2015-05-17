@@ -50,7 +50,8 @@ defmodule Openmaize.Login do
   """
   def add_token(user, conn, opts, storage) when storage == "cookie" do
     opts = Keyword.put_new(opts, :http_only, true)
-    put_resp_cookie(conn, "access_token", generate_token(user), opts)
+    {:ok, token} = generate_token(user)
+    put_resp_cookie(conn, "access_token", token, opts)
   end
   @doc """
   Generate a token and send it in the response.
@@ -62,8 +63,9 @@ defmodule Openmaize.Login do
 
   def generate_token(user) do
     # need to find a way of allowing users to define what goes in the token
-    Map.take(user, ["name", "role"])
-    |> Map.merge(%{exp: token_expiry_secs}) |> IO.inspect
+    Map.take(user, [:name, :role])
+    |> Map.merge(%{exp: token_expiry_secs})
+    |> IO.inspect
     |> Token.encode
   end
 
