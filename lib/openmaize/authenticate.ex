@@ -33,7 +33,7 @@ defmodule Openmaize.Authenticate do
 
   def call(conn, _opts) do
     if Config.storage_method == "cookie" do
-      conn = fetch_cookies(conn)
+      conn = fetch_cookies(conn) |> IO.inspect
       Map.get(conn.req_cookies, "access_token") |> check_token(conn)
     else
       get_req_header(conn, "authorization") |> check_token(conn)
@@ -43,7 +43,7 @@ defmodule Openmaize.Authenticate do
   defp check_token(["Bearer " <> token], conn), do: check_token(token, conn)
   defp check_token(token, conn) when is_binary(token) do
     case Token.decode(token) do
-      {:ok, data} -> assign(conn, :authenticated_user, data)
+      {:ok, data} -> assign(conn, :authenticated_user, data) |> IO.inspect
       {:error, _message} -> Tools.redirect_to_login(conn)
     end
   end
