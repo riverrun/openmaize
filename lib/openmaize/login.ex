@@ -52,13 +52,14 @@ defmodule Openmaize.Login do
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, opts)
+    send_resp(conn, 200, "")
   end
   @doc """
   Generate a token and send it in the response.
   """
   def add_token(user, conn, _opts, _storage) do
     token_string = "{\"Authorization\": \"Bearer #{generate_token(user)}\"}"
-    #send_resp(conn, 200, token_string)
+    send_resp(conn, 200, token_string)
   end
 
   def generate_token(user) do

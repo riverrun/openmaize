@@ -14,11 +14,15 @@ defmodule Openmaize.Token do
   @moduledoc """
   """
 
+  @secret_key Config.secret_key
+  @json_module Openmaize.JSON
+  @algorithm :HS512
+
   def encode(claims) do
-    Joken.encode(claims)
+    Joken.encode(@secret_key, @json_module, payload, @algorithm, claims \\ %{})
   end
 
   def decode(token) do
-    Joken.decode(token)
+    Joken.decode(@secret_key, @json_module, token, @algorithm, claims \\ %{})
   end
 end
