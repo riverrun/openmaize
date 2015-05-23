@@ -18,7 +18,7 @@ defmodule Openmaize.Mixfile do
       {:plug, "~> 0.12"},
       {:ecto, "~> 0.11"},
       {:postgrex, "~> 0.8"},
-      {:comeonin, "~> 0.11"},
+      {:comeonin, "~> 1.0"},
       {:joken, "~> 0.13"},
       {:poison, "~> 1.4"},
       {:earmark, "~> 0.1", only: :dev},
