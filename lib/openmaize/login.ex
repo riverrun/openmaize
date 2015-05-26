@@ -51,13 +51,14 @@ defmodule Openmaize.Login do
   def add_token(user, conn, opts, storage) when storage == "cookie" do
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
-    register_before_send(conn, &add_token_to_cookie(&1, token, opts))
+    put_resp_cookie(conn, "access_token", token, opts) |> Tools.redirect("users")
   end
   @doc """
   Generate a token and send it in the response.
   """
   def add_token(user, conn, _opts, _storage) do
     token_string = "{\"Authorization\": \"Bearer #{generate_token(user)}\"}"
+    send_resp(conn, 200, token_string)
   end
 
   def generate_token(user) do
@@ -65,11 +66,6 @@ defmodule Openmaize.Login do
     Map.take(user, [:name, :role])
     |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode
-  end
-
-  defp add_token_to_cookie(conn, token, opts) do
-    put_resp_cookie(conn, "access_token", token, opts)
-    |> Tools.redirect("users")
   end
 
   defp token_expiry_secs do

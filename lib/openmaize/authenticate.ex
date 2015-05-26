@@ -6,20 +6,6 @@ defmodule Openmaize.Authenticate do
   If there is no token or the token is invalid, the user will
   be redirected to the login page.
 
-  ## Example
-
-  In the main `router.ex` file,
-
-  add the following line to the `pipeline :browser` function:
-
-      plug :open_sesame
-
-  and add the following function to the same file:
-
-      def open_sesame(conn, opts \\ []) do
-        Openmaize.Authenticate.call(conn, opts)
-      end
-
   """
 
   import Plug.Conn

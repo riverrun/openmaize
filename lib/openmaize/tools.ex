@@ -7,14 +7,11 @@ defmodule Openmaize.Tools do
 
   def redirect(conn, address) do
     uri = "#{conn.scheme}://#{conn.host}#{address}"
-    register_before_send(conn, &send_redirect_header(&1, uri))
+    conn |> put_resp_header("location", uri) |> send_resp(301, "") |> halt
   end
 
   def redirect_to_login(conn) do
-    redirect(conn, Config.login_page) |> halt
+    redirect(conn, Config.login_page)
   end
 
-  defp send_redirect_header(conn, uri) do
-    conn |> put_resp_header("location", uri) |> put_status(301)
-  end
 end
