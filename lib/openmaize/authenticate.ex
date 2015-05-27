@@ -18,12 +18,22 @@ defmodule Openmaize.Authenticate do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    if Enum.any?(conn.path_info, fn x -> x in ["login", "logout"] end) do
-      conn
-    else
-      handle_auth(conn)
+    cond do
+      "login" in conn.path_info -> handle_login(conn)
+      "logout" in conn.path_info -> handle_logout(conn)
+      true -> handle_auth(conn)
     end
   end
+
+  defp handle_login(conn) do
+    if conn.method == "POST" do
+      Openmaize.Login.call(conn, [])
+    else
+      conn
+    end
+  end
+
+  defp handle_logout(conn), do: Openmaize.Logout.call(conn, [])
 
   defp handle_auth(conn) do
     if Config.storage_method == "cookie" do
