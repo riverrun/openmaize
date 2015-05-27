@@ -49,9 +49,10 @@ defmodule Openmaize.Login do
   Generate a token and store it in a cookie.
   """
   def add_token(user, conn, opts, storage) when storage == "cookie" do
+    IO.puts "**********adding token in cookie**********"
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
-    put_resp_cookie(conn, "access_token", token, opts) |> Tools.redirect("users")
+    put_resp_cookie(conn, "access_token", token, opts) |> IO.inspect |> Tools.redirect("users")
   end
   @doc """
   Generate a token and send it in the response.
