@@ -11,7 +11,7 @@ defmodule Openmaize.Config do
   end
 
   def crypto_mod do
-    Application.get_env(:openmaize, :crypto_mod, Comeonin.Bcrypt)
+    Application.get_env(:openmaize, :crypto_mod, :bcrypt)
   end
 
   def storage_method do
@@ -28,5 +28,12 @@ defmodule Openmaize.Config do
 
   def token_validity do
     Application.get_env(:openmaize, :token_validity_in_minutes, 24 * 60) * 60
+  end
+
+  def get_crypto_mod do
+    case crypto_mod do
+      :pbkdf2 -> Comeonin.Pbkdf2
+      _ -> Comeonin.Bcrypt
+    end
   end
 end

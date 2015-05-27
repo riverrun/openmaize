@@ -39,12 +39,12 @@ defmodule Openmaize.Login do
   @doc """
   Perform a dummy check for no user.
   """
-  def check_user(nil, _), do: Config.crypto_mod.dummy_checkpw
+  def check_user(nil, _), do: Config.get_crypto_mod.dummy_checkpw
   @doc """
   Check the user and user's password.
   """
   def check_user(user, password) do
-    Config.crypto_mod.checkpw(password, user.password_hash) and user
+    Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 
   @doc """
@@ -59,12 +59,13 @@ defmodule Openmaize.Login do
   Generate a token and send it in the response.
   """
   def add_token(user, conn, _opts, _storage) do
+    # how can we add the token to sessionStorage?
     token_string = "{\"Authorization\": \"Bearer #{generate_token(user)}\"}"
     send_resp(conn, 200, token_string)
   end
 
   def generate_token(user) do
-    # need to find a way of allowing users to define what goes in the token
+    # how can users define what goes in the token?
     Map.take(user, [:name, :role])
     |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode
