@@ -10,8 +10,8 @@ defmodule Openmaize.Config do
     Application.get_env(:openmaize, :repo)
   end
 
-  def crypto do
-    Application.get_env(:openmaize, :crypto, Comeonin.Pbkdf2)
+  def crypto_mod do
+    Application.get_env(:openmaize, :crypto_mod, Comeonin.Bcrypt)
   end
 
   def storage_method do

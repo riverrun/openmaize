@@ -1,16 +1,16 @@
 defmodule Openmaize.LoginTest do
   use ExUnit.Case
 
-  alias Openmaize.Signup
+  alias Comeonin.Bcrypt
   alias Openmaize.Login
   alias Openmaize.Token
 
   defmodule User do
-    defstruct name: "John", password_hash: Signup.create_password_hash("password")
+    defstruct name: "John", password_hash: Bcrypt.hashpwsalt("password")
   end
 
   defmodule UserRole do
-    defstruct name: "Fred", role: "admin", password_hash: Signup.create_password_hash("defaultpassword")
+    defstruct name: "Fred", role: "admin", password_hash: Bcrypt.hashpwsalt("defaultpassword")
   end
 
   test "check valid password hashes" do
@@ -20,10 +20,10 @@ defmodule Openmaize.LoginTest do
 
   test "check invalid password hashes" do
     users = [
-      %User{name: "Fred", password_hash: Signup.create_password_hash("pasw0rd")},
-      %User{name: "Tom", password_hash: Signup.create_password_hash("pa$sword")},
-      %UserRole{name: "Dick", role: "admin", password_hash: Signup.create_password_hash("passw0rd")},
-      %UserRole{name: "Harry", role: "admin", password_hash: Signup.create_password_hash("p@sw0rd")},
+      %User{name: "Fred", password_hash: Bcrypt.hashpwsalt("pasw0rd")},
+      %User{name: "Tom", password_hash: Bcrypt.hashpwsalt("pa$sword")},
+      %UserRole{name: "Dick", role: "admin", password_hash: Bcrypt.hashpwsalt("passw0rd")},
+      %UserRole{name: "Harry", role: "admin", password_hash: Bcrypt.hashpwsalt("p@sw0rd")},
       nil
     ]
     for user <- users do

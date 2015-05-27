@@ -39,19 +39,18 @@ defmodule Openmaize.Login do
   @doc """
   Perform a dummy check for no user.
   """
-  def check_user(nil, _), do: Config.crypto.dummy_checkpw
+  def check_user(nil, _), do: Config.crypto_mod.dummy_checkpw
   @doc """
   Check the user and user's password.
   """
   def check_user(user, password) do
-    Config.crypto.checkpw(password, user.password_hash) and user
+    Config.crypto_mod.checkpw(password, user.password_hash) and user
   end
 
   @doc """
   Generate a token and store it in a cookie.
   """
   def add_token(user, conn, opts, storage) when storage == "cookie" do
-    IO.puts "**********adding token in cookie**********"
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, opts) |> Tools.redirect("/users")
