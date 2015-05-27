@@ -5,11 +5,11 @@ defmodule Openmaize.Signup do
   alias Openmaize.Config
 
   @doc """
-  Create a password hash for each new user. This entry should
-  be recorded in the database as `password_hash`.
+  This function takes a map with a password in it, removes the password
+  and adds an entry for the password hash.
   """
-  def create_password_hash(password) do
-    Config.crypto.hashpwsalt(password)
+  def create_user(user_params, valid \\ true) do
+    Comeonin.create_user(user_params, valid)
   end
 
 end

@@ -15,7 +15,9 @@ defmodule Openmaize.Login do
   def init(opts), do: opts
 
   def call(conn, opts) do
-    %{"name" => name, "password" => password} = Map.get(conn.params, "user")
+    %{"name" => name, "password" => password} = Map.take(conn.params["user"],
+    ["name", "password"])
+
     case login_user(name, password) do
       false -> Tools.redirect_to_login(conn)
       user -> add_token(user, conn, opts, Config.storage_method)
@@ -52,7 +54,7 @@ defmodule Openmaize.Login do
     IO.puts "**********adding token in cookie**********"
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
-    put_resp_cookie(conn, "access_token", token, opts) |> IO.inspect |> Tools.redirect("users")
+    put_resp_cookie(conn, "access_token", token, opts) |> Tools.redirect("/users")
   end
   @doc """
   Generate a token and send it in the response.
