@@ -15,7 +15,7 @@ defmodule Openmaize.Logout do
 
   def logout_user(conn, opts, storage) when storage == "cookie" do
     delete_resp_cookie(conn, "access_token", opts)
-    |> Tools.redirect("/")
+    |> Tools.redirect_page("/")
   end
 
   def logout_user(conn) do
