@@ -26,9 +26,11 @@ defmodule Openmaize.Authenticate do
   end
 
   defp handle_login(conn) do
+    IO.puts "Got to the login page"
     if conn.method == "POST" do
       Openmaize.Login.call(conn, [])
     else
+      IO.puts "Sending the conn"
       conn
     end
   end
@@ -64,6 +66,6 @@ defmodule Openmaize.Authenticate do
   end
 
   defp get_path(path_info) do
-    Enum.join(["/" | path_info], "/")
+    Enum.join(["/" | path_info], "/") |> IO.inspect
   end
 end
