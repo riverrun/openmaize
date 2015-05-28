@@ -15,11 +15,12 @@ defmodule Openmaize.Logout do
 
   def logout_user(conn, opts, storage) when storage == "cookie" do
     delete_resp_cookie(conn, "access_token", opts)
-    |> Tools.redirect(opts[:scope_root] || "/")
+    |> Tools.redirect("/users")
   end
 
   def logout_user(conn) do
     #remove from sessionStorage
+    conn
   end
 
 end

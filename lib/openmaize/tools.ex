@@ -6,7 +6,8 @@ defmodule Openmaize.Tools do
   alias Openmaize.Config
 
   def redirect_page(conn, address) do
-    uri = "#{conn.scheme}://#{conn.host}#{address}"
+    if Mix.env == :dev, do: host = "localhost:4000", else: host = conn.host
+    uri = "#{conn.scheme}://#{host}#{address}"
     conn |> put_resp_header("location", uri) |> send_resp(301, "") |> halt
   end
 

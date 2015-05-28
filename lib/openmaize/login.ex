@@ -54,7 +54,7 @@ defmodule Openmaize.Login do
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, opts)
-    |> Tools.redirect(opts[:scope_root] || "/")
+    |> Tools.redirect("/users")
   end
   @doc """
   Generate a token and send it in the response.
