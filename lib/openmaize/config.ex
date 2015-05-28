@@ -22,10 +22,6 @@ defmodule Openmaize.Config do
     Application.get_env(:openmaize, :secret_key, "you will never guess")
   end
 
-  def login_page do
-    Application.get_env(:openmaize, :login_page, "/users/login")
-  end
-
   def token_validity do
     Application.get_env(:openmaize, :token_validity_in_minutes, 24 * 60) * 60
   end

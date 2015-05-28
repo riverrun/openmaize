@@ -4,6 +4,7 @@ defmodule Openmaize.Logout do
 
   import Plug.Conn
   alias Openmaize.Config
+  alias Openmaize.Tools
 
   @behaviour Plug
 

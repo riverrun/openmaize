@@ -67,6 +67,7 @@ defmodule Openmaize.Login do
 
   def generate_token(user) do
     # how can users define what goes in the token?
+    IO.inspect user
     Map.take(user, [:name, :role])
     |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode

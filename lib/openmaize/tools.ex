@@ -3,7 +3,6 @@ defmodule Openmaize.Tools do
   """
 
   import Plug.Conn
-  alias Openmaize.Config
 
   def redirect_page(conn, address) do
     if Mix.env == :dev, do: host = "localhost:4000", else: host = conn.host
@@ -12,7 +11,7 @@ defmodule Openmaize.Tools do
   end
 
   def redirect_to_login(conn) do
-    redirect_page(conn, Config.login_page)
+    redirect_page(conn, "/users/login")
   end
 
 end
