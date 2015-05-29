@@ -14,6 +14,15 @@ defmodule Openmaize.Login do
 
   def init(opts), do: opts
 
+  @doc """
+  Function to handle user login.
+
+  If there is no error, a token will be created and sent to the user so that
+  the user can make further requests without logging in again. The user will
+  then be redirected to the main page / user page.
+
+  If there is an error, the user will be redirected to the login page.
+  """
   def call(conn, opts) do
     %{"name" => name, "password" => password} = Map.take(conn.params["user"],
     ["name", "password"])
@@ -24,11 +33,7 @@ defmodule Openmaize.Login do
     end
   end
 
-  @doc """
-  Check for the user in the database and check the password if the user
-  is found.
-  """
-  def login_user(name, password) do
+  defp login_user(name, password) do
     from(user in Config.user_model,
     where: user.name == ^name,
     select: user)
@@ -36,36 +41,24 @@ defmodule Openmaize.Login do
     |> check_user(password)
   end
 
-  @doc """
-  Perform a dummy check for no user.
-  """
-  def check_user(nil, _), do: Config.get_crypto_mod.dummy_checkpw
-  @doc """
-  Check the user and user's password.
-  """
-  def check_user(user, password) do
+  defp check_user(nil, _), do: Config.get_crypto_mod.dummy_checkpw
+  defp check_user(user, password) do
     Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 
-  @doc """
-  Generate a token and store it in a cookie.
-  """
-  def add_token(user, conn, opts, storage) when storage == "cookie" do
+  defp add_token(user, conn, opts, storage) when storage == "cookie" do
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, opts)
     |> redirect_page("/users", %{"info" => "You have been logged in"})
   end
-  @doc """
-  Generate a token and send it in the response.
-  """
-  def add_token(user, conn, _opts, _storage) do
+  defp add_token(user, conn, _opts, _storage) do
     # how can we add the token to sessionStorage?
     token_string = "{\"Authorization\": \"Bearer #{generate_token(user)}\"}"
     send_resp(conn, 200, token_string)
   end
 
-  def generate_token(user) do
+  defp generate_token(user) do
     # how can users define what goes in the token?
     Map.take(user, [:id, :name, :role])
     |> Map.merge(%{exp: token_expiry_secs})

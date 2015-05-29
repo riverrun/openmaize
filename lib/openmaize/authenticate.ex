@@ -17,6 +17,13 @@ defmodule Openmaize.Authenticate do
 
   def init(opts), do: opts
 
+  @doc """
+  Function to check the token provided. If there is no token, or if the
+  token is invalid, the user is redirected to the login page.
+
+  If the path is for the login or logout page, the user is redirected
+  to that page straight away.
+  """
   def call(conn, _opts) do
     case get_path(conn.path_info) do
       "/users/login" -> handle_login(conn)
@@ -47,10 +54,10 @@ defmodule Openmaize.Authenticate do
   defp check_token(token, conn) when is_binary(token) do
     case Token.decode(token) do
       {:ok, data} -> verify_user(conn, data)
-      {:error, message} -> redirect_to_login(conn, message)
+      {:error, message} -> redirect_to_login(conn, %{"error" => message})
     end
   end
-  defp check_token(_, conn), do: redirect_to_login(conn, %{"error" => "Invalid credentials"})
+  defp check_token(_, conn), do: redirect_to_login(conn, %{})
 
   defp verify_user(conn, data) do
     role = Map.get(data, "role")

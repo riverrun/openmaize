@@ -10,16 +10,21 @@ defmodule Openmaize.Logout do
 
   def init(opts), do: opts
 
+  @doc """
+  Function to handle user logout.
+
+  The token is deleted and the user is redirected to the home page.
+  """
   def call(conn, opts \\ []) do
     logout_user(conn, opts, Config.storage_method)
   end
 
-  def logout_user(conn, opts, storage) when storage == "cookie" do
+  defp logout_user(conn, opts, storage) when storage == "cookie" do
     delete_resp_cookie(conn, "access_token", opts)
     |> redirect_page("/", %{"info" => "You have been logged out"})
   end
 
-  def logout_user(conn) do
+  defp logout_user(conn) do
     #remove from sessionStorage
     conn
   end
