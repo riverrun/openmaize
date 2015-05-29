@@ -1,5 +1,6 @@
 defmodule Openmaize.Logout do
   @moduledoc """
+  Module to handle user logout.
   """
 
   import Plug.Conn
@@ -24,7 +25,7 @@ defmodule Openmaize.Logout do
     |> redirect_page("/", %{"info" => "You have been logged out"})
   end
 
-  defp logout_user(conn) do
+  defp logout_user(conn, _opts, _storage) do
     #remove from sessionStorage
     conn
   end

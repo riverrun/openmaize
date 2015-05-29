@@ -1,5 +1,22 @@
 defmodule Openmaize.Config do
   @moduledoc """
+  This module provides an abstraction layer for configuration.
+  The following are valid configuration items.
+
+  | name               | type    | default  |
+  | :----------------- | :------ | -------: |
+  | user_model         | module  | N/A      |
+  | repo               | module  | N/A      |
+  | crypto_mod         | atom    | :bcrypt  |
+  | storage_method     | string  | "cookie" |
+  | secret_key         | string  | "you will never guess" |
+  | token_validity     | integer | 24 * 60  |
+
+  The values for user_model and repo should be module names.
+  If, for example, your app is called Coolapp and your user
+  model is called User, then `user_model` should be
+  Coolapp.User and `repo` should be Coolapp.Repo.
+
   """
 
   @doc """
@@ -29,7 +46,6 @@ defmodule Openmaize.Config do
       _ -> Comeonin.Bcrypt
     end
   end
-
   defp crypto_mod do
     Application.get_env(:openmaize, :crypto_mod, :bcrypt)
   end
@@ -48,6 +64,8 @@ defmodule Openmaize.Config do
   @doc """
   The secret key for use with Joken (which encodes and decodes the
   tokens).
+
+  In production, the default key should be changed.
   """
   def secret_key do
     Application.get_env(:openmaize, :secret_key, "you will never guess")
