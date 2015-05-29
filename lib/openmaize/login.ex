@@ -6,9 +6,9 @@ defmodule Openmaize.Login do
 
   import Plug.Conn
   import Ecto.Query
+  import Openmaize.Tools
   alias Openmaize.Config
   alias Openmaize.Token
-  alias Openmaize.Tools
 
   @behaviour Plug
 
@@ -19,7 +19,7 @@ defmodule Openmaize.Login do
     ["name", "password"])
 
     case login_user(name, password) do
-      false -> Tools.redirect_to_login(conn)
+      false -> redirect_to_login(conn)
       user -> add_token(user, conn, opts, Config.storage_method)
     end
   end
@@ -54,7 +54,7 @@ defmodule Openmaize.Login do
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, opts)
-    |> Tools.redirect_page("/users")
+    |> redirect_page("/users")
   end
   @doc """
   Generate a token and send it in the response.
@@ -67,8 +67,7 @@ defmodule Openmaize.Login do
 
   def generate_token(user) do
     # how can users define what goes in the token?
-    IO.inspect user
-    Map.take(user, [:name, :role])
+    Map.take(user, [:id, :name, :role])
     |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode
   end

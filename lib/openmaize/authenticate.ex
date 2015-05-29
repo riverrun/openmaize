@@ -9,9 +9,9 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
+  import Openmaize.Tools
   alias Openmaize.Config
   alias Openmaize.Token
-  alias Openmaize.Tools
 
   @behaviour Plug
 
@@ -43,23 +43,21 @@ defmodule Openmaize.Authenticate do
     get_req_header(conn, "authorization") |> check_token(conn)
   end
 
-  defp check_token(["Bearer " <> token], conn) do
-    check_token(token, conn)
-  end
+  defp check_token(["Bearer " <> token], conn), do: check_token(token, conn)
   defp check_token(token, conn) when is_binary(token) do
     case Token.decode(token) do
       {:ok, data} -> verify_user(conn, data)
-      {:error, _message} -> Tools.redirect_to_login(conn)
+      {:error, _message} -> redirect_to_login(conn)
     end
   end
-  defp check_token(_, conn), do: Tools.redirect_to_login(conn)
+  defp check_token(_, conn), do: redirect_to_login(conn)
 
   defp verify_user(conn, data) do
     role = Map.get(data, "role")
-    if role == "admin" or Enum.at(conn.path_info, 0) == "users" do
+    if role == nil or role == "admin" or Enum.at(conn.path_info, 0) == "users" do
       assign(conn, :authenticated_user, data)
     else
-      Tools.redirect_to_login(conn)
+      redirect_to_login(conn)
     end
   end
 
