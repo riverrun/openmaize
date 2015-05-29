@@ -4,16 +4,15 @@ defmodule Openmaize.Tools do
 
   import Plug.Conn
 
-  def redirect_page(conn, address) do
-    conn = send_message(conn,
-    %{:info => "Higher authorities say you must go to #{address}"})
+  def redirect_page(conn, address, message) do
+    conn = send_message(conn, message)
     if Mix.env == :dev, do: host = "localhost:4000", else: host = conn.host
     uri = "#{conn.scheme}://#{host}#{address}"
     conn |> put_resp_header("location", uri) |> send_resp(301, "") |> halt
   end
 
-  def redirect_to_login(conn) do
-    redirect_page(conn, "/users/login")
+  def redirect_to_login(conn, message) do
+    redirect_page(conn, "/users/login", message)
   end
 
   def send_message(conn, message) do

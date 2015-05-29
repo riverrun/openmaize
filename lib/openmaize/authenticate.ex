@@ -47,17 +47,17 @@ defmodule Openmaize.Authenticate do
   defp check_token(token, conn) when is_binary(token) do
     case Token.decode(token) do
       {:ok, data} -> verify_user(conn, data)
-      {:error, _message} -> redirect_to_login(conn)
+      {:error, message} -> redirect_to_login(conn, message)
     end
   end
-  defp check_token(_, conn), do: redirect_to_login(conn)
+  defp check_token(_, conn), do: redirect_to_login(conn, %{"error" => "Invalid credentials"})
 
   defp verify_user(conn, data) do
     role = Map.get(data, "role")
     if role == nil or role == "admin" or Enum.at(conn.path_info, 0) == "users" do
-      assign(conn, :authenticated_user, data)
+      assign(conn, :current_user, data)
     else
-      redirect_to_login(conn)
+      redirect_to_login(conn, %{"error" => "You do not have permission to view this page"})
     end
   end
 

@@ -13,7 +13,7 @@ defmodule Openmaize.AuthenticateTest do
     token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJuYW1lIjoiUmF5bW9uZCBMdXh1cnkgWWFjaHQifQ.hU4Mkca19Jr2OvkUMg52dMHUsaVJE-8VDGjVrDLUcdIsTDPUivSgiiiuKAHC93Xkrdog5yBAeVU8ZQ3V0QdbJw"
     conn = conn(:get, "/") |> put_req_cookie("access_token", token) |> call
     assert conn.status == 200
-    assert conn.assigns == %{authenticated_user: %{name: "Raymond Luxury Yacht"}}
+    assert conn.assigns == %{current_user: %{name: "Raymond Luxury Yacht"}}
   end
 
   test "redirect for invalid token stored in cookie" do
@@ -30,7 +30,7 @@ defmodule Openmaize.AuthenticateTest do
     token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJuYW1lIjoiUmF5bW9uZCBMdXh1cnkgWWFjaHQifQ.hU4Mkca19Jr2OvkUMg52dMHUsaVJE-8VDGjVrDLUcdIsTDPUivSgiiiuKAHC93Xkrdog5yBAeVU8ZQ3V0QdbJw"
     conn = conn(:get, "/") |> put_req_header("authorization", "Bearer #{token}") |> call
     assert conn.status == 200
-    assert conn.assigns == %{authenticated_user: %{name: "Raymond Luxury Yacht"}}
+    assert conn.assigns == %{current_user: %{name: "Raymond Luxury Yacht"}}
   end
 
   test "redirect for invalid token stored in sessionStorage" do
@@ -47,7 +47,7 @@ defmodule Openmaize.AuthenticateTest do
     token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiYWRtaW4iLCJuYW1lIjoiUmF5bW9uZCBMdXh1cnkgWWFjaHQifQ.y65Mw3fNLAt60IEugvqAMP236Sm3HE_kldT7TNjzmBD6Cu_C3DnYi1pDG7Pqa2THcSszwUrzC4xROOy_hAlqnQ"
     conn = conn(:get, "/") |> put_req_cookie("access_token", token) |> call
     assert conn.status == 200
-    assert conn.assigns == %{authenticated_user: %{name: "Raymond Luxury Yacht", role: "admin"}}
+    assert conn.assigns == %{current_user: %{name: "Raymond Luxury Yacht", role: "admin"}}
   end
 
   test "redirect for missing token" do

@@ -19,7 +19,7 @@ defmodule Openmaize.Login do
     ["name", "password"])
 
     case login_user(name, password) do
-      false -> redirect_to_login(conn)
+      false -> redirect_to_login(conn, %{"error" => "Invalid credentials"})
       user -> add_token(user, conn, opts, Config.storage_method)
     end
   end
@@ -54,7 +54,7 @@ defmodule Openmaize.Login do
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, opts)
-    |> redirect_page("/users")
+    |> redirect_page("/users", %{"info" => "You have been logged in"})
   end
   @doc """
   Generate a token and send it in the response.
