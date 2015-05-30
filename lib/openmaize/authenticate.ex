@@ -11,6 +11,8 @@ defmodule Openmaize.Authenticate do
   import Plug.Conn
   import Openmaize.Tools
   alias Openmaize.Config
+  alias Openmaize.Login
+  alias Openmaize.Logout
   alias Openmaize.Token
 
   @behaviour Plug
@@ -24,26 +26,18 @@ defmodule Openmaize.Authenticate do
   If the path is for the login or logout page, the user is redirected
   to that page straight away.
   """
-  def call(conn, _opts) do
-    case Enum.at(conn.path_info, -1) do
+  def call(%{path_info: path_info} = conn, _opts) do
+    case Enum.at(path_info, -1) do
       "login" -> handle_login(conn)
       "logout" -> handle_logout(conn)
       _ -> handle_auth(conn, Config.storage_method)
     end
   end
 
-  defp handle_login(conn) do
-    if conn.method == "POST" do
-      Openmaize.Login.call(conn, [])
-    else
-      assign(conn, :current_user, nil)
-    end
-  end
+  defp handle_login(%{method: "POST"} = conn), do: Login.call(conn, [])
+  defp handle_login(conn), do: assign(conn, :current_user, nil)
 
-  defp handle_logout(conn) do
-    assign(conn, :current_user, nil)
-    |> Openmaize.Logout.call([])
-  end
+  defp handle_logout(conn), do: assign(conn, :current_user, nil) |> Logout.call([])
 
   defp handle_auth(conn, storage) when storage == "cookie" do
     conn = fetch_cookies(conn)
@@ -60,8 +54,8 @@ defmodule Openmaize.Authenticate do
       {:error, message} -> redirect_to_login(conn, %{"error" => message})
     end
   end
-  defp check_token(_, conn) do
-    if Enum.at(conn.path_info, 0) in Config.protected do
+  defp check_token(_, %{path_info: path_info} = conn) do
+    if Enum.at(path_info, 0) in Config.protected do
       redirect_to_login(conn, %{})
     else
       assign(conn, :current_user, nil)
