@@ -59,6 +59,13 @@ defmodule Openmaize.Config do
   end
 
   @doc """
+  The redirect page after login.
+  """
+  def redirect_page do
+    Application.get_env(:openmaize, :redirect_page, "/users")
+  end
+
+  @doc """
   The storage method for the token. The default is to store it in
   a cookie which is then sent to the user.
 
