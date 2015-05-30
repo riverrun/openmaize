@@ -8,6 +8,7 @@ defmodule Openmaize.Config do
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
   | crypto_mod         | atom    | :bcrypt  |
+  | login_page         | string  | "/users/login"  |
   | storage_method     | string  | "cookie" |
   | secret_key         | string  | "you will never guess" |
   | token_validity     | integer | 24 * 60  |
@@ -51,12 +52,10 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The parent of the login and logout pages. For example, the default
-  value of "users" is for a "/users/login" login page and "/users/logout"
-  logout page.
+  The login page.
   """
-  def loginout_parent do
-    Application.get_env(:openmaize, :loginout_parent, "users")
+  def login_page do
+    Application.get_env(:openmaize, :login_page, "/users/login")
   end
 
   @doc """
