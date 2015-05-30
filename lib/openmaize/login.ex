@@ -50,7 +50,7 @@ defmodule Openmaize.Login do
     opts = Keyword.put_new(opts, :http_only, true)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, opts)
-    |> redirect_page(Config.redirect_page, %{"info" => "You have been logged in"})
+    |> redirect_page("/#{Config.login_dir}", %{"info" => "You have been logged in"})
   end
   defp add_token(user, conn, _opts, _storage) do
     # how can we add the token to sessionStorage?

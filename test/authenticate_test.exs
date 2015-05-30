@@ -21,7 +21,7 @@ defmodule Openmaize.AuthenticateTest do
     token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.eIBGE2fWD8nU0WHuuh8skEG1R789FObmDRiHybI18oMfH1UPuzAuzwUE6P4eQakNIZPMFensifQLoD3r7kzR-Q"
     conn = conn(:get, "/") |> put_req_cookie("access_token", token) |> Authenticate.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users/login"}
+           {"location", "http://www.example.com/admin/login"}
     assert conn.status == 301
   end
 
@@ -38,7 +38,7 @@ defmodule Openmaize.AuthenticateTest do
     token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6IlJheW1vbmQgTHV4dXJ5IFlhY2h0In0.eIBGE2fWD8nU0WHuuh8skEG1R789FObmDRiHybI18oMfH1UPuzAuzwUE6P4eQakNIZPMFensifQLoD3r7kzR-Q"
     conn = conn(:get, "/") |> put_req_header("authorization", "Bearer #{token}") |> Authenticate.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users/login"}
+           {"location", "http://www.example.com/admin/login"}
     assert conn.status == 301
   end
 
@@ -51,9 +51,9 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "redirect for missing token" do
-    conn = conn(:get, "/") |> Authenticate.call([])
+    conn = conn(:get, "/admin") |> Authenticate.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users/login"}
+           {"location", "http://www.example.com/admin/login"}
     assert conn.status == 301
   end
 end

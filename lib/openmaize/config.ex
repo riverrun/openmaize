@@ -8,7 +8,8 @@ defmodule Openmaize.Config do
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
   | crypto_mod         | atom    | :bcrypt  |
-  | login_page         | string  | "/users/login"  |
+  | login_dir          | string  | "admin"  |
+  | protected          | list    | ["admin"] |
   | storage_method     | string  | "cookie" |
   | secret_key         | string  | "you will never guess" |
   | token_validity     | integer | 24 * 60  |
@@ -52,17 +53,19 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The login page.
+  The login directory. For example, the default value of "admin"
+  means that the login page is "/admin/login" and the logout
+  page is "/admin/logout".
   """
-  def login_page do
-    Application.get_env(:openmaize, :login_page, "/users/login")
+  def login_dir do
+    Application.get_env(:openmaize, :login_dir, "admin")
   end
 
   @doc """
-  The redirect page after login.
+  List of directories that should be protected (that need login).
   """
-  def redirect_page do
-    Application.get_env(:openmaize, :redirect_page, "/users")
+  def protected do
+    Application.get_env(:openmaize, :protected, ["admin"])
   end
 
   @doc """

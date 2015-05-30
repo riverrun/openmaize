@@ -57,7 +57,13 @@ defmodule Openmaize.Authenticate do
       {:error, message} -> redirect_to_login(conn, %{"error" => message})
     end
   end
-  defp check_token(_, conn), do: redirect_to_login(conn, %{})
+  defp check_token(_, conn) do
+    if Enum.at(conn.path_info, 0) in Config.protected do
+      redirect_to_login(conn, %{})
+    else
+      assign(conn, :current_user, nil)
+    end
+  end
 
   defp verify_user(conn, data) do
     assign(conn, :current_user, data)
