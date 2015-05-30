@@ -28,9 +28,6 @@ It will be possible to fine-tune authentication in the following ways:
 a page, but not be able to edit it.
 * it can be based on user role or any other non-sensitive criteria.
 
-At the moment, we do not support cookie-based session authentication,
-but that might change if there is a demand for it.
-
 ### License
 
 MIT
