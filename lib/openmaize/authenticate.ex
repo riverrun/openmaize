@@ -25,9 +25,9 @@ defmodule Openmaize.Authenticate do
   to that page straight away.
   """
   def call(conn, _opts) do
-    case get_path(conn.path_info) do
-      "/users/login" -> handle_login(conn)
-      "/users/logout" -> handle_logout(conn)
+    case Enum.at(conn.path_info, -1) do
+      "login" -> handle_login(conn)
+      "logout" -> handle_logout(conn)
       _ -> handle_auth(conn, Config.storage_method)
     end
   end
@@ -68,7 +68,4 @@ defmodule Openmaize.Authenticate do
     end
   end
 
-  defp get_path(path_info) do
-    "/" <> Enum.join(path_info, "/")
-  end
 end

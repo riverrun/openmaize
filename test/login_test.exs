@@ -4,8 +4,10 @@ defmodule Openmaize.LoginTest do
 
   alias Openmaize.Authenticate
 
-  test "call to Authenticate with /users/login go straight to login page" do
+  test "call Authenticate with path ending in login" do
     conn = conn(:get, "/users/login") |> Authenticate.call([]) |> send_resp(200, "")
+    assert conn.status == 200
+    conn = conn(:get, "/admin/login") |> Authenticate.call([]) |> send_resp(200, "")
     assert conn.status == 200
   end
 
