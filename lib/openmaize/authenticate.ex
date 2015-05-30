@@ -36,11 +36,14 @@ defmodule Openmaize.Authenticate do
     if conn.method == "POST" do
       Openmaize.Login.call(conn, [])
     else
-      conn
+      assign(conn, :current_user, nil)
     end
   end
 
-  defp handle_logout(conn), do: Openmaize.Logout.call(conn, [])
+  defp handle_logout(conn) do
+    assign(conn, :current_user, nil)
+    |> Openmaize.Logout.call([])
+  end
 
   defp handle_auth(conn, storage) when storage == "cookie" do
     conn = fetch_cookies(conn)
