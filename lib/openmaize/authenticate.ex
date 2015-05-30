@@ -11,8 +11,6 @@ defmodule Openmaize.Authenticate do
   import Plug.Conn
   import Openmaize.Tools
   alias Openmaize.Config
-  alias Openmaize.Login
-  alias Openmaize.Logout
   alias Openmaize.Token
 
   @behaviour Plug
@@ -20,30 +18,15 @@ defmodule Openmaize.Authenticate do
   def init(opts), do: opts
 
   @doc """
-  Function to check the token provided. If there is no token, or if the
-  token is invalid, the user is redirected to the login page.
-
-  If the path is for the login or logout page, the user is redirected
-  to that page straight away.
   """
-  def call(%{path_info: path_info} = conn, _opts) do
-    case Enum.at(path_info, -1) do
-      "login" -> handle_login(conn)
-      "logout" -> handle_logout(conn)
-      _ -> handle_auth(conn, Config.storage_method)
-    end
-  end
-
-  defp handle_login(%{method: "POST"} = conn), do: Login.call(conn, [])
-  defp handle_login(conn), do: assign(conn, :current_user, nil)
-
-  defp handle_logout(conn), do: assign(conn, :current_user, nil) |> Logout.call([])
-
-  defp handle_auth(conn, storage) when storage == "cookie" do
+  def call(conn, [storage: "cookie"]) do
     conn = fetch_cookies(conn)
     Map.get(conn.req_cookies, "access_token") |> check_token(conn)
   end
-  defp handle_auth(conn, _storage) do
+
+  @doc """
+  """
+  def call(conn, _opts) do
     get_req_header(conn, "authorization") |> check_token(conn)
   end
 
