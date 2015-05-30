@@ -60,12 +60,7 @@ defmodule Openmaize.Authenticate do
   defp check_token(_, conn), do: redirect_to_login(conn, %{})
 
   defp verify_user(conn, data) do
-    role = Map.get(data, "role")
-    if role == nil or role == "admin" or Enum.at(conn.path_info, 0) == "users" do
-      assign(conn, :current_user, data)
-    else
-      redirect_to_login(conn, %{"error" => "You do not have permission to view this page"})
-    end
+    assign(conn, :current_user, data)
   end
 
 end

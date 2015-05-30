@@ -51,6 +51,15 @@ defmodule Openmaize.Config do
   end
 
   @doc """
+  The parent of the login and logout pages. For example, the default
+  value of "users" is for a "/users/login" login page and "/users/logout"
+  logout page.
+  """
+  def loginout_parent do
+    Application.get_env(:openmaize, :loginout_parent, "users")
+  end
+
+  @doc """
   The storage method for the token. The default is to store it in
   a cookie which is then sent to the user.
 
