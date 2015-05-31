@@ -18,6 +18,8 @@ defmodule Openmaize.Authenticate do
   def init(opts), do: opts
 
   @doc """
+  This function is for when the token is stored in a cookie, which is
+  the default method.
   """
   def call(conn, [storage: "cookie"]) do
     conn = fetch_cookies(conn)
@@ -25,6 +27,8 @@ defmodule Openmaize.Authenticate do
   end
 
   @doc """
+  This function is for when the token is stored in sessionStorage and
+  sent in the request header. This is not implemented yet.
   """
   def call(conn, _opts) do
     get_req_header(conn, "authorization") |> check_token(conn)
@@ -37,8 +41,8 @@ defmodule Openmaize.Authenticate do
       {:error, message} -> redirect_to_login(conn, %{"error" => message})
     end
   end
-  defp check_token(_, %{path_info: path_info} = conn) do
-    if Enum.at(path_info, 0) in Config.protected do
+  defp check_token(_, conn) do
+    if full_path(conn) |> String.starts_with?(Config.protected) do
       redirect_to_login(conn, %{})
     else
       assign(conn, :current_user, nil)
