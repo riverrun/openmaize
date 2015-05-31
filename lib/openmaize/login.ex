@@ -48,10 +48,9 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 
-  defp add_token(%{"id" => id, "name" => name, "role" => role} = user, conn, storage)
-  when storage == "cookie" do
-    IO.inspect {id, name, role}
-    {:ok, token} = generate_token(id, name, String.to_atom(role))
+  defp add_token(user, conn, storage) when storage == "cookie" do
+    role = "admin"
+    {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, [http_only: true]) |> IO.inspect
     |> redirect_page("/#{Config.redirect_dir[role]}", %{"info" => "You have been logged in"})
   end
@@ -61,10 +60,10 @@ defmodule Openmaize.Login do
     send_resp(conn, 200, token_string)
   end
 
-  defp generate_token(id, name, role) do
-    IO.inspect {id, name, role}
+  defp generate_token(user) do
     # how can users define what goes in the token?
-    %{id: id, name: name, role: role, exp: token_expiry_secs}
+    Map.take(user, [:id, :name, :role])
+    |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode
   end
 
