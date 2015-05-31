@@ -24,8 +24,6 @@ defmodule Openmaize.Login do
   If there is an error, the user will be redirected to the login page.
   """
   def call(conn, _opts) do
-    IO.inspect conn.params[:user]
-    IO.inspect conn.params.user
     %{"name" => name, "password" => password} = Map.take(conn.params["user"],
     ["name", "password"])
 
