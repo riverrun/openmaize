@@ -47,10 +47,10 @@ defmodule Openmaize.Login do
   end
 
   defp add_token(user, conn, storage) when storage == "cookie" do
-    role = "admin"
+    role = user[:role]
     {:ok, token} = generate_token(user)
-    put_resp_cookie(conn, "access_token", token, [http_only: true]) |> IO.inspect
-    |> redirect_page("/#{Config.redirect_dir[role]}", %{"info" => "You have been logged in"})
+    put_resp_cookie(conn, "access_token", token, [http_only: true])
+    |> redirect_page("#{Config.redirect_pages[role]}", %{"info" => "You have been logged in"})
   end
   defp add_token(user, conn, _storage) do
     # how can we add the token to sessionStorage?

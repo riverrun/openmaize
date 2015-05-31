@@ -61,8 +61,10 @@ defmodule Openmaize.Config do
     Application.get_env(:openmaize, :login_dir, "admin")
   end
 
-  def redirect_dir do
-    Application.get_env(:openmaize, :redirect_dir, [admin: "admin"])
+  @doc """
+  """
+  def redirect_pages do
+    Application.get_env(:openmaize, :redirect_pages, %{"admin" => "/admin", nil => "/"})
   end
 
   @doc """
