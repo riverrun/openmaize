@@ -1,5 +1,22 @@
 defmodule Openmaize do
   @moduledoc """
+  This module handles the initial call to Openmaize and then calls the
+  relevant module for handling authentication, logging in or logging
+  out.
+
+  If the path is for the login page and the method is "POST", the
+  connection is redirected to the Openmaize.Login module. If the
+  method is "GET", the current user is given a nil value, and then
+  the connection is returned.
+
+  If the path is for the logout page, the connection is redirected
+  to the Openmaize.Logout module, which handles the logout and redirects
+  the user to the home page.
+
+  For any other path, including unprotected paths, the connection is
+  redirected to the Openmaize.Authenticate module, which handles
+  authentication.
+
   """
 
   import Plug.Conn

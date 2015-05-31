@@ -61,6 +61,10 @@ defmodule Openmaize.Config do
     Application.get_env(:openmaize, :login_dir, "admin")
   end
 
+  def redirect_dir do
+    Application.get_env(:openmaize, :redirect_dir, [admin: "admin"])
+  end
+
   @doc """
   List of directories that should be protected (that need login).
   """

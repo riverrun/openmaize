@@ -23,13 +23,15 @@ defmodule Openmaize.Login do
 
   If there is an error, the user will be redirected to the login page.
   """
-  def call(conn, opts) do
+  def call(conn, _opts) do
+    IO.inspect conn.params[:user]
+    IO.inspect conn.params.user
     %{"name" => name, "password" => password} = Map.take(conn.params["user"],
     ["name", "password"])
 
     case login_user(name, password) do
       false -> redirect_to_login(conn, %{"error" => "Invalid credentials"})
-      user -> add_token(user, conn, opts, Config.storage_method)
+      user -> add_token(user, conn, Config.storage_method)
     end
   end
 
@@ -46,22 +48,23 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 
-  defp add_token(user, conn, opts, storage) when storage == "cookie" do
-    opts = Keyword.put_new(opts, :http_only, true)
-    {:ok, token} = generate_token(user)
-    put_resp_cookie(conn, "access_token", token, opts)
-    |> redirect_page("/#{Config.login_dir}", %{"info" => "You have been logged in"})
+  defp add_token(%{"id" => id, "name" => name, "role" => role} = user, conn, storage)
+  when storage == "cookie" do
+    IO.inspect {id, name, role}
+    {:ok, token} = generate_token(id, name, String.to_atom(role))
+    put_resp_cookie(conn, "access_token", token, [http_only: true]) |> IO.inspect
+    |> redirect_page("/#{Config.redirect_dir[role]}", %{"info" => "You have been logged in"})
   end
-  defp add_token(user, conn, _opts, _storage) do
+  defp add_token(user, conn, _storage) do
     # how can we add the token to sessionStorage?
     token_string = "{\"Authorization\": \"Bearer #{generate_token(user)}\"}"
     send_resp(conn, 200, token_string)
   end
 
-  defp generate_token(user) do
+  defp generate_token(id, name, role) do
+    IO.inspect {id, name, role}
     # how can users define what goes in the token?
-    Map.take(user, [:id, :name, :role])
-    |> Map.merge(%{exp: token_expiry_secs})
+    %{id: id, name: name, role: role, exp: token_expiry_secs}
     |> Token.encode
   end
 

@@ -54,4 +54,10 @@ defmodule Openmaize.AuthenticateTest do
            {"location", "http://www.example.com/admin/login"}
     assert conn.status == 301
   end
+
+  test "missing token for unprotected page" do
+    conn = conn(:get, "/") |> call
+    assert conn.status == 200
+    assert conn.assigns == %{current_user: nil}
+  end
 end
