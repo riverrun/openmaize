@@ -59,12 +59,12 @@ defmodule Openmaize.Authenticate do
   end
 
   defp verify_role(conn, data, match) do
-    role = Map.get(data, :role) |> IO.inspect
-    Map.get(@protected_roles, match) |> IO.inspect
+    role = Map.get(data, :role)
     if role in Map.get(@protected_roles, match) do
       assign(conn, :current_user, data)
     else
-      redirect_to_login(conn, %{"error" => "You do not have permission to view this page."})
+      redirect_to(conn, "#{Config.redirect_pages[role]}",
+      %{"error" => "You do not have permission to view #{full_path(conn)}."})
     end
   end
 

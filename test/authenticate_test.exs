@@ -58,6 +58,17 @@ defmodule Openmaize.AuthenticateTest do
     assert conn.status == 301
   end
 
+  test "redirect for insufficient permissions" do
+    Application.put_env(:openmaize, :storage_method, "cookie")
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9." <>
+    "eyJyb2xlIjoidXNlciIsIm5hbWUiOiJSYXltb25kIEx1eHVyeSBZYWNodCIsImlkIjoxfQ." <>
+    "oeUo6ZWA2VlaqQQzMa1mqIeEJvaIZfsUrtulgjgzvjqTc4MVjKps3Tqwxdxi5GRYoUOMRGiQgnedOfc8islEnA"
+    conn = conn(:get, "/admin") |> put_req_cookie("access_token", token) |> Openmaize.call([])
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+           {"location", "http://www.example.com/users"}
+    assert conn.status == 301
+  end
+
   test "redirect for missing token" do
     conn = conn(:get, "/admin") |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==

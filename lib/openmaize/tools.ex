@@ -10,7 +10,7 @@ defmodule Openmaize.Tools do
   Function to redirect to a page with a message explaining why the user
   is being redirected.
   """
-  def redirect_page(conn, address, message) do
+  def redirect_to(conn, address, message) do
     if Mix.env == :dev, do: host = "localhost:4000", else: host = conn.host
     unless map_size(message) == 0, do: conn = send_message(conn, message)
     conn
@@ -23,7 +23,7 @@ defmodule Openmaize.Tools do
   is being redirected.
   """
   def redirect_to_login(conn, message) do
-    redirect_page(conn, "/#{Config.login_dir}/login", message)
+    redirect_to(conn, "/#{Config.login_dir}/login", message)
   end
 
   defp send_message(conn, message) do
