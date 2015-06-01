@@ -14,6 +14,8 @@ defmodule Openmaize.Authenticate do
   alias Openmaize.Token
 
   @behaviour Plug
+  @protected_roles Config.protected
+  @protected Map.keys(Config.protected)
 
   def init(opts), do: opts
 
@@ -42,15 +44,28 @@ defmodule Openmaize.Authenticate do
     end
   end
   defp check_token(_, conn) do
-    if full_path(conn) |> String.starts_with?(Config.protected) do
-      redirect_to_login(conn, %{})
-    else
-      assign(conn, :current_user, nil)
+    case full_path(conn) |> :binary.match(@protected) do
+      {0, _} -> redirect_to_login(conn, %{})
+      _ -> assign(conn, :current_user, nil)
     end
   end
 
   defp verify_user(conn, data) do
-    assign(conn, :current_user, data)
+    case full_path(conn) |> :binary.match(@protected) do
+      {0, match_len} ->
+        verify_role(conn, data, :binary.part(full_path(conn), {0, match_len}))
+      _ -> assign(conn, :current_user, data)
+    end
+  end
+
+  defp verify_role(conn, data, match) do
+    role = Map.get(data, :role) |> IO.inspect
+    Map.get(@protected_roles, match) |> IO.inspect
+    if role in Map.get(@protected_roles, match) do
+      assign(conn, :current_user, data)
+    else
+      redirect_to_login(conn, %{"error" => "You do not have permission to view this page."})
+    end
   end
 
 end

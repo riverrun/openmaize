@@ -54,7 +54,8 @@ defmodule Openmaize.Login do
   end
   defp add_token(user, conn, _storage) do
     # how can we add the token to sessionStorage?
-    token_string = "{\"Authorization\": \"Bearer #{generate_token(user)}\"}"
+    {:ok, token} = generate_token(user)
+    token_string = ~s({"access_token": #{token}})
     send_resp(conn, 200, token_string)
   end
 

@@ -70,14 +70,20 @@ defmodule Openmaize.Config do
   If there is no role, the user will be redirected to the home page.
   """
   def redirect_pages do
-    Application.get_env(:openmaize, :redirect_pages, %{"admin" => "/admin", nil => "/"})
+    default = %{"admin" => "/admin", nil => "/"}
+    Application.get_env(:openmaize, :redirect_pages, default)
   end
 
   @doc """
-  List of (start of) paths that should be protected (that need login).
+  Paths that should be protected. This is a map associating each path
+  with a role.
+
+  The path is the start of the path. For example, the default value
+  of "/admin" refers to all paths that start with "/admin".
   """
   def protected do
-    Application.get_env(:openmaize, :protected, ["/admin"])
+    default = %{"/admin" => ["admin"], "/users" => ["admin", "user"]}
+    Application.get_env(:openmaize, :protected, default)
   end
 
   @doc """
