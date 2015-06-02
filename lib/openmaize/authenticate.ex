@@ -14,10 +14,14 @@ defmodule Openmaize.Authenticate do
   alias Openmaize.Token
 
   @behaviour Plug
+  @protected_roles Config.protected
+  @protected Map.keys(Config.protected)
 
   def init(opts), do: opts
 
   @doc """
+  This function is for when the token is stored in a cookie, which is
+  the default method.
   """
   def call(conn, [storage: "cookie"]) do
     conn = fetch_cookies(conn)
@@ -25,6 +29,8 @@ defmodule Openmaize.Authenticate do
   end
 
   @doc """
+  This function is for when the token is stored in sessionStorage and
+  sent in the request header. This is not implemented yet.
   """
   def call(conn, _opts) do
     get_req_header(conn, "authorization") |> check_token(conn)
@@ -37,16 +43,29 @@ defmodule Openmaize.Authenticate do
       {:error, message} -> redirect_to_login(conn, %{"error" => message})
     end
   end
-  defp check_token(_, %{path_info: path_info} = conn) do
-    if Enum.at(path_info, 0) in Config.protected do
-      redirect_to_login(conn, %{})
-    else
-      assign(conn, :current_user, nil)
+  defp check_token(_, conn) do
+    case full_path(conn) |> :binary.match(@protected) do
+      {0, _} -> redirect_to_login(conn, %{})
+      _ -> assign(conn, :current_user, nil)
     end
   end
 
   defp verify_user(conn, data) do
-    assign(conn, :current_user, data)
+    case full_path(conn) |> :binary.match(@protected) do
+      {0, match_len} ->
+        verify_role(conn, data, :binary.part(full_path(conn), {0, match_len}))
+      _ -> assign(conn, :current_user, data)
+    end
+  end
+
+  defp verify_role(conn, data, match) do
+    role = Map.get(data, :role)
+    if role in Map.get(@protected_roles, match) do
+      assign(conn, :current_user, data)
+    else
+      redirect_to(conn, "#{Config.redirect_pages[role]}",
+      %{"error" => "You do not have permission to view #{full_path(conn)}."})
+    end
   end
 
 end

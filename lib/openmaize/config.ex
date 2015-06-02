@@ -9,6 +9,7 @@ defmodule Openmaize.Config do
   | repo               | module  | N/A      |
   | crypto_mod         | atom    | :bcrypt  |
   | login_dir          | string  | "admin"  |
+  | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
   | protected          | list    | ["admin"] |
   | storage_method     | string  | "cookie" |
   | secret_key         | string  | "you will never guess" |
@@ -62,16 +63,27 @@ defmodule Openmaize.Config do
   end
 
   @doc """
+  The pages users should be redirected to after logging in. This is a
+  map where the key is the role of the user and the value is the page
+  to be redirected to.
+
+  If there is no role, the user will be redirected to the home page.
   """
   def redirect_pages do
-    Application.get_env(:openmaize, :redirect_pages, %{"admin" => "/admin", nil => "/"})
+    default = %{"admin" => "/admin", "user" => "/users", nil => "/"}
+    Application.get_env(:openmaize, :redirect_pages, default)
   end
 
   @doc """
-  List of directories that should be protected (that need login).
+  Paths that should be protected. This is a map associating each path
+  with a role.
+
+  The path is the start of the path. For example, the default value
+  of "/admin" refers to all paths that start with "/admin".
   """
   def protected do
-    Application.get_env(:openmaize, :protected, ["admin"])
+    default = %{"/admin" => ["admin"], "/users" => ["admin", "user"]}
+    Application.get_env(:openmaize, :protected, default)
   end
 
   @doc """
