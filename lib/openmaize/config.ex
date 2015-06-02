@@ -82,7 +82,8 @@ defmodule Openmaize.Config do
   of "/admin" refers to all paths that start with "/admin".
   """
   def protected do
-    default = %{"/admin" => ["admin"], "/users" => ["admin", "user"]}
+    default = %{"/admin" => ["admin"], "/users" => ["admin", "user"],
+      "/users/:id" => ["admin", "user"]}
     Application.get_env(:openmaize, :protected, default)
   end
 
