@@ -53,14 +53,14 @@ defmodule Openmaize.Authenticate do
   defp verify_user(conn, data) do
     case full_path(conn) |> :binary.match(@protected) do
       {0, match_len} ->
-        verify_role(conn, data, :binary.part(full_path(conn), {0, match_len}))
-      _ -> assign(conn, :current_user, data)
+        verify_role(conn, data, full_path(conn), match_len)
+        _ -> assign(conn, :current_user, data)
     end
   end
 
-  defp verify_role(conn, data, match) do
-    role = Map.get(data, :role)
-    if role in Map.get(@protected_roles, match) do
+  defp verify_role(conn, %{id: id, role: role} = data, path, match_len) do
+    match = :binary.part(path, {0, match_len})
+    if role in Map.get(@protected_roles, match) and verify_id(path, match, id) do
       assign(conn, :current_user, data)
     else
       redirect_to(conn, "#{Config.redirect_pages[role]}",
@@ -68,4 +68,11 @@ defmodule Openmaize.Authenticate do
     end
   end
 
+  defp verify_id(path, match, id) do
+    if match <> "/:id" in @protected do
+      Kernel.match?({0, _}, :binary.match(path, match <> "/#{id}"))
+    else
+      true
+    end
+  end
 end
