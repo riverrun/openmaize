@@ -68,11 +68,17 @@ defmodule Openmaize.Authenticate do
     end
   end
 
+  defp verify_id(_path, match, _id) when not match <> "/:id" in @protected do
+    IO.inspect {match, @protected}
+    true
+  end
   defp verify_id(path, match, id) do
-    if match <> "/:id" in @protected do
-      Kernel.match?({0, _}, :binary.match(path, match <> "/#{id}"))
-    else
-      true
+    cond do
+      path == match -> true
+      path == match <> "/" -> true
+      path == match <> "/#{id}" -> true
+      true -> Kernel.match?({0, _}, :binary.match(path, match <> "/#{id}/"))
     end
   end
+
 end
