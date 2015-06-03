@@ -68,12 +68,9 @@ defmodule Openmaize.Authenticate do
     end
   end
 
-  defp verify_id(_path, match, _id) when not match <> "/:id" in @protected do
-    IO.inspect {match, @protected}
-    true
-  end
   defp verify_id(path, match, id) do
     cond do
+      not (match <> "/:id") in @protected -> true
       path == match -> true
       path == match <> "/" -> true
       path == match <> "/#{id}" -> true
