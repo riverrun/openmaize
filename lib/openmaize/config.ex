@@ -10,7 +10,7 @@ defmodule Openmaize.Config do
   | crypto_mod         | atom    | :bcrypt  |
   | login_dir          | string  | "admin"  |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
-  | protected          | list    | ["admin"] |
+  | protected          | list    | %{"/admin" => [], "/users" => ["user"] |
   | storage_method     | string  | "cookie" |
   | secret_key         | string  | "you will never guess" |
   | token_validity     | integer | 24 * 60  |
@@ -76,14 +76,14 @@ defmodule Openmaize.Config do
 
   @doc """
   Paths that should be protected. This is a map associating each path
-  with a role.
+  with a role. Users with the "admin" role can access any url, and there
+  is no need to write "admin" in any of these values.
 
-  The path is the start of the path. For example, the default value
-  of "/admin" refers to all paths that start with "/admin".
+  The path is the start of the path. For example, "/users" refers to
+  all paths that start with "/users".
   """
   def protected do
-    default = %{"/admin" => ["admin"], "/users" => ["admin", "user"],
-      "/users/:id" => ["admin", "user"]}
+    default = %{"/admin" => [], "/users" => ["user"]}
     Application.get_env(:openmaize, :protected, default)
   end
 

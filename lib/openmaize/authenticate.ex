@@ -58,6 +58,9 @@ defmodule Openmaize.Authenticate do
     end
   end
 
+  defp verify_role(conn, %{role: "admin"} = data, _path, _match_len) do
+    assign(conn, :current_user, data)
+  end
   defp verify_role(conn, %{id: id, role: role} = data, path, match_len) do
     match = :binary.part(path, {0, match_len})
     if role in Map.get(@protected_roles, match) and verify_id(path, match, id) do
@@ -70,7 +73,6 @@ defmodule Openmaize.Authenticate do
 
   defp verify_id(path, match, id) do
     cond do
-      not (match <> "/:id") in @protected -> true
       path == match -> true
       path == match <> "/" -> true
       path == match <> "/#{id}" -> true
