@@ -16,8 +16,14 @@ that is easy to use.
 
 ## Use
 
-Add the following to the list of plugs you are using (in Phoenix, this
-will be in `web/router.ex`:
+Before you use Openmaize, you need to make sure that your user model
+contains an `id`, `name` and `role`.
+
+You then need to configure Openmaize. For more information, see the documentation
+for the Openmaize.Config module.
+
+Next, add the following to the list of plugs you are using (in Phoenix, this
+will be in `web/router.ex`):
 
     plug Openmaize
 
@@ -28,10 +34,7 @@ an error, then the user will be redirected to the login page. If the login
 is successful then the user will be given a token, which he / she can use
 in subsequent requests.
 
-There are several configurable values. For more information, see the documentation
-for the Openmaize.Config module.
-
-There is an example of openmaize being used with Phoenix at
+There is an example of Openmaize being used with Phoenix at
 [Openmaize-example](https://github.com/riverrun/openmaize-example).
 
 ### License
