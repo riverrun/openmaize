@@ -20,6 +20,22 @@ defmodule Openmaize.Config do
   model is called User, then `user_model` should be
   Coolapp.User and `repo` should be Coolapp.Repo.
 
+  ## Examples
+
+  The simplest way to change the default values would be to add
+  the following to the `config.exs` file in your project.
+
+      config :openmaize,
+        user_model: Coolapp.User,
+        repo: Coolapp.Repo,
+        crypto_mod: :bcrypt,
+        login_dir: "admin",
+        redirect_pages: %{"admin" => "/admin"},
+        protected: %{"/admin" => []},
+        storage_method: "cookie",
+        secret_key: "so hard to guess",
+        token_validity: 7 * 24 * 60
+
   """
 
   @doc """

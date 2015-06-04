@@ -6,8 +6,7 @@ defmodule Openmaize do
 
   If the path is for the login page and the method is "POST", the
   connection is redirected to the Openmaize.Login module. If the
-  method is "GET", the current user is given a nil value, and then
-  the connection is returned.
+  method is "GET", the user is allowed to go to the login page.
 
   If the path is for the logout page, the connection is redirected
   to the Openmaize.Logout module, which handles the logout and redirects
@@ -16,6 +15,12 @@ defmodule Openmaize do
   For any other path, including unprotected paths, the connection is
   redirected to the Openmaize.Authenticate module, which handles
   authentication.
+
+  ## Phoenix integration
+
+  The `current_user` variable is set for every path. This means that
+  you can access `@current_user` in any of your templates. If nobody
+  is logged in, `current_user` is set to nil.
 
   """
 

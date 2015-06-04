@@ -3,8 +3,8 @@ defmodule Openmaize.Authenticate do
   Module to authenticate users.
 
   JSON Web Tokens (JWTs) are used to authenticate the user.
-  If there is no token or the token is invalid, the user will
-  be redirected to the login page.
+  For protected pages, if there is no token or the token is
+  invalid, the user will be redirected to the login page.
 
   """
 
@@ -72,11 +72,10 @@ defmodule Openmaize.Authenticate do
   end
 
   defp verify_id(path, match, id) do
-    cond do
-      path == match -> true
-      path == match <> "/" -> true
-      path == match <> "/#{id}" -> true
-      true -> Kernel.match?({0, _}, :binary.match(path, match <> "/#{id}/"))
+    if Regex.match?(~r{#{match}/?[0-9]*$}, path) do
+      true
+    else
+      Kernel.match?({0, _}, :binary.match(path, match <> "/#{id}/"))
     end
   end
 

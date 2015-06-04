@@ -27,40 +27,33 @@ defmodule Openmaize.RolesTest do
     assert conn.status == 301
   end
 
-  test "user with id" do
-    conn = conn(:get, "/users/1") |> put_req_cookie("access_token", @user_token) |> call
+  test "able to view other user's page" do
+    conn = conn(:get, "/users/3") |> put_req_cookie("access_token", @user_token) |> call
     assert conn.status == 200
     assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
   end
 
-  test "user with id -- long url" do
+  test "need id to edit page with id" do
     conn = conn(:get, "/users/1/edit") |> put_req_cookie("access_token", @user_token) |> call
     assert conn.status == 200
     assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
   end
 
   test "user with wrong id, but start of id is the same" do
-    conn = conn(:get, "/users/10") |> put_req_cookie("access_token", @user_token) |> Openmaize.call([])
+    conn = conn(:get, "/users/10/edit") |> put_req_cookie("access_token", @user_token) |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "http://www.example.com/users"}
     assert conn.status == 301
   end
 
-  test "user with wrong id" do
-    conn = conn(:get, "/users/3") |> put_req_cookie("access_token", @user_token) |> Openmaize.call([])
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users"}
-    assert conn.status == 301
-  end
-
-  test "user with wrong id -- long url" do
+  test "user with wrong id -- cannot edit" do
     conn = conn(:get, "/users/3/edit") |> put_req_cookie("access_token", @user_token) |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "http://www.example.com/users"}
     assert conn.status == 301
   end
 
-  test "main user page with id set in config" do
+  test "main user page" do
     conn = conn(:get, "/users/") |> put_req_cookie("access_token", @user_token) |> call
     assert conn.status == 200
     assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
