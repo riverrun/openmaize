@@ -10,7 +10,7 @@ defmodule Openmaize.Config do
   | crypto_mod         | atom    | :bcrypt  |
   | login_dir          | string  | "admin"  |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
-  | protected          | list    | %{"/admin" => [], "/users" => ["user"] |
+  | protected          | list    | %{"/admin" => []} |
   | storage_method     | string  | "cookie" |
   | secret_key         | string  | "you will never guess" |
   | token_validity     | integer | 24 * 60  |
@@ -30,8 +30,8 @@ defmodule Openmaize.Config do
         repo: Coolapp.Repo,
         crypto_mod: :bcrypt,
         login_dir: "admin",
-        redirect_pages: %{"admin" => "/admin"},
-        protected: %{"/admin" => []},
+        redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
+        protected: %{"/admin" => [], "/users" => ["user"], "/users/:id" => ["user"]}
         storage_method: "cookie",
         secret_key: "so hard to guess",
         token_validity: 7 * 24 * 60
@@ -86,7 +86,7 @@ defmodule Openmaize.Config do
   If there is no role, the user will be redirected to the home page.
   """
   def redirect_pages do
-    default = %{"admin" => "/admin", "user" => "/users", nil => "/"}
+    default = %{"admin" => "/admin", nil => "/"}
     Application.get_env(:openmaize, :redirect_pages, default)
   end
 
@@ -99,7 +99,7 @@ defmodule Openmaize.Config do
   all paths that start with "/users".
   """
   def protected do
-    default = %{"/admin" => [], "/users" => ["user"]}
+    default = %{"/admin" => []}
     Application.get_env(:openmaize, :protected, default)
   end
 

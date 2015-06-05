@@ -54,7 +54,13 @@ defmodule Openmaize.RolesTest do
   end
 
   test "main user page" do
-    conn = conn(:get, "/users/") |> put_req_cookie("access_token", @user_token) |> call
+    conn = conn(:get, "/users") |> put_req_cookie("access_token", @user_token) |> call
+    assert conn.status == 200
+    assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
+  end
+
+  test "other user page -- no id in path" do
+    conn = conn(:get, "/users/whatever") |> put_req_cookie("access_token", @user_token) |> call
     assert conn.status == 200
     assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
   end

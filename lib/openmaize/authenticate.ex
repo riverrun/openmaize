@@ -71,12 +71,13 @@ defmodule Openmaize.Authenticate do
     end
   end
 
-  defp verify_id(path, match, id) do
-    if Regex.match?(~r{#{match}/?[0-9]*$}, path) do
-      true
-    else
+  defp verify_id(path, match, id) when (match <> "/:id") in @protected do
+    if Regex.match?(~r{#{match}/[0-9]+/}, path) do
       Kernel.match?({0, _}, :binary.match(path, match <> "/#{id}/"))
+    else
+      true
     end
   end
+  defp verify_id(_, _, _), do: true
 
 end
