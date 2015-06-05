@@ -6,7 +6,7 @@ defmodule Openmaize.Login do
 
   import Plug.Conn
   import Ecto.Query
-  import Openmaize.Tools
+  import Openmaize.Redirect
   alias Openmaize.Config
   alias Openmaize.Token
 

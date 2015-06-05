@@ -9,7 +9,7 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
-  import Openmaize.Tools
+  import Openmaize.Redirect
   alias Openmaize.Config
   alias Openmaize.Token
 

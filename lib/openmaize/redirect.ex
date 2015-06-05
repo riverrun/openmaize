@@ -1,4 +1,4 @@
-defmodule Openmaize.Tools do
+defmodule Openmaize.Redirect do
   @moduledoc """
   Various tools that are used with Openmaize.
   """
@@ -10,11 +10,11 @@ defmodule Openmaize.Tools do
   Function to redirect to a page with a message explaining why the user
   is being redirected.
   """
-  def redirect_to(conn, address, message) do
-    if Mix.env == :dev, do: host = "localhost:4000", else: host = conn.host
+  def redirect_to(%{scheme: scheme, host: host} = conn, address, message) do
+    if Mix.env == :dev, do: host = "localhost:4000"
     unless map_size(message) == 0, do: conn = send_message(conn, message)
     conn
-    |> put_resp_header("location", "#{conn.scheme}://#{host}#{address}")
+    |> put_resp_header("location", "#{scheme}://#{host}#{address}")
     |> send_resp(301, "") |> halt
   end
 

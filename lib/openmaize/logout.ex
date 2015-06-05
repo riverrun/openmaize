@@ -4,7 +4,7 @@ defmodule Openmaize.Logout do
   """
 
   import Plug.Conn
-  import Openmaize.Tools
+  import Openmaize.Redirect
   alias Openmaize.Config
 
   @behaviour Plug

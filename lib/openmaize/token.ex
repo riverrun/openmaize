@@ -5,16 +5,13 @@ defmodule Openmaize.JSON do
   @doc """
   Encode function for use with Joken.
   """
-  def encode(map) do
-    JSON.encode!(map)
-  end
+  def encode(map), do: JSON.encode!(map)
 
   @doc """
   Decode function for use with Joken.
   """
-  def decode(binary) do
-    JSON.decode!(binary, keys: :atoms!)
-  end
+  def decode(binary), do: JSON.decode!(binary, keys: :atoms!)
+
 end
 defmodule Openmaize.Token do
   @moduledoc """
