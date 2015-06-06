@@ -35,7 +35,7 @@ is successful then the user will be given a token, which he / she can use
 in subsequent requests.
 
 There is an example of Openmaize being used with Phoenix at
-[Openmaize-example](https://github.com/riverrun/openmaize-example).
+[Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
 
 ### License
 
