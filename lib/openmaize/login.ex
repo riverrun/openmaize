@@ -46,7 +46,7 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 
-  defp add_token(user, conn, storage) when storage == "cookie" do
+  defp add_token(user, conn, storage) when storage == :cookie do
     role = Map.get(user, :role)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, [http_only: true])

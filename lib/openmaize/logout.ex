@@ -20,7 +20,7 @@ defmodule Openmaize.Logout do
     logout_user(conn, opts, Config.storage_method)
   end
 
-  defp logout_user(conn, opts, storage) when storage == "cookie" do
+  defp logout_user(conn, opts, storage) when storage == :cookie do
     delete_resp_cookie(conn, "access_token", opts)
     |> redirect_to("/", %{"info" => "You have been logged out"})
   end

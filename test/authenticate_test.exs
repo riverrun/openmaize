@@ -15,7 +15,7 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "correct token stored in cookie" do
-    Application.put_env(:openmaize, :storage_method, "cookie")
+    Application.put_env(:openmaize, :storage_method, :cookie)
     conn = conn(:get, "/") |> put_req_cookie("access_token", @user_token) |> call
     assert conn.status == 200
     assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
@@ -23,7 +23,7 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "redirect for invalid token stored in cookie" do
-    Application.put_env(:openmaize, :storage_method, "cookie")
+    Application.put_env(:openmaize, :storage_method, :cookie)
     conn = conn(:get, "/") |> put_req_cookie("access_token", @invalid) |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "http://www.example.com/admin/login"}

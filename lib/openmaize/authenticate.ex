@@ -23,7 +23,7 @@ defmodule Openmaize.Authenticate do
   This function is for when the token is stored in a cookie, which is
   the default method.
   """
-  def call(conn, [storage: "cookie"]) do
+  def call(conn, [storage: :cookie]) do
     conn = fetch_cookies(conn)
     Map.get(conn.req_cookies, "access_token") |> check_token(conn)
   end

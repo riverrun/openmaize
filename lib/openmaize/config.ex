@@ -11,7 +11,7 @@ defmodule Openmaize.Config do
   | login_dir          | string  | "admin"  |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
   | protected          | list    | %{"/admin" => []} |
-  | storage_method     | string  | "cookie" |
+  | storage_method     | atom    | :cookie |
   | secret_key         | string  | "you will never guess" |
   | token_validity     | integer | 24 * 60  |
 
@@ -32,7 +32,7 @@ defmodule Openmaize.Config do
         login_dir: "admin",
         redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
         protected: %{"/admin" => [], "/users" => ["user"], "/users/:id" => ["user"]}
-        storage_method: "cookie",
+        storage_method: :cookie,
         secret_key: "so hard to guess",
         token_validity: 7 * 24 * 60
 
@@ -111,7 +111,7 @@ defmodule Openmaize.Config do
   sessionStorage, but this is not supported yet.
   """
   def storage_method do
-    Application.get_env(:openmaize, :storage_method, "cookie")
+    Application.get_env(:openmaize, :storage_method, :cookie)
   end
 
   @doc """
