@@ -23,7 +23,7 @@ defmodule Openmaize.Redirect do
   is being redirected.
   """
   def redirect_to_login(conn, message) do
-    redirect_to(conn, "/#{Config.login_dir}/login", message)
+    redirect_to(conn, "#{Config.login_dir}/login", message)
   end
 
   defp send_message(conn, message) do
