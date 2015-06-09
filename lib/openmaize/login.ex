@@ -11,6 +11,7 @@ defmodule Openmaize.Login do
   alias Openmaize.Token
 
   @behaviour Plug
+  @token_info Config.token_info
 
   def init(opts), do: opts
 
@@ -60,8 +61,7 @@ defmodule Openmaize.Login do
   end
 
   defp generate_token(user) do
-    # how can users define what goes in the token?
-    Map.take(user, [:id, :name, :role])
+    Map.take(user, [:id, :name, :role] ++ @token_info)
     |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode
   end

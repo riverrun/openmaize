@@ -11,8 +11,9 @@ defmodule Openmaize.Config do
   | login_dir          | string  | "/admin" |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
   | protected          | list    | %{"/admin" => []} |
-  | storage_method     | atom    | :cookie |
+  | storage_method     | atom    | :cookie  |
   | secret_key         | string  | "you will never guess" |
+  | token_info         | list    | []       |
   | token_validity     | integer | 24 * 60  |
 
   The values for user_model and repo should be module names.
@@ -34,6 +35,7 @@ defmodule Openmaize.Config do
         protected: %{"/admin" => [], "/users" => ["user"], "/users/:id" => ["user"]}
         storage_method: :cookie,
         secret_key: "so hard to guess",
+        token_info: [:email, :shoesize],
         token_validity: 7 * 24 * 60
 
   """
@@ -122,6 +124,16 @@ defmodule Openmaize.Config do
   """
   def secret_key do
     Application.get_env(:openmaize, :secret_key, "you will never guess")
+  end
+
+  @doc """
+  Additional information that can be added to the token. By default,
+  the token will have an id, name and role.
+
+  This value takes a list of atoms.
+  """
+  def token_info do
+    Application.get_env(:openmaize, :token_info, [])
   end
 
   @doc """
