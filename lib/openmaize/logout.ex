@@ -26,7 +26,6 @@ defmodule Openmaize.Logout do
   end
 
   defp logout_user(conn, _opts, _storage) do
-    #remove from sessionStorage
     conn
   end
 

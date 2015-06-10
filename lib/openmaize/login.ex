@@ -54,10 +54,9 @@ defmodule Openmaize.Login do
     |> redirect_to("#{Config.redirect_pages[role]}", %{"info" => "You have been logged in"})
   end
   defp add_token(user, conn, _storage) do
-    # how can we add the token to sessionStorage?
     {:ok, token} = generate_token(user)
     token_string = ~s({"access_token": #{token}})
-    send_resp(conn, 200, token_string)
+    send_resp(conn, 200, token_string) |> halt
   end
 
   defp generate_token(user) do

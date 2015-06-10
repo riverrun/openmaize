@@ -70,6 +70,10 @@ defmodule Openmaize.Authenticate do
       %{"error" => "You do not have permission to view #{full_path(conn)}."})
     end
   end
+  defp verify_role(conn, _data, _path, _match_len) do
+    redirect_to(conn, "/",
+    %{"error" => "Invalid token. It should contain an id, name and role."})
+  end
 
   defp verify_id(path, match, id) when (match <> "/:id") in @protected do
     if Regex.match?(~r{#{match}/[0-9]+/}, path) do
