@@ -6,6 +6,8 @@ defmodule Openmaize.Authenticate do
   For protected pages, if there is no token or the token is
   invalid, the user will be redirected to the login page.
 
+  ## JSON Web Tokens
+
   """
 
   import Plug.Conn
@@ -29,8 +31,7 @@ defmodule Openmaize.Authenticate do
   end
 
   @doc """
-  This function is for when the token is stored in sessionStorage and
-  sent in the request header. This is not implemented yet.
+  This function is for when the token is sent in the request header.
   """
   def call(conn, _opts) do
     get_req_header(conn, "authorization") |> check_token(conn)
