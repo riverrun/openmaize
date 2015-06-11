@@ -51,7 +51,7 @@ defmodule Openmaize.Login do
     role = Map.get(user, :role)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, [http_only: true])
-    |> redirect_to("#{Config.redirect_pages[role]}", %{"info" => "You have been logged in"})
+    |> redirect_to_role(role, %{"info" => "You have been logged in"})
   end
   defp add_token(user, conn, _storage) do
     {:ok, token} = generate_token(user)

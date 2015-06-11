@@ -42,10 +42,10 @@ defmodule Openmaize do
   If the path is for the login or logout page, the user is redirected
   to that page straight away.
   """
-  def call(conn, _opts) do
-    case full_path(conn) do
-      @login_dir <> "/login" -> handle_login(conn)
-      @login_dir <> "/logout" -> handle_logout(conn)
+  def call(%{path_info: path_info} = conn, _opts) do
+    case Enum.at(path_info, -1) do
+      "login" -> handle_login(conn)
+      "logout" -> handle_logout(conn)
       _ -> Authenticate.call(conn, [storage: Config.storage_method])
     end
   end

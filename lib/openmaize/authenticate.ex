@@ -67,12 +67,12 @@ defmodule Openmaize.Authenticate do
     if role in Map.get(@protected_roles, match) and verify_id(path, match, id) do
       assign(conn, :current_user, data)
     else
-      redirect_to(conn, "#{Config.redirect_pages[role]}",
+      redirect_to_role(conn, role,
       %{"error" => "You do not have permission to view #{full_path(conn)}."})
     end
   end
   defp verify_role(conn, _data, _path, _match_len) do
-    redirect_to(conn, "/",
+    redirect_to_root(conn,
     %{"error" => "Invalid token. It should contain an id, name and role."})
   end
 

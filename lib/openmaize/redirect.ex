@@ -26,6 +26,13 @@ defmodule Openmaize.Redirect do
     redirect_to(conn, "#{Config.login_dir}/login", message)
   end
 
+  def redirect_to_root(conn, message), do: redirect_to(conn, "/", message)
+
+  def redirect_to_role(conn, nil, message), do: redirect_to(conn, "/", message)
+  def redirect_to_role(conn, role, message) do
+    redirect_to(conn, "#{Config.redirect_pages[role]}", message)
+  end
+
   defp send_message(conn, message) do
     if Map.get(conn.private, :phoenix_flash) do
       put_private(conn, :phoenix_flash, message)
