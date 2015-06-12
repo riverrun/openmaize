@@ -31,7 +31,6 @@ defmodule Openmaize do
   alias Openmaize.Logout
 
   @behaviour Plug
-  @login_dir Config.login_dir
 
   def init(opts), do: opts
 

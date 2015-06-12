@@ -7,12 +7,7 @@ defmodule Openmaize.Errors do
   alias Openmaize.Config
 
   def handle_errors(conn, message) do
-    case message do
-      "Invalid" <> _ -> redirect_to_login(conn, %{"error" => message})
-      "Token" <> _ -> redirect_to_login(conn, %{"error" => message})
-      "" -> redirect_to_login(conn, %{"error" => message})
-      _ -> redirect_to(conn, "/", %{"error" => message})
-    end
+    redirect_to_login(conn, %{"error" => message})
   end
 
   def handle_errors(conn, role, message) do
@@ -20,6 +15,7 @@ defmodule Openmaize.Errors do
   end
 
   def handle_info(conn, message), do: redirect_to(conn, "/", %{"info" => message})
+
   def handle_info(conn, role, message) do
     redirect_to(conn, "#{Config.redirect_pages[role]}", %{"info" => message})
   end
