@@ -11,7 +11,7 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
-  import Openmaize.Redirect
+  import Openmaize.Errors
   alias Openmaize.Config
   alias Openmaize.Token
 
@@ -33,20 +33,21 @@ defmodule Openmaize.Authenticate do
   @doc """
   This function is for when the token is sent in the request header.
   """
-  def call(conn, _opts) do
-    get_req_header(conn, "authorization") |> check_token(conn)
+  def call(%{req_headers: headers} = conn, _opts) do
+    [token] = for {k, v} <- headers, k == "authorization" or k == "access-token", do: v
+    check_token(token, conn)
   end
 
-  defp check_token(["Bearer " <> token], conn), do: check_token(token, conn)
+  defp check_token("Bearer " <> token, conn), do: check_token(token, conn)
   defp check_token(token, conn) when is_binary(token) do
     case Token.decode(token) do
       {:ok, data} -> verify_user(conn, data)
-      {:error, message} -> redirect_to_login(conn, %{"error" => message})
+      {:error, message} -> handle_errors(conn, message)
     end
   end
   defp check_token(_, conn) do
     case full_path(conn) |> :binary.match(@protected) do
-      {0, _} -> redirect_to_login(conn, %{})
+      {0, _} -> handle_errors(conn, "")
       _ -> assign(conn, :current_user, nil)
     end
   end
@@ -67,13 +68,8 @@ defmodule Openmaize.Authenticate do
     if role in Map.get(@protected_roles, match) and verify_id(path, match, id) do
       assign(conn, :current_user, data)
     else
-      redirect_to_role(conn, role,
-      %{"error" => "You do not have permission to view #{full_path(conn)}."})
+      handle_errors(conn, role, "You do not have permission to view #{full_path(conn)}")
     end
-  end
-  defp verify_role(conn, _data, _path, _match_len) do
-    redirect_to_root(conn,
-    %{"error" => "Invalid token. It should contain an id, name and role."})
   end
 
   defp verify_id(path, match, id) when (match <> "/:id") in @protected do

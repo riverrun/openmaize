@@ -14,18 +14,6 @@ defmodule Openmaize.AuthenticateTest do
     conn |> Openmaize.call([]) |> send_resp(200, "")
   end
 
-  test "redirect when token does not have a name, id and role" do
-    Application.put_env(:openmaize, :storage_method, :cookie)
-    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9." <>
-    "eyJuYW1lIjoiUmF5bW9uZCBMdXh1cnkgWWFjaHQifQ." <>
-    "hU4Mkca19Jr2OvkUMg52dMHUsaVJE-8VDGjVrDLUcdIsTDPUivSgiiiuKAHC93Xkrdog5yBAeVU8ZQ3V0QdbJw"
-    conn = conn(:get, "/admin") |> put_req_cookie("access_token", token) |> Openmaize.call([])
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/"}
-    assert conn.status == 301
-    Application.delete_env(:openmaize, :storage_method)
-  end
-
   test "redirect for expired token" do
     Application.put_env(:openmaize, :storage_method, :cookie)
     expired_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9." <>

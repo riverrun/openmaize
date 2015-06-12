@@ -4,7 +4,7 @@ defmodule Openmaize.Logout do
   """
 
   import Plug.Conn
-  import Openmaize.Redirect
+  import Openmaize.Errors
   alias Openmaize.Config
 
   @behaviour Plug
@@ -22,7 +22,7 @@ defmodule Openmaize.Logout do
 
   defp logout_user(conn, opts, storage) when storage == :cookie do
     delete_resp_cookie(conn, "access_token", opts)
-    |> redirect_to_root(%{"info" => "You have been logged out"})
+    |> handle_info("You have been logged out")
   end
 
   defp logout_user(conn, _opts, _storage) do

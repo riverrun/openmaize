@@ -6,7 +6,7 @@ defmodule Openmaize.Login do
 
   import Plug.Conn
   import Ecto.Query
-  import Openmaize.Redirect
+  import Openmaize.Errors
   alias Openmaize.Config
   alias Openmaize.Token
 
@@ -29,7 +29,7 @@ defmodule Openmaize.Login do
     ["name", "password"])
 
     case login_user(name, password) do
-      false -> redirect_to_login(conn, %{"error" => "Invalid credentials"})
+      false -> handle_errors(conn, "Invalid credentials")
       user -> add_token(user, conn, Config.storage_method)
     end
   end
@@ -51,7 +51,7 @@ defmodule Openmaize.Login do
     role = Map.get(user, :role)
     {:ok, token} = generate_token(user)
     put_resp_cookie(conn, "access_token", token, [http_only: true])
-    |> redirect_to_role(role, %{"info" => "You have been logged in"})
+    |> handle_info(role, "You have been logged in")
   end
   defp add_token(user, conn, _storage) do
     {:ok, token} = generate_token(user)
