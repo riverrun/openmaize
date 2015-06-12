@@ -11,15 +11,11 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
-  import Openmaize.Errors
   alias Openmaize.Config
   alias Openmaize.Token
 
-  @behaviour Plug
   @protected_roles Config.protected
   @protected Map.keys(Config.protected)
-
-  def init(opts), do: opts
 
   @doc """
   This function is for when the token is stored in a cookie, which is
@@ -42,13 +38,13 @@ defmodule Openmaize.Authenticate do
   defp check_token(token, conn) when is_binary(token) do
     case Token.decode(token) do
       {:ok, data} -> verify_user(conn, data)
-      {:error, message} -> handle_errors(conn, message)
+      {:error, message} -> {:error, message}
     end
   end
   defp check_token(_, conn) do
     case full_path(conn) |> :binary.match(@protected) do
-      {0, _} -> handle_errors(conn, "")
-      _ -> assign(conn, :current_user, nil)
+      {0, _} -> {:error, "You have to be logged in to view #{full_path(conn)}"}
+      _ -> {:ok, nil}
     end
   end
 
@@ -56,19 +52,19 @@ defmodule Openmaize.Authenticate do
     case full_path(conn) |> :binary.match(@protected) do
       {0, match_len} ->
         verify_role(conn, data, full_path(conn), match_len)
-        _ -> assign(conn, :current_user, data)
+        _ -> {:ok, data}
     end
   end
 
-  defp verify_role(conn, %{role: "admin"} = data, _path, _match_len) do
-    assign(conn, :current_user, data)
+  defp verify_role(_conn, %{role: "admin"} = data, _path, _match_len) do
+    {:ok, data}
   end
   defp verify_role(conn, %{id: id, role: role} = data, path, match_len) do
     match = :binary.part(path, {0, match_len})
     if role in Map.get(@protected_roles, match) and verify_id(path, match, id) do
-      assign(conn, :current_user, data)
+      {:ok, data}
     else
-      handle_errors(conn, role, "You do not have permission to view #{full_path(conn)}")
+      {:error, role, "You do not have permission to view #{full_path(conn)}"}
     end
   end
 

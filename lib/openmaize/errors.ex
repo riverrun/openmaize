@@ -6,11 +6,11 @@ defmodule Openmaize.Errors do
   import Plug.Conn
   alias Openmaize.Config
 
-  def handle_errors(conn, message) do
+  def handle_error(conn, message) do
     redirect_to_login(conn, %{"error" => message})
   end
 
-  def handle_errors(conn, role, message) do
+  def handle_error(conn, role, message) do
     redirect_to(conn, "#{Config.redirect_pages[role]}", %{"error" => message})
   end
 
@@ -18,6 +18,10 @@ defmodule Openmaize.Errors do
 
   def handle_info(conn, role, message) do
     redirect_to(conn, "#{Config.redirect_pages[role]}", %{"info" => message})
+  end
+
+  def send_error(conn, message) do
+    send_resp(conn, 401, message) |> halt
   end
 
   defp redirect_to(%{scheme: scheme, host: host} = conn, address, message) do

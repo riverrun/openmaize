@@ -10,10 +10,7 @@ defmodule Openmaize.Login do
   alias Openmaize.Config
   alias Openmaize.Token
 
-  @behaviour Plug
   @token_info Config.token_info
-
-  def init(opts), do: opts
 
   @doc """
   Function to handle user login.
@@ -24,13 +21,15 @@ defmodule Openmaize.Login do
 
   If there is an error, the user will be redirected to the login page.
   """
-  def call(conn, _opts) do
+  def call(conn, opts) do
     %{"name" => name, "password" => password} = Map.take(conn.params["user"],
     ["name", "password"])
 
-    case login_user(name, password) do
-      false -> handle_errors(conn, "Invalid credentials")
-      user -> add_token(user, conn, Config.storage_method)
+    case {login_user(name, password), opts} do
+      {false, [redirects: false]} -> send_error(conn, "Invalid credentials")
+      {false, _opts} -> handle_error(conn, "Invalid credentials")
+      {user, [redirects: false]} -> add_token(user, conn, :session)
+      {user, _opts} -> add_token(user, conn, Config.storage_method)
     end
   end
 

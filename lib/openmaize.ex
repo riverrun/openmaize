@@ -25,6 +25,7 @@ defmodule Openmaize do
   """
 
   import Plug.Conn
+  import Openmaize.Errors
   alias Openmaize.Authenticate
   alias Openmaize.Config
   alias Openmaize.Login
@@ -41,17 +42,36 @@ defmodule Openmaize do
   If the path is for the login or logout page, the user is redirected
   to that page straight away.
   """
-  def call(%{path_info: path_info} = conn, _opts) do
+  def call(%{path_info: path_info} = conn, opts) do
     case Enum.at(path_info, -1) do
-      "login" -> handle_login(conn)
-      "logout" -> handle_logout(conn)
-      _ -> Authenticate.call(conn, [storage: Config.storage_method])
+      "login" -> handle_login(conn, opts)
+      "logout" -> handle_logout(conn, opts)
+      _ -> handle_auth(conn, opts)
     end
   end
 
-  defp handle_login(%{method: "POST"} = conn), do: Login.call(conn, [])
-  defp handle_login(conn), do: assign(conn, :current_user, nil)
+  defp handle_login(%{method: "POST"} = conn, opts), do: Login.call(conn, opts)
+  defp handle_login(conn, _opts), do: assign(conn, :current_user, nil)
 
-  defp handle_logout(conn), do: assign(conn, :current_user, nil) |> Logout.call([])
+  defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
+
+  defp handle_auth(conn, [redirects: false]) do
+    auth_worker(conn, [redirects: false])
+  end
+  defp handle_auth(conn, _opts), do: auth_worker(conn, [storage: Config.storage_method])
+
+  defp auth_worker(conn, opts) do
+    case Authenticate.call(conn, opts) do
+      {:ok, data} -> assign(conn, :current_user, data)
+      {:error, message} -> auth_error(conn, message, opts)
+      {:error, role, message} -> role_error(conn, role, message, opts)
+    end
+  end
+
+  defp auth_error(conn, message, [redirects: false]), do: send_error(conn, message)
+  defp auth_error(conn, message, _), do: handle_error(conn, message)
+
+  defp role_error(conn, _, message, [redirects: false]), do: send_error(conn, message)
+  defp role_error(conn, role, message, _), do: handle_error(conn, role, message)
 
 end
