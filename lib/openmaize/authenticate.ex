@@ -30,8 +30,11 @@ defmodule Openmaize.Authenticate do
   This function is for when the token is sent in the request header.
   """
   def call(%{req_headers: headers} = conn, _opts) do
-    [token] = for {k, v} <- headers, k == "authorization" or k == "access-token", do: v
-    check_token(token, conn)
+    get_token(headers) |> Enum.at(0) |> check_token(conn)
+  end
+
+  defp get_token(headers) do
+    for {k, v} <- headers, k == "authorization" or k == "access-token", do: v
   end
 
   defp check_token("Bearer " <> token, conn), do: check_token(token, conn)
