@@ -5,6 +5,7 @@ defmodule Openmaize.Errors do
 
   import Plug.Conn
   alias Openmaize.Config
+  alias Openmaize.JSON
 
   def handle_error(conn, message) do
     redirect_to_login(conn, %{"error" => message})
@@ -21,7 +22,7 @@ defmodule Openmaize.Errors do
   end
 
   def send_error(conn, message) do
-    send_resp(conn, 401, message) |> halt
+    send_resp(conn, 401, JSON.encode(message)) |> halt
   end
 
   defp redirect_to(%{scheme: scheme, host: host} = conn, address, message) do
