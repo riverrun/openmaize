@@ -22,7 +22,7 @@ defmodule Openmaize.Errors do
   end
 
   def send_error(conn, message) do
-    send_resp(conn, 401, JSON.encode(message)) |> halt
+    send_resp(conn, 401, JSON.encode(%{"error" => message})) |> halt
   end
 
   defp redirect_to(%{scheme: scheme, host: host} = conn, address, message) do
