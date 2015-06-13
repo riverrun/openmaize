@@ -51,20 +51,17 @@ defmodule Openmaize.Authenticate do
   defp verify_user(conn, data) do
     case full_path(conn) |> :binary.match(@protected) do
       {0, match_len} ->
-        verify_role(conn, data, full_path(conn), match_len)
+        verify_role(data, full_path(conn), match_len)
         _ -> {:ok, data}
     end
   end
 
-  defp verify_role(_conn, %{role: "admin"} = data, _path, _match_len) do
-    {:ok, data}
-  end
-  defp verify_role(conn, %{id: id, role: role} = data, path, match_len) do
+  defp verify_role(%{id: id, role: role} = data, path, match_len) do
     match = :binary.part(path, {0, match_len})
     if role in Map.get(@protected_roles, match) and verify_id(path, match, id) do
       {:ok, data}
     else
-      {:error, role, "You do not have permission to view #{full_path(conn)}"}
+      {:error, role, "You do not have permission to view #{path}"}
     end
   end
 
