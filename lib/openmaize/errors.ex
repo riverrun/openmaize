@@ -34,7 +34,7 @@ defmodule Openmaize.Errors do
   end
 
   defp redirect_to_login(conn, message) do
-    redirect_to(conn, "#{Config.login_dir}/login", %{"error" => message})
+    redirect_to(conn, "#{Config.login_dir}/login", message)
   end
 
   defp send_message(conn, message) do
