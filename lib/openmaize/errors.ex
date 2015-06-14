@@ -21,8 +21,8 @@ defmodule Openmaize.Errors do
     redirect_to(conn, "#{Config.redirect_pages[role]}", %{"info" => message})
   end
 
-  def send_error(conn, message) do
-    send_resp(conn, 401, JSON.encode(%{"error" => message})) |> halt
+  def send_error(conn, status, message) do
+    send_resp(conn, status, JSON.encode(%{"error" => message})) |> halt
   end
 
   defp redirect_to(%{scheme: scheme, host: host} = conn, address, message) do
@@ -30,7 +30,7 @@ defmodule Openmaize.Errors do
     unless map_size(message) == 0, do: conn = send_message(conn, message)
     conn
     |> put_resp_header("location", "#{scheme}://#{host}#{address}")
-    |> send_resp(301, "") |> halt
+    |> send_resp(302, "") |> halt
   end
 
   defp redirect_to_login(conn, message) do

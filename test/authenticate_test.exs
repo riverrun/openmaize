@@ -22,7 +22,7 @@ defmodule Openmaize.AuthenticateTest do
     conn = conn(:get, "/admin") |> put_req_cookie("access_token", expired_token) |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "http://www.example.com/admin/login"}
-    assert conn.status == 301
+    assert conn.status == 302
     Application.delete_env(:openmaize, :storage_method)
   end
 
@@ -39,7 +39,7 @@ defmodule Openmaize.AuthenticateTest do
     conn = conn(:get, "/") |> put_req_cookie("access_token", @invalid) |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "http://www.example.com/admin/login"}
-    assert conn.status == 301
+    assert conn.status == 302
     Application.delete_env(:openmaize, :storage_method)
   end
 
@@ -56,7 +56,7 @@ defmodule Openmaize.AuthenticateTest do
     conn = conn(:get, "/") |> put_req_header("authorization", "Bearer #{@invalid}") |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "http://www.example.com/admin/login"}
-    assert conn.status == 301
+    assert conn.status == 302
     Application.delete_env(:openmaize, :storage_method)
   end
 
@@ -64,7 +64,7 @@ defmodule Openmaize.AuthenticateTest do
     conn = conn(:get, "/admin") |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "http://www.example.com/admin/login"}
-    assert conn.status == 301
+    assert conn.status == 302
   end
 
   test "missing token for unprotected page" do

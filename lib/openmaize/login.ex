@@ -21,7 +21,7 @@ defmodule Openmaize.Login do
   def call(%{params: params} = conn, [redirects: false]) do
     %{"name" => name, "password" => password} = Map.take(params, ["name", "password"])
     case login_user(name, password) do
-      false -> send_error(conn, "Invalid credentials")
+      false -> send_error(conn, 401, "Invalid credentials")
       user -> add_token(user, conn, :session)
     end
   end

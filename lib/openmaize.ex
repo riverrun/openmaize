@@ -68,10 +68,10 @@ defmodule Openmaize do
     end
   end
 
-  defp auth_error(conn, message, [redirects: false]), do: send_error(conn, message)
+  defp auth_error(conn, message, [redirects: false]), do: send_error(conn, 401, message)
   defp auth_error(conn, message, _), do: handle_error(conn, message)
 
-  defp role_error(conn, _, message, [redirects: false]), do: send_error(conn, message)
+  defp role_error(conn, _, message, [redirects: false]), do: send_error(conn, 403, message)
   defp role_error(conn, role, message, _), do: handle_error(conn, role, message)
 
 end

@@ -6,7 +6,7 @@ defmodule Openmaize.LogoutTest do
     conn = conn(:get, "/admin/logout") |> Openmaize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "http://www.example.com/"}
-    assert conn.status == 301
+    assert conn.status == 302
   end
 
 end
