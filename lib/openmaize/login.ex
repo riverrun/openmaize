@@ -13,7 +13,21 @@ defmodule Openmaize.Login do
   @token_info Config.token_info
 
   @doc """
-  Function to handle user login.
+  Function to handle user login for apis.
+
+  A token will be sent to the user if there is no error. If there is an error,
+  an error message will be sent.
+  """
+  def call(%{params: params} = conn, [redirects: false]) do
+    %{"name" => name, "password" => password} = Map.take(params, ["name", "password"])
+    case login_user(name, password) do
+      false -> send_error(conn, "Invalid credentials")
+      user -> add_token(user, conn, :session)
+    end
+  end
+
+  @doc """
+  Function to handle user login for browser.
 
   If there is no error, a token will be created and sent to the user so that
   the user can make further requests without logging in again. The user will
@@ -21,15 +35,11 @@ defmodule Openmaize.Login do
 
   If there is an error, the user will be redirected to the login page.
   """
-  def call(conn, opts) do
-    %{"name" => name, "password" => password} = Map.take(conn.params["user"],
-    ["name", "password"])
-
-    case {login_user(name, password), opts} do
-      {false, [redirects: false]} -> send_error(conn, "Invalid credentials")
-      {false, _opts} -> handle_error(conn, "Invalid credentials")
-      {user, [redirects: false]} -> add_token(user, conn, :session)
-      {user, _opts} -> add_token(user, conn, Config.storage_method)
+  def call(%{params: params} = conn, _opts) do
+    %{"name" => name, "password" => password} = Map.take(params["user"], ["name", "password"])
+    case login_user(name, password) do
+      false -> handle_error(conn, "Invalid credentials")
+      user -> add_token(user, conn, Config.storage_method)
     end
   end
 
