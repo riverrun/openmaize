@@ -55,23 +55,30 @@ defmodule Openmaize do
 
   defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
 
-  defp handle_auth(conn, [redirects: false]) do
-    auth_worker(conn, [redirects: false])
+  defp handle_auth(conn, [{:redirects, false} | _other] = opts) do
+    auth_worker(conn, opts)
   end
   defp handle_auth(conn, _opts), do: auth_worker(conn, [storage: Config.storage_method])
 
   defp auth_worker(conn, opts) do
     case Authenticate.call(conn, opts) do
-      {:ok, data} -> assign(conn, :current_user, data)
+      {:ok, data} -> further_check(conn, data, opts)
       {:error, message} -> auth_error(conn, message, opts)
       {:error, role, message} -> role_error(conn, role, message, opts)
     end
   end
 
-  defp auth_error(conn, message, [redirects: false]), do: send_error(conn, 401, message)
+  defp further_check(conn, data, opts) do
+    case opts[:check] do
+      nil -> assign(conn, :current_user, data)
+      func -> func.(conn)
+    end
+  end
+
+  defp auth_error(conn, message, [{:redirects, false} | _other]), do: send_error(conn, 401, message)
   defp auth_error(conn, message, _), do: handle_error(conn, message)
 
-  defp role_error(conn, _, message, [redirects: false]), do: send_error(conn, 403, message)
+  defp role_error(conn, _, message, [{:redirects, false} | _other]), do: send_error(conn, 403, message)
   defp role_error(conn, role, message, _), do: handle_error(conn, role, message)
 
 end
