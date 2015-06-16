@@ -28,6 +28,8 @@ defmodule Openmaize.Authenticate do
 
   @doc """
   This function is for when the token is sent in the request header.
+  You would use this if you are authenticating an api, or if you are
+  storing the token in sessionStorage or localStorage.
   """
   def call(%{req_headers: headers} = conn, _opts) do
     get_token(headers) |> Enum.at(0) |> check_token(conn)
@@ -45,17 +47,16 @@ defmodule Openmaize.Authenticate do
     end
   end
   defp check_token(_, conn) do
-    case full_path(conn) |> :binary.match(@protected) do
-      {0, _} -> {:error, "You have to be logged in to view #{full_path(conn)}"}
+    case check_match(conn) do
+      {{0, _}, path} -> {:error, "You have to be logged in to view #{path}"}
       _ -> {:ok, nil}
     end
   end
 
   defp verify_user(conn, data) do
-    path = full_path(conn)
-    case path |> :binary.match(@protected) do
-      {0, match_len} -> verify_role(data, path, :binary.part(path, {0, match_len}))
-        _ -> {:ok, data}
+    case check_match(conn) do
+      {{0, match_len}, path} -> verify_role(data, path, :binary.part(path, {0, match_len}))
+      _ -> {:ok, data}
     end
   end
 
@@ -67,4 +68,8 @@ defmodule Openmaize.Authenticate do
     end
   end
 
+  defp check_match(conn) do
+    path = full_path(conn)
+    {:binary.match(path, @protected), path}
+  end
 end

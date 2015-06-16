@@ -2,28 +2,14 @@ defmodule Openmaize.ExtraCheckTest do
   use ExUnit.Case
   use Plug.Test
 
+  import Openmaize.ExtraCheck
+
   @user_token "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9." <>
   "eyJyb2xlIjoidXNlciIsIm5hbWUiOiJSYXltb25kIEx1eHVyeSBZYWNodCIsImlkIjoxfQ." <>
   "oeUo6ZWA2VlaqQQzMa1mqIeEJvaIZfsUrtulgjgzvjqTc4MVjKps3Tqwxdxi5GRYoUOMRGiQgnedOfc8islEnA"
 
   def call(conn) do
     conn |> Openmaize.call([check: &id_check/2])
-  end
-
-  def id_check(conn, %{role: role} = data) do
-    case verify_id(conn, data) do
-      true -> {:ok, data}
-      false -> {:error, role, "You cannot view this page."}
-    end
-  end
-
-  def verify_id(conn, %{id: id}) do
-    path = full_path(conn)
-    if Regex.match?(~r{/users/[0-9]+/}, path) do
-      Kernel.match?({0, _}, :binary.match(path, "/users/#{id}/"))
-    else
-      true
-    end
   end
 
   test "need id to edit page with id" do
