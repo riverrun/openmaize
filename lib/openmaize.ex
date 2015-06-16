@@ -41,8 +41,34 @@ defmodule Openmaize do
 
   If the path is for the login or logout page, the user is redirected
   to that page straight away.
+
+  ## Options
+
+  There are two options available: `redirects` and `check`.
+
+  `redirects` is set to true by default, which is probably what you need
+  for an application in the browser. For an api, though, or a Single Page
+  Application, you will probably just want responses without redirects.
+
+  `check` is for a function to perform extra checks before authenticating
+  the user. This function takes two arguments, `conn` and `data` (user data).
+
+  ## Examples
+
+  Call openmaize with no options:
+
+  plug Openmaize
+
+  Call openmaize for an api with a further id check:
+
+  plug Openmaize, redirects: false, check: &id_check/2
+
+  You can also find an example of the `check` option in the extra_check_test.exs
+  file in the test directory.
+
   """
   def call(%{path_info: path_info} = conn, opts) do
+    opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :check)}
     case Enum.at(path_info, -1) do
       "login" -> handle_login(conn, opts)
       "logout" -> handle_logout(conn, opts)
@@ -55,30 +81,18 @@ defmodule Openmaize do
 
   defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
 
-  defp handle_auth(conn, [{:redirects, false} | _other] = opts) do
-    auth_worker(conn, opts)
+  defp handle_auth(conn, {false, _check} = opts) do
+    Authenticate.call(conn, opts) |> finish(conn, opts)
   end
-  defp handle_auth(conn, _opts), do: auth_worker(conn, [storage: Config.storage_method])
-
-  defp auth_worker(conn, opts) do
-    case Authenticate.call(conn, opts) do
-      {:ok, data} -> further_check(conn, data, opts)
-      {:error, message} -> auth_error(conn, message, opts)
-      {:error, role, message} -> role_error(conn, role, message, opts)
-    end
+  defp handle_auth(conn, opts) do
+    Authenticate.call(conn, [storage: Config.storage_method]) |> finish(conn, opts)
   end
 
-  defp further_check(conn, data, opts) do
-    case opts[:check] do
-      nil -> assign(conn, :current_user, data)
-      func -> func.(conn)
-    end
-  end
-
-  defp auth_error(conn, message, [{:redirects, false} | _other]), do: send_error(conn, 401, message)
-  defp auth_error(conn, message, _), do: handle_error(conn, message)
-
-  defp role_error(conn, _, message, [{:redirects, false} | _other]), do: send_error(conn, 403, message)
-  defp role_error(conn, role, message, _), do: handle_error(conn, role, message)
+  defp finish({:ok, data}, conn, {_, nil}), do: assign(conn, :current_user, data)
+  defp finish({:ok, data}, conn, {_, func}), do: func.(conn, data) |> finish(conn, {nil, nil})
+  defp finish({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
+  defp finish({:error, message}, conn, _), do: handle_error(conn, message)
+  defp finish({:error, _, message}, conn, {false, _}), do: send_error(conn, 403, message)
+  defp finish({:error, role, message}, conn, _), do: handle_error(conn, role, message)
 
 end
