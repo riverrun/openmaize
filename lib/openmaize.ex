@@ -63,9 +63,6 @@ defmodule Openmaize do
 
   plug Openmaize, redirects: false, check: &id_noedit/4
 
-  You can also find an example of the `check` option in the extra_check_test.exs
-  file in the test directory.
-
   """
   def call(%{path_info: path_info} = conn, opts) do
     opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :check)}

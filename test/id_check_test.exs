@@ -16,9 +16,16 @@ defmodule Openmaize.IdCheckTest do
     conn |> Openmaize.call([check: &id_noshow/4])
   end
 
-  test "need id to edit page with id" do
+  test "user with correct id can edit" do
     conn = conn(:get, "/users/1/edit") |> put_req_cookie("access_token", @user_token)
                                       |> noedit |> send_resp(200, "")
+    assert conn.status == 200
+    assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
+  end
+
+  test "user with correct id can show" do
+    conn = conn(:get, "/users/1") |> put_req_cookie("access_token", @user_token)
+                                      |> noshow |> send_resp(200, "")
     assert conn.status == 200
     assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
   end
