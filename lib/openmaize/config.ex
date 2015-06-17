@@ -72,9 +72,8 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The login / logout directory. For example, the default value of "/admin"
-  means that the login page is "/admin/login" and the logout page is
-  "/admin/logout".
+  The login directory. For example, the default value of "/admin" means
+  that the login page is "/admin/login".
   """
   def login_dir do
     Application.get_env(:openmaize, :login_dir, "/admin")
@@ -108,8 +107,10 @@ defmodule Openmaize.Config do
   The storage method for the token. The default is to store it in
   a cookie which is then sent to the user.
 
-  In the future, there will be support for storing the token in
-  sessionStorage, but this is not supported yet.
+  The token can also be sent in the body of the response, which is the
+  default if you call Openmaize with the `redirects: false` option. For
+  subsequent requests, the token can then be sent back in the request
+  headers.
   """
   def storage_method do
     Application.get_env(:openmaize, :storage_method, :cookie)

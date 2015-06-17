@@ -51,17 +51,21 @@ defmodule Openmaize do
   Application, you will probably just want responses without redirects.
 
   `check` is for a function to perform extra checks before authenticating
-  the user. This function takes two arguments, `conn` and `data` (user data).
+  the user. This option is available so that the authentication of users
+  can be more easily customized. There are some examples of this kind of
+  function in the Openmaize.IdCheck module.
 
   ## Examples
 
   Call openmaize with no options:
 
-  plug Openmaize
+      plug Openmaize
 
   Call openmaize for an api with a further id check:
 
-  plug Openmaize, redirects: false, check: &id_noedit/4
+      import Openmaize.IdCheck
+
+      plug Openmaize, redirects: false, check: &id_noedit/4
 
   """
   def call(%{path_info: path_info} = conn, opts) do

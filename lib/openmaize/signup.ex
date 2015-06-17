@@ -14,6 +14,10 @@ defmodule Openmaize.Signup do
   length can be changed by configuring Comeonin. See the documentation
   for Comeonin.Config for more details. If `strength` is set to false, then
   there is no check.
+
+  The documentation for the Comeonin.Password module can give you more
+  information about the advantages and disadvantages of checking password
+  strength.
   """
   def create_user(user_params, strength \\ true) do
     Comeonin.create_user(user_params, strength)

@@ -34,6 +34,10 @@ an error, then the user will be redirected to the login page. If the login
 is successful then the user will be given a token, which he / she can use
 in subsequent requests.
 
+There are also options to disable redirects and to use an external function
+in the last part of the token authentication. See the documentation for the
+Openmaize module for more details.
+
 There is an example of Openmaize being used with Phoenix at
 [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
 

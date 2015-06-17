@@ -12,7 +12,7 @@ defmodule Openmaize.IdCheck do
   @protected Map.keys(Config.protected)
 
   @doc """
-  Function to not allow a user to edit another user's page. However,
+  Function to protect another user's page from editing. However,
   the user is allowed to view the page.
   """
   def id_noedit(_conn, data, path, match) when (match <> "/:id") in @protected do
@@ -25,7 +25,8 @@ defmodule Openmaize.IdCheck do
   def id_noedit(_, data, _, _), do: {:ok, data}
 
   @doc """
-  Function to not allow a user to view another user's page.
+  Function to protect another user's page. In this case, the page cannot
+  be viewed as well.
   """
   def id_noshow(_conn, data, path, match) when (match <> "/:id") in @protected do
     if Regex.match?(~r{#{match}/[0-9]+(/|$)}, path) do

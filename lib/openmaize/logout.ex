@@ -13,7 +13,7 @@ defmodule Openmaize.Logout do
   If the token is stored in a cookie, the cookie is deleted and the
   user is redirected to the home page.
   """
-  def call(conn, [{:redirects, false} | _other]), do: logout_user(conn, :session)
+  def call(conn, {false, _}), do: logout_user(conn, :session)
   def call(conn, _opts), do: logout_user(conn, Config.storage_method)
 
   defp logout_user(conn, storage) when storage == :cookie do

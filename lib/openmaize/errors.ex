@@ -7,20 +7,36 @@ defmodule Openmaize.Errors do
   alias Openmaize.Config
   alias Openmaize.JSON
 
+  @doc """
+  Redirect the connection to the login page with an error message.
+  """
   def handle_error(conn, message) do
     redirect_to_login(conn, %{"error" => message})
   end
 
+  @doc """
+  Redirect the connection to the user's role's page with an error message.
+  """
   def handle_error(conn, role, message) do
     redirect_to(conn, "#{Config.redirect_pages[role]}", %{"error" => message})
   end
 
+  @doc """
+  Redirect the connection to the home page with an info message.
+  """
   def handle_info(conn, message), do: redirect_to(conn, "/", %{"info" => message})
 
+  @doc """
+  Redirect the connection to the user's role's page with an info message.
+  """
   def handle_info(conn, role, message) do
     redirect_to(conn, "#{Config.redirect_pages[role]}", %{"info" => message})
   end
 
+  @doc """
+  Send a json-encoded error message as a response and then halt the connection.
+  This function will be used if the `redirects` option is set to false.
+  """
   def send_error(conn, status, message) do
     send_resp(conn, status, JSON.encode(%{"error" => message})) |> halt
   end

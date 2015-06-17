@@ -18,7 +18,7 @@ defmodule Openmaize.Login do
   A token will be sent to the user if there is no error. If there is an error,
   an error message will be sent.
   """
-  def call(%{params: params} = conn, [{:redirects, false} | _other]) do
+  def call(%{params: params} = conn, {false, _}) do
     %{"name" => name, "password" => password} = Map.take(params, ["name", "password"])
     case login_user(name, password) do
       false -> send_error(conn, 401, "Invalid credentials")
