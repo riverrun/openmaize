@@ -61,7 +61,7 @@ defmodule Openmaize do
 
   Call openmaize for an api with a further id check:
 
-  plug Openmaize, redirects: false, check: &id_check/2
+  plug Openmaize, redirects: false, check: &id_noedit/4
 
   You can also find an example of the `check` option in the extra_check_test.exs
   file in the test directory.
@@ -82,17 +82,20 @@ defmodule Openmaize do
   defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
 
   defp handle_auth(conn, {false, _check} = opts) do
-    Authenticate.call(conn, opts) |> finish(conn, opts)
+    Authenticate.call(conn, opts) |> auth(conn, opts)
   end
   defp handle_auth(conn, opts) do
-    Authenticate.call(conn, [storage: Config.storage_method]) |> finish(conn, opts)
+    Authenticate.call(conn, [storage: Config.storage_method]) |> auth(conn, opts)
   end
 
-  defp finish({:ok, data}, conn, {_, nil}), do: assign(conn, :current_user, data)
-  defp finish({:ok, data}, conn, {_, func}), do: func.(conn, data) |> finish(conn, {nil, nil})
-  defp finish({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
-  defp finish({:error, message}, conn, _), do: handle_error(conn, message)
-  defp finish({:error, _, message}, conn, {false, _}), do: send_error(conn, 403, message)
-  defp finish({:error, role, message}, conn, _), do: handle_error(conn, role, message)
+  defp auth({:ok, data}, conn, _), do: assign(conn, :current_user, data)
+  defp auth({:ok, data, _, _}, conn, {_, nil}), do: assign(conn, :current_user, data)
+  defp auth({:ok, data, path, match}, conn, {_, func}) do
+    func.(conn, data, path, match) |> auth(conn, {nil, nil})
+  end
+  defp auth({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
+  defp auth({:error, message}, conn, _), do: handle_error(conn, message)
+  defp auth({:error, _, message}, conn, {false, _}), do: send_error(conn, 403, message)
+  defp auth({:error, role, message}, conn, _), do: handle_error(conn, role, message)
 
 end

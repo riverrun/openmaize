@@ -62,7 +62,7 @@ defmodule Openmaize.Authenticate do
 
   defp verify_role(%{role: role} = data, path, match) do
     if role in Map.get(@protected_roles, match) do
-      {:ok, data}
+      {:ok, data, path, match}
     else
       {:error, role, "You do not have permission to view #{path}"}
     end
