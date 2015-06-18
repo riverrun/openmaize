@@ -8,7 +8,7 @@ in production.
 
 ## Goals
 
-Openmaize aims to provide developers the following:
+Openmaize aims to provide developers with the following:
 
 * a secure, but lightweight, framework-agnostic authentication mechanism
 that is easy to use.
