@@ -1,12 +1,24 @@
 defmodule Openmaize.Authenticate do
   @moduledoc """
-  Module to authenticate users.
+  Module to authenticate users using Json Web Tokens.
 
-  JSON Web Tokens (JWTs) are used to authenticate the user.
-  For protected pages, if there is no token or the token is
-  invalid, the user will be redirected to the login page.
+  ## Json Web Tokens
 
-  ## JSON Web Tokens
+  Json Web Tokens (JWTs) are an alternative to using cookies to identify,
+  and provide information about, users after they have logged in.
+
+  One main advantage of using JWTs is that there is no need to keep a
+  session store as the token can be used to contain user information.
+  It is important, though, not to keep sensitive information in the
+  token as the information is not encrypted -- it is just encoded.
+
+  The JWTs need to be stored somewhere, either in cookies or sessionStorage
+  (or localStorage), so that they can be used in subsequent requests. 
+  With this module, if you store the token in a cookie, this module handles
+  all of the authentication process. If, however, you want to store the
+  token in sessionStorage, you will need to add the token to sessionStorage
+  with the front-end framework you are using and add the token to the request
+  headers for each request.
 
   """
 
