@@ -30,19 +30,14 @@ defmodule Openmaize.Authenticate do
   @protected Map.keys(Config.protected)
 
   @doc """
-  This function is for when the token is stored in a cookie, which is
-  the default method.
+  This function checks the token, which is either in a cookie or the
+  request headers, and authenticates the user based on the information
+  in the token.
   """
   def call(conn, [storage: :cookie]) do
     conn = fetch_cookies(conn)
     Map.get(conn.req_cookies, "access_token") |> check_token(conn)
   end
-
-  @doc """
-  This function is for when the token is sent in the request header.
-  You would use this if you are authenticating an api, or if you are
-  storing the token in sessionStorage or localStorage.
-  """
   def call(%{req_headers: headers} = conn, _opts) do
     get_token(headers) |> Enum.at(0) |> check_token(conn)
   end

@@ -13,10 +13,17 @@ defmodule Openmaize.Login do
   @token_info Config.token_info
 
   @doc """
-  Function to handle user login for apis.
+  Function to handle user login.
 
-  A token will be sent to the user if there is no error. If there is an error,
-  an error message will be sent.
+  If there is no error, a token will be created and sent to the user so that
+  the user can make further requests without logging in again.
+  
+  If the option `redirects` is not set, or set to true, the user will then
+  be redirected to the main page / user page. If there is an error, the
+  user will be redirected to the login page.
+
+  If `redirects` is set to false, then obviously there will be no redirects.
+
   """
   def call(%{params: params} = conn, {false, _}) do
     %{"name" => name, "password" => password} = Map.take(params, ["name", "password"])
@@ -25,16 +32,6 @@ defmodule Openmaize.Login do
       user -> add_token(user, conn, :session)
     end
   end
-
-  @doc """
-  Function to handle user login for browser.
-
-  If there is no error, a token will be created and sent to the user so that
-  the user can make further requests without logging in again. The user will
-  then be redirected to the main page / user page.
-
-  If there is an error, the user will be redirected to the login page.
-  """
   def call(%{params: params} = conn, _opts) do
     %{"name" => name, "password" => password} = Map.take(params["user"], ["name", "password"])
     case login_user(name, password) do
