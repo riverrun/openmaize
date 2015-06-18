@@ -1,4 +1,4 @@
-# Openmaize [![Hex.pm Version](http://img.shields.io/hexpm/v/openmaize.svg)](https://hex.pm/packages/openmaize)
+# Openmaize
 
 Authentication library for Elixir
 
