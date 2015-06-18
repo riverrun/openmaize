@@ -1,4 +1,4 @@
-# Openmaize
+# Openmaize [![Hex.pm Version](http://img.shields.io/hexpm/v/openmaize.svg)](https://hex.pm/packages/openmaize)
 
 Authentication library for Elixir
 
@@ -13,6 +13,18 @@ Openmaize aims to provide developers the following:
 * a secure, but lightweight, framework-agnostic authentication mechanism
 that is easy to use.
 * excellent documentation.
+
+## Installation
+
+1. Add openmaize to your `mix.exs` dependencies
+
+  ```elixir
+  defp deps do
+    [ {:openmaize, "~> 0.4"} ]
+  end
+  ```
+
+2. Run `mix do deps.get, compile`
 
 ## Use
 
@@ -43,4 +55,4 @@ There is an example of Openmaize being used with Phoenix at
 
 ### License
 
-MIT
+BSD
