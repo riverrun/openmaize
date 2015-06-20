@@ -10,6 +10,7 @@ defmodule Openmaize.Login do
   alias Openmaize.Config
   alias Openmaize.Token
 
+  @unique to_string(Config.unique)
   @token_info Config.token_info
 
   @doc """
@@ -26,23 +27,23 @@ defmodule Openmaize.Login do
 
   """
   def call(%{params: params} = conn, {false, _}) do
-    %{"name" => name, "password" => password} = Map.take(params, ["name", "password"])
-    case login_user(name, password) do
+    %{@unique => uniq, "password" => password} = Map.take(params, [@unique, "password"])
+    case login_user(uniq, password) do
       false -> send_error(conn, 401, "Invalid credentials")
       user -> add_token(user, conn, :session)
     end
   end
   def call(%{params: params} = conn, _opts) do
-    %{"name" => name, "password" => password} = Map.take(params["user"], ["name", "password"])
-    case login_user(name, password) do
+    %{@unique => uniq, "password" => password} = Map.take(params["user"], [@unique, "password"])
+    case login_user(uniq, password) do
       false -> handle_error(conn, "Invalid credentials")
       user -> add_token(user, conn, Config.storage_method)
     end
   end
 
-  defp login_user(name, password) do
+  defp login_user(uniq, password) do
     from(user in Config.user_model,
-    where: user.name == ^name,
+    where: user.uniq == ^uniq,
     select: user)
     |> Config.repo.one
     |> check_user(password)
@@ -66,7 +67,7 @@ defmodule Openmaize.Login do
   end
 
   defp generate_token(user) do
-    Map.take(user, [:id, :name, :role] ++ @token_info)
+    Map.take(user, @token_info)
     |> Map.merge(%{exp: token_expiry_secs})
     |> Token.encode
   end
