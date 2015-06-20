@@ -1,8 +1,8 @@
 defmodule Openmaize do
   @moduledoc """
   This module handles the initial call to Openmaize and then calls the
-  relevant module for handling authentication, logging in or logging
-  out.
+  relevant module for handling authentication / authorization, logging
+  in or logging out.
 
   If the path is for the login page and the method is "POST", the
   connection is redirected to the Openmaize.Login module. If the
@@ -13,8 +13,8 @@ defmodule Openmaize do
   the user to the home page.
 
   For any other path, including unprotected paths, the connection is
-  redirected to the Openmaize.Authenticate module, which handles
-  authentication.
+  redirected to the Openmaize.Authenticate module, which handles user
+  authentication and resource authorization.
 
   ## Phoenix integration
 

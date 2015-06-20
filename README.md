@@ -1,8 +1,8 @@
 # Openmaize
 
-Authentication library for Elixir
+Authentication and authorization library for Elixir
 
-Openmaize is an authentication library for Elixir.
+Openmaize is an authentication and authorization library for Elixir.
 It is still under heavy development and has had limited testing
 in production.
 
@@ -10,8 +10,8 @@ in production.
 
 Openmaize aims to provide developers the following:
 
-* a secure, but lightweight, framework-agnostic authentication mechanism
-that is easy to use.
+* a secure, but lightweight, framework-agnostic authentication and authorization
+mechanism that is easy to use.
 * excellent documentation.
 
 ## Installation

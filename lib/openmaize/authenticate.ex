@@ -15,10 +15,10 @@ defmodule Openmaize.Authenticate do
   The JWTs need to be stored somewhere, either in cookies or sessionStorage
   (or localStorage), so that they can be used in subsequent requests. 
   With this module, if you store the token in a cookie, this module handles
-  all of the authentication process. If, however, you want to store the
-  token in sessionStorage, you will need to add the token to sessionStorage
-  with the front-end framework you are using and add the token to the request
-  headers for each request.
+  all of the authentication / authorization process. If, however, you want
+  to store the token in sessionStorage, you will need to add the token to
+  sessionStorage with the front-end framework you are using and add the
+  token to the request headers for each request.
 
   """
 
@@ -31,8 +31,9 @@ defmodule Openmaize.Authenticate do
 
   @doc """
   This function checks the token, which is either in a cookie or the
-  request headers, and authenticates the user based on the information
-  in the token.
+  request headers, authenticates the user based on the information in
+  the token and checks, based on the user's role, that the user is allowed
+  to access the url.
   """
   def call(conn, [storage: :cookie]) do
     conn = fetch_cookies(conn)
