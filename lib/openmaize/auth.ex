@@ -57,33 +57,29 @@ defmodule Openmaize.Auth do
   defp check_token("Bearer " <> token, conn), do: check_token(token, conn)
   defp check_token(token, conn) when is_binary(token) do
     case Token.decode(token) do
-      {:ok, data} -> verify_user(conn, data)
+      {:ok, data} -> get_match(conn) |> is_permitted(data)
       {:error, message} -> {:error, message}
     end
   end
   defp check_token(_, conn) do
-    case check_match(conn) do
-      {{0, _}, path} -> {:error, "You have to be logged in to view #{path}"}
-      _ -> {:ok, nil}
-    end
+    get_match(conn) |> is_permitted(nil)
   end
 
-  defp verify_user(conn, data) do
-    case check_match(conn) do
-      {{0, match_len}, path} -> verify_role(data, path, :binary.part(path, {0, match_len}))
-      _ -> {:ok, data}
-    end
+  defp is_permitted({{0, _}, path}, nil) do
+    {:error, "You have to be logged in to view #{path}"}
   end
-
-  defp verify_role(%{role: role} = data, path, match) do
+  defp is_permitted(_, nil), do: {:ok, nil}
+  defp is_permitted({{0, match_len}, path}, %{role: role} = data) do
+    match = :binary.part(path, {0, match_len})
     if role in Map.get(@protected_roles, match) do
       {:ok, data, path, match}
     else
       {:error, role, "You do not have permission to view #{path}"}
     end
   end
+  defp is_permitted(_, data), do: {:ok, data}
 
-  defp check_match(conn) do
+  defp get_match(conn) do
     path = full_path(conn)
     {:binary.match(path, @protected), path}
   end
