@@ -5,6 +5,15 @@ defmodule Openmaize.IdCheck do
 
   They can be used as they are, but they also serve as examples of
   how to write such functions.
+
+  For these functions to work, you need to have the start of the path
+  and the start of the path + "/:id" in the protected map in the config.
+  For example, the following entry protects "/users" and checks ids under
+  "/users":
+
+      config: openmaize,
+        protected: %{"/users" => ["user"], "/users/:id" => ["user"]}
+
   """
 
   alias Openmaize.Config

@@ -1,7 +1,7 @@
 defmodule Openmaize do
   @moduledoc """
   This module handles the initial call to Openmaize and then calls the
-  relevant module for handling authentication / authorization, logging
+  relevant module for handling authentication and authorization, logging
   in or logging out.
 
   If the path is for the login page and the method is "POST", the
@@ -13,7 +13,7 @@ defmodule Openmaize do
   the user to the home page.
 
   For any other path, including unprotected paths, the connection is
-  redirected to the Openmaize.Authenticate module, which handles user
+  redirected to the Openmaize.Auth module, which handles user
   authentication and resource authorization.
 
   ## Phoenix integration
@@ -26,7 +26,7 @@ defmodule Openmaize do
 
   import Plug.Conn
   import Openmaize.Errors
-  alias Openmaize.Authenticate
+  alias Openmaize.Auth
   alias Openmaize.Config
   alias Openmaize.Login
   alias Openmaize.Logout
@@ -51,9 +51,9 @@ defmodule Openmaize do
   Application, you will probably just want responses without redirects.
 
   `check` is for a function to perform extra checks before authenticating
-  the user. This option is available so that the authentication of users
-  can be more easily customized. There are some examples of this kind of
-  function in the Openmaize.IdCheck module.
+  the user. This option is available so that user authentication and
+  resource authorization can be more easily customized. There are some
+  examples of this kind of function in the Openmaize.IdCheck module.
 
   ## Examples
 
@@ -83,10 +83,10 @@ defmodule Openmaize do
   defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
 
   defp handle_auth(conn, {false, _check} = opts) do
-    Authenticate.call(conn, opts) |> auth(conn, opts)
+    Auth.call(conn, opts) |> auth(conn, opts)
   end
   defp handle_auth(conn, opts) do
-    Authenticate.call(conn, [storage: Config.storage_method]) |> auth(conn, opts)
+    Auth.call(conn, [storage: Config.storage_method]) |> auth(conn, opts)
   end
 
   defp auth({:ok, data}, conn, _), do: assign(conn, :current_user, data)

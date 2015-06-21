@@ -14,7 +14,7 @@ defmodule Openmaize.Config do
   | storage_method     | atom    | :cookie  |
   | unique             | atom    | :name    |
   | secret_key         | string  | "you will never guess" |
-  | token_info         | list    | []       |
+  | token_info         | list    | [:id, unique, :role]   |
   | token_validity     | integer | 24 * 60  |
 
   The values for user_model and repo should be module names.

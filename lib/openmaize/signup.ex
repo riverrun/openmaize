@@ -1,6 +1,10 @@
 defmodule Openmaize.Signup do
   @moduledoc """
   This module handles the signup / creation of a new user.
+
+  By default, bcrypt is used to hash the password, but you can change
+  this to pbkdf2_sha512 by setting the `crypto_mod` value in the config
+  to `:pbkdf2`.
   """
 
   @doc """

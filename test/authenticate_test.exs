@@ -1,4 +1,4 @@
-defmodule Openmaize.AuthenticateTest do
+defmodule Openmaize.AuthTest do
   use ExUnit.Case
   use Plug.Test
 

@@ -29,7 +29,9 @@ mechanism that is easy to use.
 ## Use
 
 Before you use Openmaize, you need to make sure that your user model
-contains an `id`, `name` and `role`.
+contains an `id` and `role`. You also need to have a unique key (name, email,
+etc.) by which you identify the user. This is configurable, and the default
+is name.
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.

@@ -1,7 +1,13 @@
 defmodule Openmaize.Login do
   @moduledoc """
-  Module to handle password authentication and the generation
-  of tokens.
+  Module to handle password authentication and the generation, and
+  distribution, of tokens.
+
+  By default, the user will be identified by `name`, but this can be
+  changed by setting the `unique` value in the config.
+
+  If the login is successful, the token will either be stored in a cookie
+  or sent back in the body of the response.
   """
 
   import Plug.Conn
