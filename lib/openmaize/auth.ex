@@ -6,26 +6,8 @@ defmodule Openmaize.Auth do
   Authorization is based on user roles, and so you will need a `role` entry
   in your user model.
 
-  ## Json Web Tokens
-
-  Json Web Tokens (JWTs) are an alternative to using cookies to identify,
-  and provide information about, users after they have logged in.
-
-  One main advantage of using JWTs is that there is no need to keep a
-  session store as the token can be used to contain user information.
-  It is important, though, not to keep sensitive information in the
-  token as the information is not encrypted -- it is just encoded.
-
-  The JWTs need to be stored somewhere, either in cookies or sessionStorage
-  (or localStorage), so that they can be used in subsequent requests. 
-  With this module, if you store the token in a cookie, this module handles
-  all of the authentication and authorization process. If, however, you want
-  to store the token in sessionStorage, you will need to add the token to
-  sessionStorage with the front-end framework you are using and add the
-  token to the request headers for each request.
-
-  If you do not store the token in a cookie, then you will probably not need
-  to use the `protect_from_forgery` (csrf protection) plug.
+  For more information about Json Web Tokens, see the documentation for
+  the Openmaize.Token module.
 
   """
 
