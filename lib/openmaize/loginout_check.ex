@@ -20,7 +20,9 @@ defmodule Openmaize.LoginoutCheck do
   end
 
   defp handle_login(%{method: "POST"} = conn, opts), do: Login.call(conn, opts)
-  defp handle_login(conn, _opts), do: assign(conn, :current_user, nil) |> halt
+  defp handle_login(conn, _opts) do
+    conn |> assign(:current_user, nil) |> put_private(:openmaize_login, true)
+  end
 
   defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
 
