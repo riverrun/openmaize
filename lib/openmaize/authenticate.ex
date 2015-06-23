@@ -28,7 +28,7 @@ defmodule Openmaize.Authenticate do
   or an error message is sent to the user. The connection is also halted.
   """
   def call(conn, opts) when is_list(opts) do
-    opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :storage)}
+    opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :storage, :cookie)}
     call(conn, opts)
   end
   def call(conn, {_, :cookie} = opts) do
@@ -55,7 +55,7 @@ defmodule Openmaize.Authenticate do
   end
 
   defp authenticate_error(conn, message, {false, _}) do
-    handle_error(conn, message)
+    send_error(conn, 401, message)
   end
-  defp authenticate_error(conn, message, _), do: send_error(conn, 401, message)
+  defp authenticate_error(conn, message, _), do: handle_error(conn, message)
 end
