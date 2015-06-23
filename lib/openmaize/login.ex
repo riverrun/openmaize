@@ -3,9 +3,6 @@ defmodule Openmaize.Login do
   Module to handle password authentication and the generation, and
   distribution, of tokens.
 
-  By default, the user will be identified by `name`, but this can be
-  changed by setting the `unique` value in the config.
-
   If the login is successful, the token will either be stored in a cookie
   or sent back in the body of the response.
   """
@@ -14,8 +11,6 @@ defmodule Openmaize.Login do
   import Openmaize.Errors
   import Openmaize.Token
   alias Openmaize.Config
-
-  @unique to_string(Config.unique)
 
   @doc """
   Function to handle user login.
@@ -31,23 +26,23 @@ defmodule Openmaize.Login do
 
   """
   def call(%{params: params} = conn, {false, _}) do
-    %{@unique => uniq, "password" => password} = Map.take(params, [@unique, "password"])
-    case login_user(uniq, password) do
+    %{"name" => name, "password" => password} = Map.take(params, ["name", "password"])
+    case login_user(name, password) do
       false -> send_error(conn, 401, "Invalid credentials")
       user -> add_token(user, conn, nil)
     end
   end
   def call(%{params: params} = conn, {_, storage}) do
-    %{@unique => uniq, "password" => password} = Map.take(params["user"], [@unique, "password"])
-    case login_user(uniq, password) do
+    %{"name" => name, "password" => password} = Map.take(params["user"], ["name", "password"])
+    case login_user(name, password) do
       false -> handle_error(conn, "Invalid credentials")
       user -> add_token(user, conn, storage)
     end
   end
 
-  defp login_user(uniq, password) do
+  defp login_user(name, password) do
     from(user in Config.user_model,
-    where: user.uniq == ^uniq,
+    where: user.name == ^name,
     select: user)
     |> Config.repo.one
     |> check_user(password)

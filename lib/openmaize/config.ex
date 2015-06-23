@@ -11,9 +11,8 @@ defmodule Openmaize.Config do
   | login_dir          | string  | "/admin" |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
   | protected          | list    | %{"/admin" => ["admin"]} |
-  | unique             | atom    | :name    |
   | secret_key         | string  | "you will never guess" |
-  | token_info         | list    | [:id, unique, :role]   |
+  | token_info         | list    | [:id, :name, :role]    |
   | token_validity     | integer | 24 * 60  |
 
   The values for user_model and repo should be module names.
@@ -33,7 +32,6 @@ defmodule Openmaize.Config do
         login_dir: "admin",
         redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
         protected: %{"/admin" => ["admin"], "/users" => ["admin", "user"], "/users/:id" => ["user"]}
-        unique: :email,
         secret_key: "so hard to guess",
         token_info: [:email, :shoesize],
         token_validity: 7 * 24 * 60
@@ -104,14 +102,6 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The unique key by which the user can be identified when making the
-  database calls, for example when logging in. This should be an atom.
-  """
-  def unique do
-    Application.get_env(:openmaize, :unique, :name)
-  end
-
-  @doc """
   The secret key for use with Joken (which encodes and decodes the
   tokens).
 
@@ -128,7 +118,7 @@ defmodule Openmaize.Config do
   This value takes a list of atoms.
   """
   def token_info do
-    Application.get_env(:openmaize, :token_info, []) ++ [:id, unique, :role]
+    Application.get_env(:openmaize, :token_info, []) ++ [:id, :name, :role]
   end
 
   @doc """
