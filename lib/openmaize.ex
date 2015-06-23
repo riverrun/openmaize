@@ -81,10 +81,10 @@ defmodule Openmaize do
   defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
 
   defp handle_auth(conn, {false, _check} = opts) do
-    Authenticate.call(conn, opts) |> Authorize.call(conn, opts)
+    Authenticate.call(conn, opts) |> Authorize.call(opts)
   end
   defp handle_auth(conn, opts) do
-    Authenticate.call(conn, [storage: Config.storage_method]) |> Authorize.call(conn, opts)
+    Authenticate.call(conn, [storage: Config.storage_method]) |> Authorize.call(opts)
   end
 
 end
