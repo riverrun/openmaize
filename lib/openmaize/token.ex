@@ -1,18 +1,3 @@
-defmodule Openmaize.JSON do
-  alias Poison, as: JSON
-  @behaviour Joken.Codec
-
-  @doc """
-  Encode function for use with Joken.
-  """
-  def encode(map), do: JSON.encode!(map)
-
-  @doc """
-  Decode function for use with Joken.
-  """
-  def decode(binary), do: JSON.decode!(binary, keys: :atoms!)
-
-end
 defmodule Openmaize.Token do
   @moduledoc """
   Module to generate Json Web Tokens and send them to the user, either
@@ -31,14 +16,14 @@ defmodule Openmaize.Token do
 
   The JWTs need to be stored somewhere, either in cookies or sessionStorage
   (or localStorage), so that they can be used in subsequent requests. 
-  With this module, if you store the token in a cookie, this module handles
-  all of the authentication and authorization process. If, however, you want
-  to store the token in sessionStorage, you will need to add the token to
-  sessionStorage with the front-end framework you are using and add the
-  token to the request headers for each request.
+  If you want to store the token in sessionStorage, you will need to add
+  the token to sessionStorage with the front-end framework you are using
+  and add the token to the request headers for each request.
 
-  If you do not store the token in a cookie, then you will probably not need
-  to use the `protect_from_forgery` (csrf protection) plug.
+  If you do not store the token in a cookie, then you will not need to use
+  the `protect_from_forgery` (csrf protection) plug. However, if you are
+  storing the token in sessionStorage, there is then a risk of cross-site
+  scripting attack.
 
   """
 

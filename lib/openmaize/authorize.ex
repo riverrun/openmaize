@@ -20,6 +20,7 @@ defmodule Openmaize.Authorize do
   def init(opts), do: opts
 
   @doc """
+  Verify that the user is authorized to access the requested page / resource.
   """
   def call(conn, opts) when is_list(opts) do
     opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :check)}
@@ -27,7 +28,7 @@ defmodule Openmaize.Authorize do
   end
   def call(%{assigns: assigns} = conn, opts) do
     user = Map.get(assigns, :current_user)
-    get_match(conn) |> is_permitted(user) |> auth(conn, opts)
+    get_match(conn) |> is_permitted(user) |> finish(conn, opts)
   end
 
   defp is_permitted({{0, _}, path}, nil) do
@@ -49,14 +50,14 @@ defmodule Openmaize.Authorize do
     {:binary.match(path, @protected), path}
   end
 
-  defp auth({:ok, _}, conn, _), do: conn
-  defp auth({:ok, _, _, _}, conn, {_, nil}), do: conn
-  defp auth({:ok, data, path, match}, conn, {_, func}) do
-    func.(conn, data, path, match) |> auth(conn, {nil, nil})
+  defp finish({:ok, _}, conn, _), do: conn
+  defp finish({:ok, _, _, _}, conn, {_, nil}), do: conn
+  defp finish({:ok, data, path, match}, conn, {_, func}) do
+    func.(conn, data, path, match) |> finish(conn, {nil, nil})
   end
-  defp auth({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
-  defp auth({:error, message}, conn, _), do: handle_error(conn, message)
-  defp auth({:error, _, message}, conn, {false, _}), do: send_error(conn, 403, message)
-  defp auth({:error, role, message}, conn, _), do: handle_error(conn, role, message)
+  defp finish({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
+  defp finish({:error, message}, conn, _), do: handle_error(conn, message)
+  defp finish({:error, _, message}, conn, {false, _}), do: send_error(conn, 403, message)
+  defp finish({:error, role, message}, conn, _), do: handle_error(conn, role, message)
 
 end

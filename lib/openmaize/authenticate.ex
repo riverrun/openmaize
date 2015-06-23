@@ -8,6 +8,7 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
+  import Openmaize.Errors
   alias Openmaize.Token
 
   @behaviour Plug
@@ -18,27 +19,43 @@ defmodule Openmaize.Authenticate do
   This function checks the token, which is either in a cookie or the
   request headers and authenticates the user based on the information in
   the token.
+
+  If the authentication is successful, a map, called `:current_user`,
+  providing the user information is added to the `assigns` map in the
+  Plug connection. If there is no token, the `:current_user` is set to nil.
+
+  If there is an error, the user is either redirected to the login page
+  or an error message is sent to the user. The connection is also halted.
   """
-  def call(conn, [storage: :cookie]) do
-    conn = fetch_cookies(conn)
-    Map.get(conn.req_cookies, "access_token") |> check_token(conn)
+  def call(conn, opts) when is_list(opts) do
+    opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :storage)}
+    call(conn, opts)
   end
-  def call(%{req_headers: headers} = conn, _opts) do
-    get_token(headers) |> Enum.at(0) |> check_token(conn)
+  def call(conn, {_, :cookie} = opts) do
+    conn = fetch_cookies(conn)
+    Map.get(conn.req_cookies, "access_token") |> check_token(conn, opts)
+  end
+  def call(%{req_headers: headers} = conn, opts) do
+    get_token(headers) |> Enum.at(0) |> check_token(conn, opts)
   end
 
   defp get_token(headers) do
     for {k, v} <- headers, k == "authorization" or k == "access-token", do: v
   end
 
-  defp check_token("Bearer " <> token, conn), do: check_token(token, conn)
-  defp check_token(token, conn) when is_binary(token) do
+  defp check_token("Bearer " <> token, conn, opts), do: check_token(token, conn, opts)
+  defp check_token(token, conn, opts) when is_binary(token) do
     case Token.decode(token) do
       {:ok, data} -> assign(conn, :current_user, data)
-      {:error, message} -> {:error, message}
+      {:error, message} -> authenticate_error(conn, message, opts)
     end
   end
-  defp check_token(_, conn) do
+  defp check_token(_, conn, _) do
     assign(conn, :current_user, nil)
   end
+
+  defp authenticate_error(conn, message, {false, _}) do
+    handle_error(conn, message)
+  end
+  defp authenticate_error(conn, message, _), do: send_error(conn, 401, message)
 end
