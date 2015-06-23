@@ -11,7 +11,6 @@ defmodule Openmaize.Config do
   | login_dir          | string  | "/admin" |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
   | protected          | list    | %{"/admin" => ["admin"]} |
-  | storage_method     | atom    | :cookie  |
   | unique             | atom    | :name    |
   | secret_key         | string  | "you will never guess" |
   | token_info         | list    | [:id, unique, :role]   |
@@ -34,7 +33,6 @@ defmodule Openmaize.Config do
         login_dir: "admin",
         redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
         protected: %{"/admin" => ["admin"], "/users" => ["admin", "user"], "/users/:id" => ["user"]}
-        storage_method: :cookie,
         unique: :email,
         secret_key: "so hard to guess",
         token_info: [:email, :shoesize],
@@ -103,19 +101,6 @@ defmodule Openmaize.Config do
   def protected do
     default = %{"/admin" => ["admin"]}
     Application.get_env(:openmaize, :protected, default)
-  end
-
-  @doc """
-  The storage method for the token. The default is to store it in
-  a cookie which is then sent to the user.
-
-  The token can also be sent in the body of the response, which is the
-  default if you call Openmaize with the `redirects: false` option. For
-  subsequent requests, the token can then be sent back in the request
-  headers.
-  """
-  def storage_method do
-    Application.get_env(:openmaize, :storage_method, :cookie)
   end
 
   @doc """

@@ -11,7 +11,7 @@ defmodule Openmaize.LoginoutCheck do
   def init(opts), do: opts
 
   def call(%{path_info: path_info} = conn, opts) do
-    opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :check)}
+    opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :storage, :cookie)}
     case Enum.at(path_info, -1) do
       "login" -> handle_login(conn, opts)
       "logout" -> handle_logout(conn, opts)
@@ -20,7 +20,7 @@ defmodule Openmaize.LoginoutCheck do
   end
 
   defp handle_login(%{method: "POST"} = conn, opts), do: Login.call(conn, opts)
-  defp handle_login(conn, _opts), do: assign(conn, :current_user, nil)
+  defp handle_login(conn, _opts), do: assign(conn, :current_user, nil) |> halt
 
   defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
 

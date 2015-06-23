@@ -27,15 +27,15 @@ defmodule Openmaize.Authenticate do
   If there is an error, the user is either redirected to the login page
   or an error message is sent to the user. The connection is also halted.
   """
-  def call(conn, opts) when is_list(opts) do
+  def call(conn, opts) do
     opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :storage, :cookie)}
-    call(conn, opts)
+    run(conn, opts)
   end
-  def call(conn, {_, :cookie} = opts) do
+  defp run(conn, {_, :cookie} = opts) do
     conn = fetch_cookies(conn)
     Map.get(conn.req_cookies, "access_token") |> check_token(conn, opts)
   end
-  def call(%{req_headers: headers} = conn, opts) do
+  defp run(%{req_headers: headers} = conn, opts) do
     get_token(headers) |> Enum.at(0) |> check_token(conn, opts)
   end
 

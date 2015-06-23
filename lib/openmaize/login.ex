@@ -34,14 +34,14 @@ defmodule Openmaize.Login do
     %{@unique => uniq, "password" => password} = Map.take(params, [@unique, "password"])
     case login_user(uniq, password) do
       false -> send_error(conn, 401, "Invalid credentials")
-      user -> add_token(user, conn, :session)
+      user -> add_token(user, conn, nil)
     end
   end
-  def call(%{params: params} = conn, _opts) do
+  def call(%{params: params} = conn, {_, storage}) do
     %{@unique => uniq, "password" => password} = Map.take(params["user"], [@unique, "password"])
     case login_user(uniq, password) do
       false -> handle_error(conn, "Invalid credentials")
-      user -> add_token(user, conn, Config.storage_method)
+      user -> add_token(user, conn, storage)
     end
   end
 

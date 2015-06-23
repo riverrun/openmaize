@@ -22,11 +22,11 @@ defmodule Openmaize.Authorize do
   @doc """
   Verify that the user is authorized to access the requested page / resource.
   """
-  def call(conn, opts) when is_list(opts) do
+  def call(conn, opts) do
     opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :check)}
-    call(conn, opts)
+    run(conn, opts)
   end
-  def call(%{assigns: assigns} = conn, opts) do
+  defp run(%{assigns: assigns} = conn, opts) do
     user = Map.get(assigns, :current_user)
     get_match(conn) |> is_permitted(user) |> finish(conn, opts)
   end

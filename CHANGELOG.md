@@ -1,8 +1,14 @@
 # Changelog
 
+## v0.5.0
+
+* Split authentication and authorization into separate modules (plugs).
+* Added a LoginoutCheck module (plug).
+* Removed the global `Openmaize` plug.
+
 ## v0.4.0
 
-* Added ability to use external function in final part of authentication.
+* Added ability to use external function in final part of authorization.
 
 ## v0.3.0
 
