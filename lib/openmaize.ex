@@ -25,11 +25,9 @@ defmodule Openmaize do
   """
 
   import Plug.Conn
-  import Openmaize.Errors
-  alias Openmaize.Auth
   alias Openmaize.Config
-  alias Openmaize.Login
-  alias Openmaize.Logout
+  alias Openmaize.Authenticate
+  alias Openmaize.Authorize
 
   @behaviour Plug
 
@@ -83,20 +81,10 @@ defmodule Openmaize do
   defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
 
   defp handle_auth(conn, {false, _check} = opts) do
-    Auth.call(conn, opts) |> auth(conn, opts)
+    Authenticate.call(conn, opts) |> Authorize.call(conn, opts)
   end
   defp handle_auth(conn, opts) do
-    Auth.call(conn, [storage: Config.storage_method]) |> auth(conn, opts)
+    Authenticate.call(conn, [storage: Config.storage_method]) |> Authorize.call(conn, opts)
   end
-
-  defp auth({:ok, data}, conn, _), do: assign(conn, :current_user, data)
-  defp auth({:ok, data, _, _}, conn, {_, nil}), do: assign(conn, :current_user, data)
-  defp auth({:ok, data, path, match}, conn, {_, func}) do
-    func.(conn, data, path, match) |> auth(conn, {nil, nil})
-  end
-  defp auth({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
-  defp auth({:error, message}, conn, _), do: handle_error(conn, message)
-  defp auth({:error, _, message}, conn, {false, _}), do: send_error(conn, 403, message)
-  defp auth({:error, role, message}, conn, _), do: handle_error(conn, role, message)
 
 end
