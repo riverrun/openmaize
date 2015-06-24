@@ -30,25 +30,22 @@ defmodule Openmaize.Token do
   import Plug.Conn
   import Openmaize.Errors
   alias Openmaize.Config
-
-  @secret_key Config.secret_key
-  @json_module Openmaize.JSON
-  @algorithm :HS512
+  alias Openmaize.TokenConfig
 
   @token_info Config.token_info
 
   @doc """
   Encode JWT.
   """
-  def encode(payload, claims \\ %{}) do
-    Joken.Token.encode(@secret_key, @json_module, payload, @algorithm, claims)
+  def encode(payload) do
+    Joken.Token.encode(TokenConfig, payload)
   end
 
   @doc """
   Decode JWT.
   """
-  def decode(token, claims \\ %{}) do
-    Joken.Token.decode(@secret_key, @json_module, token, @algorithm, claims)
+  def decode(token) do
+    Joken.Token.decode(TokenConfig, token)
   end
 
   @doc """
