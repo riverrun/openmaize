@@ -28,7 +28,7 @@ defmodule Openmaize.Authenticate do
   or an error message is sent to the user. The connection is also halted.
   """
   def call(%{private: private} = conn, opts) do
-    if Map.get(private, :openmaize_login) == true do
+    if Map.get(private, :openmaize_skip) == true do
       conn
     else
       opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :storage, :cookie)}

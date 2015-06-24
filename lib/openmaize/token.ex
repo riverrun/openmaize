@@ -67,7 +67,7 @@ defmodule Openmaize.Token do
   def add_token(user, conn, _storage) do
     {:ok, token} = generate_token(user)
     token_string = ~s({"access_token": #{token}})
-    send_resp(conn, 200, token_string) |> halt
+    send_resp(conn, 200, token_string) |> terminate
   end
 
   defp generate_token(user) do

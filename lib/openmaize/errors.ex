@@ -38,15 +38,22 @@ defmodule Openmaize.Errors do
   This function will be used if the `redirects` option is set to false.
   """
   def send_error(conn, status, message) do
-    send_resp(conn, status, JSON.encode(%{"error" => message})) |> halt
+    send_resp(conn, status, JSON.encode(%{"error" => message})) |> terminate
   end
+
+  @doc """
+  Return and halt the connection. Also, set the openmaize_skip value to true,
+  which means that subsequent Openmaize plugs will just return the connection
+  without performing any checks.
+  """
+  def terminate(conn), do: conn |> put_private(:openmaize_skip, true) |> halt
 
   defp redirect_to(%{scheme: scheme, host: host} = conn, address, message) do
     if Mix.env == :dev, do: host = "localhost:4000"
     unless map_size(message) == 0, do: conn = send_message(conn, message)
     conn
     |> put_resp_header("location", "#{scheme}://#{host}#{address}")
-    |> send_resp(302, "") |> halt
+    |> send_resp(302, "") |> terminate
   end
 
   defp redirect_to_login(conn, message) do
