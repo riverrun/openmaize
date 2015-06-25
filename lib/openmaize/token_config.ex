@@ -17,7 +17,7 @@ defmodule Openmaize.TokenConfig do
     Poison.decode!(binary, keys: :atoms!)
   end
 
-  def claim(:exp, payload) do
+  def claim(:exp, _) do
     Joken.Config.get_current_time() + 300
   end
 

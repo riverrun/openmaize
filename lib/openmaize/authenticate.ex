@@ -5,6 +5,31 @@ defmodule Openmaize.Authenticate do
   For more information about Json Web Tokens, see the documentation for
   the Openmaize.Token module.
 
+  This module also sets the current_user variable, which, if you are using
+  Phoenix, can then be used in your templates. If no token is found, the
+  current_user is set to nil.
+
+  There are two options:
+  * redirects
+      * if true, which is the default, redirect on login / logout
+  * storage
+      * storage method for the token -- the default is :cookie
+      * if redirects is set to false, storage is automatically set to nil
+
+  ## Examples
+
+  Call Authenticate without any options:
+
+      Plug Openmaize.Authenticate
+
+  Call Authenticate and send the token in the response body:
+
+      Plug Openmaize.Authenticate, storage: nil
+
+  Call Authenticate without redirects:
+
+      Plug Openmaize.Authenticate, redirects: false
+
   """
 
   import Plug.Conn
@@ -31,7 +56,7 @@ defmodule Openmaize.Authenticate do
     if Map.get(private, :openmaize_skip) == true do
       conn
     else
-      opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :storage, :cookie)}
+      opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :storage, :cookie)}
       run(conn, opts)
     end
   end

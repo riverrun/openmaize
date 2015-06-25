@@ -6,6 +6,28 @@ defmodule Openmaize.Authorize do
   Authorization is based on user roles, and so you will need a `role` entry
   in your user model.
 
+  There are two options:
+
+  * redirects
+      * if true, which is the default, redirect on login / logout
+  * check
+      * an external function, with an arity of 4, which can run further checks
+      * some example can be found in the Openmaize.IdCheck module
+
+  ## Examples
+
+  Call Authorize without any options:
+
+      Plug Openmaize.LoginoutCheck
+
+  Call Authorize without redirects:
+
+      Plug Openmaize.LoginoutCheck, redirects: false
+
+  Call Authorize and perform an extra check using the function `extra_check`:
+
+      Plug Openmaize.LoginoutCheck, check: &extra_check/4
+
   """
 
   import Plug.Conn
@@ -26,7 +48,7 @@ defmodule Openmaize.Authorize do
     if Map.get(private, :openmaize_skip) == true do
       conn
     else
-      opts = {Keyword.get(opts, :redirects), Keyword.get(opts, :check)}
+      opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :check)}
       run(conn, opts)
     end
   end
