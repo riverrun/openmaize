@@ -1,4 +1,4 @@
-defmodule Openmaize.AddTokenTest do
+defmodule Openmaize.TokenTest do
   use ExUnit.Case
   use Plug.Test
 
