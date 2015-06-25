@@ -1,11 +1,11 @@
 defmodule Openmaize.TokenConfig do
   @behaviour Joken.Config
 
-  def secret_key() do
+  def secret_key do
     Openmaize.Config.secret_key
   end
 
-  def algorithm() do
+  def algorithm do
     :HS512
   end
 

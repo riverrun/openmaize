@@ -9,6 +9,7 @@ defmodule Openmaize.Config do
   | repo               | module  | N/A      |
   | crypto_mod         | atom    | :bcrypt  |
   | login_dir          | string  | "/admin" |
+  | unique             | atom    | :name    |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
   | protected          | list    | %{"/admin" => ["admin"]} |
   | secret_key         | string  | "you will never guess" |
@@ -30,6 +31,7 @@ defmodule Openmaize.Config do
         repo: Coolapp.Repo,
         crypto_mod: :bcrypt,
         login_dir: "admin",
+        unique: :email,
         redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
         protected: %{"/admin" => ["admin"], "/users" => ["admin", "user"], "/users/:id" => ["user"]}
         secret_key: "so hard to guess",
@@ -75,6 +77,14 @@ defmodule Openmaize.Config do
   """
   def login_dir do
     Application.get_env(:openmaize, :login_dir, "/admin")
+  end
+
+  @doc """
+  The unique user identifier (in the user model). The default value is
+  :name.
+  """
+  def unique do
+    Application.get_env(:openmaize, :unique, :name)
   end
 
   @doc """
