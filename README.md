@@ -20,7 +20,7 @@ mechanism that is easy to use.
 
   ```elixir
   defp deps do
-    [ {:openmaize, "~> 0.4"} ]
+    [ {:openmaize, "~> 0.5"} ]
   end
   ```
 
@@ -29,21 +29,23 @@ mechanism that is easy to use.
 ## Use
 
 Before you use Openmaize, you need to make sure that your user model
-contains an `id` and `role`. You also need to have a unique key (name, email,
-etc.) by which you identify the user. This is configurable, and the default
-is name.
+contains an `id`, `name` (which identifies the user) and `role`.
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
 
-There are three plugs available:
+Openmaize provides the following plugs:
 
 * Openmaize.LoginoutCheck
+    * checks the path to see if it is for the login or logout page
+    * handles login or logout if necessary
 * Openmaize.Authenticate
+    * authenticates the user
+    * sets (adds to the assigns map) the current_user variable
 * Openmaize.Authorize
+    * checks to see if the user is authorized to access the page / resource
 
-There are also options to disable redirects and to use an external function
-in the last part of the authorization.
+See the relevant module documentation for more details.
 
 There is an example of Openmaize being used with Phoenix at
 [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).

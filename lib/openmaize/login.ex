@@ -12,8 +12,6 @@ defmodule Openmaize.Login do
   import Openmaize.Token
   alias Openmaize.Config
 
-  @unique to_string(Config.unique)
-
   @doc """
   Function to handle user login.
 
@@ -28,25 +26,25 @@ defmodule Openmaize.Login do
 
   """
   def call(%{params: params} = conn, {false, _}) do
-    %{@unique => unique_user, "password" => password} =
-    Map.take(params, [@unique, "password"])
-    case login_user(unique_user, password) do
+    %{"name" => user, "password" => password} =
+    Map.take(params, ["name", "password"])
+    case login_user(user, password) do
       false -> send_error(conn, 401, "Invalid credentials")
       user -> add_token(conn, user, nil)
     end
   end
   def call(%{params: params} = conn, {_, storage}) do
-    %{@unique => unique_user, "password" => password} =
-    Map.take(params["user"], [@unique, "password"])
-    case login_user(unique_user, password) do
+    %{"name" => user, "password" => password} =
+    Map.take(params["user"], ["name", "password"])
+    case login_user(user, password) do
       false -> handle_error(conn, "Invalid credentials")
       user -> add_token(conn, user, storage)
     end
   end
 
-  defp login_user(unique_user, password) do
+  defp login_user(user, password) do
     from(user in Config.user_model,
-    where: field(user, ^Config.unique) == ^unique_user,
+    where: user.name == ^user,
     select: user)
     |> Config.repo.one
     |> check_user(password)
