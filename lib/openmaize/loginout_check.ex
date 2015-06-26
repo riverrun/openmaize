@@ -46,6 +46,10 @@ defmodule Openmaize.LoginoutCheck do
 
   def init(opts), do: opts
 
+  @doc """
+  Check the path and handle login or logout is necessary. If the path
+  is not for the login or logout page, the connection is returned.
+  """
   def call(%{path_info: path_info} = conn, opts) do
     opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :storage, :cookie)}
     case Enum.at(path_info, -1) do

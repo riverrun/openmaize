@@ -9,7 +9,7 @@ defmodule Openmaize.Authorize do
   There are two options:
 
   * redirects
-      * if true, which is the default, redirect on login / logout
+      * if true, which is the default, redirect if authorized or if there is an error
   * check
       * an external function, with an arity of 4, which can run further checks
       * some example can be found in the Openmaize.IdCheck module
@@ -18,15 +18,15 @@ defmodule Openmaize.Authorize do
 
   Call Authorize without any options:
 
-      Plug Openmaize.LoginoutCheck
+      Plug Openmaize.Authorize
 
   Call Authorize without redirects:
 
-      Plug Openmaize.LoginoutCheck, redirects: false
+      Plug Openmaize.Authorize, redirects: false
 
   Call Authorize and perform an extra check using the function `extra_check`:
 
-      Plug Openmaize.LoginoutCheck, check: &extra_check/4
+      Plug Openmaize.Authorize, check: &extra_check/4
 
   """
 
