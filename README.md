@@ -52,9 +52,9 @@ There is an example of Openmaize being used with Phoenix at
 
 ## TODO
 
-* [] Support more database adapters when making Ecto query
+* [ ] Support more database adapters when making Ecto query
     * we only support postgres at the moment
-* [] Add customizable unique identifier for user model
+* [ ] Add customizable unique identifier for user model
     * currently the identifier is name -- allow developers to customize this
     * planned for when Erlang 18 is more widely adopted, as Erlang 18 supports variables as Map keys
 
