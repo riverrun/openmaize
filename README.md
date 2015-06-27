@@ -50,6 +50,19 @@ See the relevant module documentation for more details.
 There is an example of Openmaize being used with Phoenix at
 [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
 
+## TODO
+
+[] Support more database adapters when making Ecto query
+    * we only support postgres at the moment
+[] Add customizable unique identifier for user model
+    * currently the identifier is name -- allow developers to customize this
+    * planned for when Erlang 18 is more widely adopted, as Erlang 18 supports variables as Map keys
+
+The Authorize module allows the developer to define functions that can be used
+to perform further authorization checks (see the Openmaize.IdCheck
+module for examples of these functions). We would like to implement more
+of these checks, based on developer feedback.
+
 ### License
 
 BSD
