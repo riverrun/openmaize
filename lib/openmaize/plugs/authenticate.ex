@@ -1,6 +1,6 @@
 defmodule Openmaize.Authenticate do
   @moduledoc """
-  Module to authenticate users, using Json Web Tokens.
+  Plug to authenticate users, using Json Web Tokens.
 
   For more information about Json Web Tokens, see the documentation for
   the Openmaize.Token module.

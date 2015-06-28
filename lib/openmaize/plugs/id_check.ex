@@ -1,6 +1,9 @@
 defmodule Openmaize.IdCheck do
   @moduledoc """
-  This module contains a plug to perform optional checks based on the user id.
+  Plug to perform a further check based on the user id.
+
+  This plug needs to be called after Openmaize.Authorize, which makes the
+  initial authorization checks.
 
   For this plug to work, you need to have the start of the path
   and the start of the path + "/:id" in the protected map in the config.
@@ -44,6 +47,7 @@ defmodule Openmaize.IdCheck do
   def init(opts), do: opts
 
   @doc """
+  Verify that the user, based on id, is authorized to access the page / resource.
   """
   def call(%{private: private, assigns: assigns} = conn, opts) do
     if Map.get(private, :openmaize_skip) == true do

@@ -1,8 +1,8 @@
 defmodule Openmaize.LoginoutCheck do
   @moduledoc """
-  This Plug checks to see if the path is for the login or logout page
-  and handles the login or logout if necessary. If the path is different,
-  the connection is returned without any further checks being performed.
+  Plug to check if the path is for the login or logout page and handles the
+  login or logout if necessary. If the path is different, the connection is
+  returned without any further checks being performed.
 
   If the path ends with `login` and it is a GET request, the current_user
   is set to nil and the user is sent straight to the login page. If the path

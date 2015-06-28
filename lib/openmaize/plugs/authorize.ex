@@ -1,12 +1,20 @@
 defmodule Openmaize.Authorize do
   @moduledoc """
-  Module to verify that users are authorized to access the requested pages
+  Plug to verify that users are authorized to access the requested pages
   / resources.
 
   Authorization is based on user roles, and so you will need a `role` entry
   in your user model.
 
-  There are two options:
+  This plug can be used as a first stage in authorizing users, and so you
+  can call further plugs afterwards to make more fine-grained checks. To
+  help these further checks, if authorization is successful, two variables,
+  `path` and `match` are stored in the conn.private.openmaize_vars map.
+  `path` is the full path of the connection and `match` refers to a matching
+  path in the Config.protected map. If no `match` is found, it means that
+  the page is unprotected, and extra Openmaize checks are skipped.
+
+  There is one option:
 
   * redirects
       * if true, which is the default, redirect if authorized or if there is an error
@@ -52,7 +60,7 @@ defmodule Openmaize.Authorize do
   defp is_permitted({{0, _}, path}, nil) do
     {:error, "You have to be logged in to view #{path}"}
   end
-  defp is_permitted(_, nil), do: {:ok, nil, nil}
+  defp is_permitted(_, nil), do: {:ok, :nomatch}
   defp is_permitted({{0, match_len}, path}, %{role: role}) do
     match = :binary.part(path, {0, match_len})
     if role in Map.get(@protected_roles, match) do
@@ -61,7 +69,7 @@ defmodule Openmaize.Authorize do
       {:error, role, "You do not have permission to view #{path}"}
     end
   end
-  defp is_permitted(_, _), do: {:ok, nil, nil}
+  defp is_permitted(_, _), do: {:ok, :nomatch}
 
   defp get_match(conn) do
     path = full_path(conn)
@@ -69,6 +77,7 @@ defmodule Openmaize.Authorize do
   end
 
   def finish(:ok, conn, _), do: conn
+  def finish({:ok, :nomatch}, conn, _), do: put_private(conn, :openmaize_skip, true)
   def finish({:ok, path, match}, conn, _) do
     put_private(conn, :openmaize_vars, %{path: path, match: match})
   end

@@ -1,6 +1,10 @@
 # Contributing to Openmaize
 
-This is a draft.
+The first part of this document covers the goals and the scope of Openmaize,
+and then lists some ways that developers can contribute to it.
+
+After that, there is more technical information about the contributing
+process.
 
 ## Features
 
@@ -10,14 +14,6 @@ This is a draft.
 * provides excellent documentation
 * is framework-agnostic
 * is lightweight
-
-## Experimental features
-
-* allows the developer to define a function to perform extra authorization checks
-
-This experimental feature is designed to make Openmaize authorization a lot
-more configurable and fine-grained. We might well decide on a different approach
-to this problem in the future.
 
 ## Things we do not intend to implement
 
@@ -33,4 +29,8 @@ we will be glad to implement them.
 * Find bugs
 * Help support more database adapters when making the Ecto query
 * Add to, or improve, the documentation
-* Add further optional checks that you think might be useful
+* Add further plugs / checks you think might be useful
+
+##Contributing
+
+
