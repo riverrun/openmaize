@@ -54,14 +54,14 @@ defmodule Openmaize.Authorize do
     end
   end
   defp run(conn, opts, data) do
-    get_match(conn) |> is_permitted(data) |> finish(conn, opts)
+    get_match(conn) |> permitted?(data) |> authorized?(conn, opts)
   end
 
-  defp is_permitted({{0, _}, path}, nil) do
+  defp permitted?({{0, _}, path}, nil) do
     {:error, "You have to be logged in to view #{path}"}
   end
-  defp is_permitted(_, nil), do: {:ok, :nomatch}
-  defp is_permitted({{0, match_len}, path}, %{role: role}) do
+  defp permitted?(_, nil), do: {:ok, :nomatch}
+  defp permitted?({{0, match_len}, path}, %{role: role}) do
     match = :binary.part(path, {0, match_len})
     if role in Map.get(@protected_roles, match) do
       {:ok, path, match}
@@ -69,21 +69,21 @@ defmodule Openmaize.Authorize do
       {:error, role, "You do not have permission to view #{path}"}
     end
   end
-  defp is_permitted(_, _), do: {:ok, :nomatch}
+  defp permitted?(_, _), do: {:ok, :nomatch}
 
   defp get_match(conn) do
     path = full_path(conn)
     {:binary.match(path, @protected), path}
   end
 
-  def finish(:ok, conn, _), do: conn
-  def finish({:ok, :nomatch}, conn, _), do: put_private(conn, :openmaize_skip, true)
-  def finish({:ok, path, match}, conn, _) do
+  def authorized?(:ok, conn, _), do: conn
+  def authorized?({:ok, :nomatch}, conn, _), do: put_private(conn, :openmaize_skip, true)
+  def authorized?({:ok, path, match}, conn, _) do
     put_private(conn, :openmaize_vars, %{path: path, match: match})
   end
-  def finish({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
-  def finish({:error, message}, conn, _), do: handle_error(conn, message)
-  def finish({:error, _, message}, conn, {false, _}), do: send_error(conn, 403, message)
-  def finish({:error, role, message}, conn, _), do: handle_error(conn, role, message)
+  def authorized?({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
+  def authorized?({:error, message}, conn, _), do: handle_error(conn, message)
+  def authorized?({:error, _, message}, conn, {false, _}), do: send_error(conn, 403, message)
+  def authorized?({:error, role, message}, conn, _), do: handle_error(conn, role, message)
 
 end

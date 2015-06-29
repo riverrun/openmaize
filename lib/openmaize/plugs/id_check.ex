@@ -59,10 +59,10 @@ defmodule Openmaize.IdCheck do
     end
   end
   defp run(conn, {redirects, false}, data, path, match) do
-    id_noshow(data, path, match) |> Authorize.finish(conn, {redirects, false})
+    id_noshow(data, path, match) |> Authorize.authorized?(conn, {redirects, false})
   end
   defp run(conn, {redirects, true}, data, path, match) do
-    id_noedit(data, path, match) |> Authorize.finish(conn, {redirects, false})
+    id_noedit(data, path, match) |> Authorize.authorized?(conn, {redirects, false})
   end
 
   defp id_noedit(data, path, match) when (match <> "/:id") in @protected do

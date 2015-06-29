@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.6.0
+
+* Added an IdCheck module (plug).
+* Removed function to provide optional checks from Authorize module.
+* Storing `path` (full path) and `match` (matching a value in the Config.protected map)
+variables in conn.private, which can be used in further checks.
+
 ## v0.5.0
 
 * Split authentication and authorization into separate modules (plugs).
