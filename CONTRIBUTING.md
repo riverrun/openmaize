@@ -18,7 +18,6 @@ process.
 ## Ways you can contribute
 
 * Find bugs
-* Help support more database adapters when making the Ecto query
 * Add to, or improve, the documentation
 * Add further plugs / checks you think might be useful
 

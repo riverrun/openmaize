@@ -58,13 +58,11 @@ There is an example of Openmaize being used with Phoenix at
 
 ## TODO
 
-* [ ] Support more database adapters when making Ecto query
-    * we only support postgres at the moment
 * [ ] Add customizable unique identifier for user model
     * currently the identifier is name -- allow developers to customize this
-    * planned for when Erlang 18 is more widely adopted, as Erlang 18 supports variables as Map keys
-
-We would also like to implement more checks, based on developer's needs.
+    * planned for when there is support for variables as Map keys -- Elixir 1.2
+* [ ] Add more plugs / checks
+* [ ] Add warning when not using https
 
 ### License
 
