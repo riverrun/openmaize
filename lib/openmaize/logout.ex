@@ -4,7 +4,7 @@ defmodule Openmaize.Logout do
   """
 
   import Plug.Conn
-  import Openmaize.Errors
+  import Openmaize.Report
 
   @doc """
   Function to handle user logout.

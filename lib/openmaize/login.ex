@@ -8,7 +8,7 @@ defmodule Openmaize.Login do
   """
 
   import Ecto.Query
-  import Openmaize.Errors
+  import Openmaize.Report
   import Openmaize.Token
   alias Openmaize.Config
 

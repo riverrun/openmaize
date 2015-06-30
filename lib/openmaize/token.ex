@@ -28,7 +28,7 @@ defmodule Openmaize.Token do
   """
 
   import Plug.Conn
-  import Openmaize.Errors
+  import Openmaize.Report
   alias Openmaize.Config
   alias Openmaize.TokenConfig
 

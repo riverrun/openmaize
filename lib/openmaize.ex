@@ -1,6 +1,6 @@
 defmodule Openmaize do
   @moduledoc """
-  Openmaize provides the following plugs:
+  Openmaize provides the following main plugs:
 
   * Openmaize.LoginoutCheck
       * checks the path to see if it is for the login or logout page
@@ -11,7 +11,14 @@ defmodule Openmaize do
   * Openmaize.Authorize
       * checks to see if the user is authorized to access the page / resource
 
+  There is also the following plug, which can be used to perform an extra authorization check:
+
+  * Openmaize.IdCheck
+      * checks to see if the user, based on id, is authorized to access the page / resource
+      * this plug needs to be called after Openmaize.Authorize
+
   See the relevant module documentation for more details.
+
   """
 
 end

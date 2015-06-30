@@ -20,7 +20,7 @@ mechanism that is easy to use.
 
   ```elixir
   defp deps do
-    [ {:openmaize, "~> 0.5"} ]
+    [ {:openmaize, "~> 0.6"} ]
   end
   ```
 
@@ -34,7 +34,7 @@ contains an `id`, `name` (which identifies the user) and `role`.
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
 
-Openmaize provides the following plugs:
+Openmaize provides the following main plugs:
 
 * Openmaize.LoginoutCheck
     * checks the path to see if it is for the login or logout page
@@ -45,6 +45,12 @@ Openmaize provides the following plugs:
 * Openmaize.Authorize
     * checks to see if the user is authorized to access the page / resource
 
+There is also the following plug, which can be used to perform an extra authorization check:
+
+* Openmaize.IdCheck
+    * checks to see if the user, based on id, is authorized to access the page / resource
+    * this plug needs to be called after Openmaize.Authorize
+
 See the relevant module documentation for more details.
 
 There is an example of Openmaize being used with Phoenix at
@@ -52,16 +58,11 @@ There is an example of Openmaize being used with Phoenix at
 
 ## TODO
 
-* [ ] Support more database adapters when making Ecto query
-    * we only support postgres at the moment
 * [ ] Add customizable unique identifier for user model
     * currently the identifier is name -- allow developers to customize this
-    * planned for when Erlang 18 is more widely adopted, as Erlang 18 supports variables as Map keys
-
-The Authorize module allows the developer to define functions that can be used
-to perform further authorization checks (see the Openmaize.IdCheck
-module for examples of these functions). We would like to implement more
-of these checks, based on developer feedback.
+    * planned for when there is support for variables as Map keys -- Elixir 1.2
+* [ ] Add more plugs / checks
+* [ ] Add warning when not using https
 
 ### License
 
