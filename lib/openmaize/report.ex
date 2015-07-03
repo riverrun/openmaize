@@ -49,7 +49,7 @@ defmodule Openmaize.Report do
   """
   def terminate(conn), do: conn |> put_private(:openmaize_skip, true) |> halt
 
-  defp redirect_to(%{scheme: scheme, host: host} = conn, address, message) do
+  defp redirect_to(%Plug.Conn{scheme: scheme, host: host} = conn, address, message) do
     if Mix.env == :dev, do: host = "localhost:4000"
     unless map_size(message) == 0, do: conn = send_message(conn, message)
     conn

@@ -49,7 +49,7 @@ defmodule Openmaize.IdCheck do
   @doc """
   Verify that the user, based on id, is authorized to access the page / resource.
   """
-  def call(%{private: private, assigns: assigns} = conn, opts) do
+  def call(%Plug.Conn{private: private, assigns: assigns} = conn, opts) do
     if Map.get(private, :openmaize_skip) == true do
       conn
     else

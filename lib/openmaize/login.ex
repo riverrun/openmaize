@@ -25,7 +25,7 @@ defmodule Openmaize.Login do
   If `redirects` is set to false, then obviously there will be no redirects.
 
   """
-  def call(%{params: params} = conn, {false, _}) do
+  def call(%Plug.Conn{params: params} = conn, {false, _}) do
     %{"name" => user, "password" => password} =
     Map.take(params, ["name", "password"])
     case login_user(user, password) do
@@ -33,7 +33,7 @@ defmodule Openmaize.Login do
       user -> add_token(conn, user, nil)
     end
   end
-  def call(%{params: params} = conn, {_, storage}) do
+  def call(%Plug.Conn{params: params} = conn, {_, storage}) do
     %{"name" => user, "password" => password} =
     Map.take(params["user"], ["name", "password"])
     case login_user(user, password) do

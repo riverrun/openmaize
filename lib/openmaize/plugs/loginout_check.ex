@@ -50,7 +50,7 @@ defmodule Openmaize.LoginoutCheck do
   Check the path and handle login or logout is necessary. If the path
   is not for the login or logout page, the connection is returned.
   """
-  def call(%{path_info: path_info} = conn, opts) do
+  def call(%Plug.Conn{path_info: path_info} = conn, opts) do
     opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :storage, :cookie)}
     case Enum.at(path_info, -1) do
       "login" -> handle_login(conn, opts)
@@ -59,7 +59,7 @@ defmodule Openmaize.LoginoutCheck do
     end
   end
 
-  defp handle_login(%{method: "POST"} = conn, opts), do: Login.call(conn, opts)
+  defp handle_login(%Plug.Conn{method: "POST"} = conn, opts), do: Login.call(conn, opts)
   defp handle_login(conn, _opts) do
     conn |> assign(:current_user, nil) |> put_private(:openmaize_skip, true)
   end
