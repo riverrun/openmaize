@@ -1,7 +1,7 @@
 defmodule Openmaize.Report do
   @moduledoc """
   This module provides error and info messages and handles redirects if
-  the option `redirects` is set to true.
+  the option `redirects` is set to true, which is the default.
   """
 
   import Plug.Conn
