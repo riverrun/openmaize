@@ -18,7 +18,7 @@ defmodule Openmaize.TokenConfig do
   end
 
   def claim(:exp, _) do
-    Joken.Config.get_current_time() + 300
+    Joken.Helpers.get_current_time() + 300
   end
 
   def claim(_, _) do
@@ -26,7 +26,7 @@ defmodule Openmaize.TokenConfig do
   end
 
   def validate_claim(:exp, payload) do
-    Joken.Config.validate_time_claim(payload, :exp, "Token expired",
+    Joken.Helpers.validate_time_claim(payload, :exp, "Token expired",
     fn(expires_at, now) -> expires_at > now end)
   end
 
