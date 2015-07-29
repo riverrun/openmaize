@@ -76,6 +76,12 @@ defmodule Openmaize.Authorize do
     {:binary.match(path, @protected), path}
   end
 
+  defp full_path(conn)
+  defp full_path(%Plug.Conn{script_name: [], path_info: []}), do:
+    "/"
+  defp full_path(%Plug.Conn{script_name: script, path_info: path}), do:
+    "/" <> Enum.join(script ++ path, "/")
+
   def authorized?(:ok, conn, _), do: conn
   def authorized?({:ok, :nomatch}, conn, _), do: put_private(conn, :openmaize_skip, true)
   def authorized?({:ok, path, match}, conn, _) do
