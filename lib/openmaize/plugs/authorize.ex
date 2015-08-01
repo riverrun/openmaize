@@ -35,9 +35,6 @@ defmodule Openmaize.Authorize do
   import Openmaize.Report
   alias Openmaize.Config
 
-  @protected_roles Config.protected
-  @protected Map.keys(Config.protected)
-
   @behaviour Plug
 
   def init(opts), do: opts
@@ -63,7 +60,7 @@ defmodule Openmaize.Authorize do
   defp permitted?(_, nil), do: {:ok, :nomatch}
   defp permitted?({{0, match_len}, path}, %{role: role}) do
     match = :binary.part(path, {0, match_len})
-    if role in Map.get(@protected_roles, match) do
+    if role in Map.get(Config.protected, match) do
       {:ok, path, match}
     else
       {:error, role, "You do not have permission to view #{path}"}
@@ -72,7 +69,7 @@ defmodule Openmaize.Authorize do
   defp permitted?(_, _), do: {:ok, :nomatch}
 
   defp get_match(%Plug.Conn{request_path: path}) do
-    {:binary.match(path, @protected), path}
+    {:binary.match(path, Map.keys(Config.protected)), path}
   end
 
   def authorized?(:ok, conn, _), do: conn

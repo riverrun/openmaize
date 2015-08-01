@@ -40,8 +40,6 @@ defmodule Openmaize.IdCheck do
   alias Openmaize.Authorize
   alias Openmaize.Config
 
-  @protected Map.keys(Config.protected)
-
   @behaviour Plug
 
   def init(opts), do: opts
@@ -55,7 +53,11 @@ defmodule Openmaize.IdCheck do
     else
       opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :show, false)}
       %{path: path, match: match} = Map.take(private.openmaize_vars, [:path, :match])
-      run(conn, opts, Map.get(assigns, :current_user), path, match)
+      if (match <> "/:id") in Map.keys(Config.protected) do
+        run(conn, opts, Map.get(assigns, :current_user), path, match)
+      else
+        conn
+      end
     end
   end
   defp run(conn, {redirects, false}, data, path, match) do
@@ -65,23 +67,21 @@ defmodule Openmaize.IdCheck do
     id_noedit(data, path, match) |> Authorize.authorized?(conn, {redirects, false})
   end
 
-  defp id_noedit(data, path, match) when (match <> "/:id") in @protected do
+  defp id_noedit(data, path, match) do
     if Regex.match?(~r{#{match}/[0-9]+/}, path) do
       check_match(data, path, match, "/")
     else
       :ok
     end
   end
-  defp id_noedit(_, _, _), do: :ok
 
-  defp id_noshow(data, path, match) when (match <> "/:id") in @protected do
+  defp id_noshow(data, path, match) do
     if Regex.match?(~r{#{match}/[0-9]+(/|$)}, path) do
       check_match(data, path, match, "")
     else
       :ok
     end
   end
-  defp id_noshow(_, _, _), do: :ok
 
   defp check_match(%{id: id, role: role}, path, match, suffix) do
     if Kernel.match?({0, _}, :binary.match(path, "#{match}/#{id}#{suffix}")) do
