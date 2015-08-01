@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.0-dev
+
+* Updated to new version of Plug (replaced `full_path` with `Plug.Conn.request_path`).
+* Stopped using compile time configuration.
+
 ## v0.6.0
 
 * Added an IdCheck module (plug).
