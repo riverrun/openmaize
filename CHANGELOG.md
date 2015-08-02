@@ -2,6 +2,7 @@
 
 ## v0.7.0-dev
 
+* Reorganized authorization code so that the id_check calls the basic Authorize check before checking ids.
 * Updated to new version of Plug (replaced `full_path` with `Plug.Conn.request_path`).
 * Stopped using compile time configuration.
 

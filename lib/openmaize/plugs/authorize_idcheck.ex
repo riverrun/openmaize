@@ -1,12 +1,7 @@
 defmodule Openmaize.Authorize.IdCheck do
   @moduledoc """
-  Performs Authorize check first.
-
-
-  Plug to perform a further check based on the user id.
-
-  This plug needs to be called after Openmaize.Authorize, which makes the
-  initial authorization checks.
+  Plug to perform the basic authorization check and then a further check
+  based on the user id.
 
   For this plug to work, you need to have the start of the path
   and the start of the path + "/:id" in the protected map in the config.
@@ -57,16 +52,16 @@ defmodule Openmaize.Authorize.IdCheck do
       data = Map.get(assigns, :current_user)
       case get_match(conn) |> permitted?(data) do
         {:ok, :nomatch} -> conn
-        {:ok, path, match} -> run(conn, opts, data, path, match)
+        {:ok, path, match} -> run_check(conn, opts, data, path, match)
         {:error, message} -> authorized?(message, conn, opts)
         {:error, _, message} -> authorized?(message, conn, opts)
       end
     end
   end
-  defp run(conn, {redirects, false}, data, path, match) do
+  defp run_check(conn, {redirects, false}, data, path, match) do
     id_noshow(data, path, match) |> authorized?(conn, {redirects, false})
   end
-  defp run(conn, {redirects, true}, data, path, match) do
+  defp run_check(conn, {redirects, true}, data, path, match) do
     id_noedit(data, path, match) |> authorized?(conn, {redirects, false})
   end
 
