@@ -37,11 +37,8 @@ defmodule Openmaize.Authorize do
       conn
     else
       opts = {Keyword.get(opts, :redirects, true)}
-      run_check(conn, opts, Map.get(assigns, :current_user))
+      full_check(conn, opts, Map.get(assigns, :current_user))
     end
-  end
-  defp run_check(conn, opts, data) do
-    get_match(conn) |> permitted?(data) |> authorized?(conn, opts)
   end
 
 end

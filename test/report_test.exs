@@ -1,4 +1,4 @@
-defmodule Openmaize.Test do
+defmodule Openmaize.ReportTest do
   use ExUnit.Case
   use Plug.Test
 

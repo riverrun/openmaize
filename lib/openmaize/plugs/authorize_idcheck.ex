@@ -50,11 +50,11 @@ defmodule Openmaize.Authorize.IdCheck do
     else
       opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :show, false)}
       data = Map.get(assigns, :current_user)
-      case get_match(conn) |> permitted?(data) do
+      case part_check(conn, data) do
         {:ok, :nomatch} -> conn
         {:ok, path, match} -> run_check(conn, opts, data, path, match)
-        {:error, message} -> authorized?(message, conn, opts)
-        {:error, _, message} -> authorized?(message, conn, opts)
+        {:error, message} -> authorized?({:error, message}, conn, opts)
+        {:error, role, message} -> authorized?({:error, role, message}, conn, opts)
       end
     end
   end

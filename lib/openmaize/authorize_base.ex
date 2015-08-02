@@ -11,18 +11,30 @@ defmodule Openmaize.Authorize.Base do
   alias Openmaize.Config
 
   @doc """
-  Check if the path / resource is protected and if the user is
-  permitted to access the path.
-
-  This function returns an error if the path is protected and the
-  current user is nil, or if the current user's role is not allowed
-  to access the resource.
+  Function that performs a basic check to see if the path / resource is
+  protected and if the user is permitted to access the path.
   """
-  def permitted?({{0, _}, path}, nil) do
+  def full_check(conn, opts, data) do
+    get_match(conn) |> permitted?(data) |> authorized?(conn, opts)
+  end
+
+  @doc """
+  Function that performs the same basic check as full_check, but does
+  not call the `authorized?` function.
+
+  This can be used by Plugs that make further checks in addition to the
+  basic authorization. See `Openmaize.Authorize.IdCheck` for an example
+  of a Plug that provides finer-grained authorization.
+  """
+  def part_check(conn, data) do
+    get_match(conn) |> permitted?(data)
+  end
+
+  defp permitted?({{0, _}, path}, nil) do
     {:error, "You have to be logged in to view #{path}"}
   end
-  def permitted?(_, nil), do: {:ok, :nomatch}
-  def permitted?({{0, match_len}, path}, %{role: role}) do
+  defp permitted?(_, nil), do: {:ok, :nomatch}
+  defp permitted?({{0, match_len}, path}, %{role: role}) do
     match = :binary.part(path, {0, match_len})
     if role in Map.get(Config.protected, match) do
       {:ok, path, match}
@@ -30,12 +42,9 @@ defmodule Openmaize.Authorize.Base do
       {:error, role, "You do not have permission to view #{path}"}
     end
   end
-  def permitted?(_, _), do: {:ok, :nomatch}
+  defp permitted?(_, _), do: {:ok, :nomatch}
 
-  @doc """
-  Function to get the path and check if it is protected.
-  """
-  def get_match(%Plug.Conn{request_path: path}) do
+  defp get_match(%Plug.Conn{request_path: path}) do
     {:binary.match(path, Map.keys(Config.protected)), path}
   end
 
