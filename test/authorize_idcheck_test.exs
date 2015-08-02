@@ -1,8 +1,8 @@
-defmodule Openmaize.IdCheckTest do
+defmodule Openmaize.Authorize.IdCheckTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.IdCheck
+  alias Openmaize.Authorize.IdCheck
 
   @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
 

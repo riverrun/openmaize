@@ -1,5 +1,8 @@
-defmodule Openmaize.IdCheck do
+defmodule Openmaize.Authorize.IdCheck do
   @moduledoc """
+  Performs Authorize check first.
+
+
   Plug to perform a further check based on the user id.
 
   This plug needs to be called after Openmaize.Authorize, which makes the
@@ -37,8 +40,7 @@ defmodule Openmaize.IdCheck do
 
   """
 
-  alias Openmaize.Authorize
-  alias Openmaize.Config
+  import Openmaize.Authorize.Base
 
   @behaviour Plug
 
@@ -52,26 +54,27 @@ defmodule Openmaize.IdCheck do
       conn
     else
       opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :show, false)}
-      %{path: path, match: match} = Map.take(private.openmaize_vars, [:path, :match])
-      if (match <> "/:id") in Map.keys(Config.protected) do
-        run(conn, opts, Map.get(assigns, :current_user), path, match)
-      else
-        conn
+      data = Map.get(assigns, :current_user)
+      case get_match(conn) |> permitted?(data) do
+        {:ok, :nomatch} -> conn
+        {:ok, path, match} -> run(conn, opts, data, path, match)
+        {:error, message} -> authorized?(message, conn, opts)
+        {:error, _, message} -> authorized?(message, conn, opts)
       end
     end
   end
   defp run(conn, {redirects, false}, data, path, match) do
-    id_noshow(data, path, match) |> Authorize.authorized?(conn, {redirects, false})
+    id_noshow(data, path, match) |> authorized?(conn, {redirects, false})
   end
   defp run(conn, {redirects, true}, data, path, match) do
-    id_noedit(data, path, match) |> Authorize.authorized?(conn, {redirects, false})
+    id_noedit(data, path, match) |> authorized?(conn, {redirects, false})
   end
 
   defp id_noedit(data, path, match) do
     if Regex.match?(~r{#{match}/[0-9]+/}, path) do
       check_match(data, path, match, "/")
     else
-      :ok
+      {:ok, :nomatch}
     end
   end
 
@@ -79,13 +82,13 @@ defmodule Openmaize.IdCheck do
     if Regex.match?(~r{#{match}/[0-9]+(/|$)}, path) do
       check_match(data, path, match, "")
     else
-      :ok
+      {:ok, :nomatch}
     end
   end
 
   defp check_match(%{id: id, role: role}, path, match, suffix) do
     if Kernel.match?({0, _}, :binary.match(path, "#{match}/#{id}#{suffix}")) do
-      :ok
+      {:ok, :nomatch}
     else
       {:error, role, "You do not have permission to view #{path}"}
     end

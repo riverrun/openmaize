@@ -32,15 +32,4 @@ defmodule Openmaize.AuthorizeTest do
     assert conn.status == 200
   end
 
-  test "path and match variables stored in conn.private" do
-    conn = conn(:get, "/users/whatever")
-            |> assign(:current_user, @user)
-            |> Authorize.call([])
-            |> send_resp(200, "")
-    assert conn.status == 200
-    vars = conn.private.openmaize_vars
-    assert vars.path == "/users/whatever"
-    assert vars.match == "/users"
-  end
-
 end
