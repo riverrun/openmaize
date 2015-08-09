@@ -20,15 +20,15 @@ defmodule Openmaize.Authenticate do
 
   Call Authenticate without any options:
 
-      Plug Openmaize.Authenticate
+      plug Openmaize.Authenticate
 
   Call Authenticate and send the token in the response body:
 
-      Plug Openmaize.Authenticate, storage: nil
+      plug Openmaize.Authenticate, storage: nil
 
   Call Authenticate without redirects:
 
-      Plug Openmaize.Authenticate, redirects: false
+      plug Openmaize.Authenticate, redirects: false
 
   """
 

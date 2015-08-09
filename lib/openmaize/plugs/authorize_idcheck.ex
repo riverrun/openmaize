@@ -23,15 +23,15 @@ defmodule Openmaize.Authorize.IdCheck do
 
   Call IdCheck without any options:
 
-      Plug Openmaize.IdCheck
+      plug Openmaize.Authorize.IdCheck
 
   Call IdCheck without redirects:
 
-      Plug Openmaize.IdCheck, redirects: false
+      plug Openmaize.Authorize.IdCheck, redirects: false
 
   Call IdCheck and allow users to view the pages of other ids:
 
-      Plug Openmaize.IdCheck, show: true
+      plug Openmaize.Authorize.IdCheck, show: true
 
   """
 

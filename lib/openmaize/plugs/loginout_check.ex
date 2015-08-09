@@ -26,15 +26,15 @@ defmodule Openmaize.LoginoutCheck do
 
   Call LoginoutCheck without any options:
 
-      Plug Openmaize.LoginoutCheck
+      plug Openmaize.LoginoutCheck
 
   Call LoginoutCheck and send the token in the response body:
 
-      Plug Openmaize.LoginoutCheck, storage: nil
+      plug Openmaize.LoginoutCheck, storage: nil
 
   Call LoginoutCheck without redirects:
 
-      Plug Openmaize.LoginoutCheck, redirects: false
+      plug Openmaize.LoginoutCheck, redirects: false
 
   """
 

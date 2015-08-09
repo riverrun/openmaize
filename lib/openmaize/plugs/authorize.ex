@@ -15,11 +15,11 @@ defmodule Openmaize.Authorize do
 
   Call Authorize without any options:
 
-      Plug Openmaize.Authorize
+      plug Openmaize.Authorize
 
   Call Authorize without redirects:
 
-      Plug Openmaize.Authorize, redirects: false
+      plug Openmaize.Authorize, redirects: false
 
   """
 
