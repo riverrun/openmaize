@@ -11,11 +11,11 @@ defmodule Openmaize do
   * Openmaize.Authorize
       * checks to see if the user is authorized to access the page / resource
 
-  There is also the following plug, which can be used to perform an extra authorization check:
+  There is also the following plug, which can be used to perform an extra
+  authorization check based on user id:
 
-  * Openmaize.IdCheck
+  * Openmaize.Authorize.IdCheck
       * checks to see if the user, based on id, is authorized to access the page / resource
-      * this plug needs to be called after Openmaize.Authorize
 
   See the relevant module documentation for more details.
 

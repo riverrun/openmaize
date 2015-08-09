@@ -1,8 +1,8 @@
-defmodule Openmaize.IdCheckTest do
+defmodule Openmaize.Authorize.IdCheckTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.IdCheck
+  alias Openmaize.Authorize.IdCheck
 
   @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
 
@@ -46,6 +46,23 @@ defmodule Openmaize.IdCheckTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
     {"location", "http://www.example.com/users"}
     assert conn.status == 302
+  end
+
+  test "redirect for insufficient permissions" do
+    conn = conn(:get, "/admin")
+            |> assign(:current_user, @user)
+            |> IdCheck.call([])
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+           {"location", "http://www.example.com/users"}
+    assert conn.status == 302
+  end
+
+  test "able to view user page as user" do
+    conn = conn(:get, "/users")
+            |> assign(:current_user, @user)
+            |> IdCheck.call([])
+            |> send_resp(200, "")
+    assert conn.status == 200
   end
 
 end
