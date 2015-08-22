@@ -10,7 +10,6 @@ defmodule Openmaize.Authorize.Base do
   modules provide examples of how to write your own plugs.
   """
 
-  import Plug.Conn
   import Openmaize.Report
   alias Openmaize.Config
 
