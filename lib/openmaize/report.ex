@@ -1,7 +1,7 @@
 defmodule Openmaize.Report do
   @moduledoc """
   This module provides error and info messages and handles redirects if
-  the option `redirects` is set to true, which is the default.
+  the option `redirects` is set to true.
   """
 
   import Plug.Conn
@@ -45,7 +45,7 @@ defmodule Openmaize.Report do
   @doc """
   Return and halt the connection. Also, set the openmaize_skip value to true,
   which means that subsequent Openmaize plugs will just return the connection
-  without performing any checks.
+  without performing any further checks.
   """
   def terminate(conn), do: conn |> put_private(:openmaize_skip, true) |> halt
 

@@ -1,7 +1,7 @@
 defmodule Openmaize.Token do
   @moduledoc """
   Module to generate Json Web Tokens and send them to the user, either
-  by storing the token in a cookie or sending the token in the body of
+  by storing the token in a cookie or by sending the token in the body of
   the response.
 
   ## Json Web Tokens

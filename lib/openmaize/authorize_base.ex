@@ -1,9 +1,13 @@
 defmodule Openmaize.Authorize.Base do
   @moduledoc """
-  Base module to handle authorization.
+  Base module to handle authorization, which is based on user role.
 
   This module provides functions that are called by the
-  various authorization `Plugs`.
+  various authorization plugs.
+
+  You can also define your own plugs, which can call the functions in
+  this module. The `Openmaize.Authorize` and `Openmaize.Authorize.IdCheck`
+  modules provide examples of how to write your own plugs.
   """
 
   import Plug.Conn
@@ -12,7 +16,7 @@ defmodule Openmaize.Authorize.Base do
 
   @doc """
   Function that performs a basic check to see if the path / resource is
-  protected and if the user is permitted to access the path.
+  protected and if the user, based on role, is permitted to access the path.
   """
   def full_check(conn, opts, data) do
     get_match(conn) |> permitted?(data) |> authorized?(conn, opts)
@@ -22,9 +26,9 @@ defmodule Openmaize.Authorize.Base do
   Function that performs the same basic check as full_check, but does
   not call the `authorized?` function.
 
-  This can be used by Plugs that make further checks in addition to the
+  This can be used by plugs that make further checks in addition to the
   basic authorization. See `Openmaize.Authorize.IdCheck` for an example
-  of a Plug that provides finer-grained authorization.
+  of a plug that provides finer-grained authorization.
   """
   def part_check(conn, data) do
     get_match(conn) |> permitted?(data)
@@ -50,8 +54,15 @@ defmodule Openmaize.Authorize.Base do
 
   @doc """
   Final step in the authorization process.
+
+  If the connection is unprotected or if the user is allowed to access the
+  path / resource, the connection, `conn`, is returned.
+
+  If there is an error, then an error is returned with an error message.
+  If the redirects option is set to true, then the user is redirected to a
+  certain page (which is specified in the config).
   """
-  def authorized?({:ok, :nomatch}, conn, _), do: put_private(conn, :openmaize_skip, true)
+  def authorized?({:ok, :nomatch}, conn, _), do: conn
   def authorized?({:ok, _path, _match}, conn, _), do: conn
   def authorized?({:error, message}, conn, {false, _}), do: send_error(conn, 401, message)
   def authorized?({:error, message}, conn, _), do: handle_error(conn, message)

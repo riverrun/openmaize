@@ -17,7 +17,7 @@ defmodule Openmaize.Login do
 
   If there is no error, a token will be created and sent to the user so that
   the user can make further requests without logging in again.
-  
+ 
   If the option `redirects` is not set, or set to true, the user will then
   be redirected to the main page / user page. If there is an error, the
   user will be redirected to the login page.
