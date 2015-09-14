@@ -7,7 +7,7 @@ defmodule Openmaize.Mixfile do
 
   def project do
     [app: :openmaize,
-      version: "0.7.2",
+      version: "0.7.4",
       elixir: "~> 1.0",
       name: "Openmaize",
       description: @description,
@@ -24,12 +24,12 @@ defmodule Openmaize.Mixfile do
     [
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.0"},
-      {:ecto, "~> 0.16"},
+      {:ecto, "~> 1.0"},
       {:comeonin, "~> 1.1"},
       {:joken, "~> 0.15"},
-      {:poison, "~> 1.4"},
+      {:poison, "~> 1.5"},
       {:earmark, "~> 0.1", only: :dev},
-      {:ex_doc,  "~> 0.7", only: :dev}
+      {:ex_doc,  "~> 0.9", only: :dev}
     ]
   end
 
