@@ -33,8 +33,8 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
+  import Openmaize.Token
   import Openmaize.Report
-  alias Openmaize.Token
 
   @behaviour Plug
 
@@ -74,7 +74,7 @@ defmodule Openmaize.Authenticate do
 
   defp check_token("Bearer " <> token, conn, opts), do: check_token(token, conn, opts)
   defp check_token(token, conn, opts) when is_binary(token) do
-    case Token.decode(token) do
+    case decode(token) do
       {:ok, data} -> assign(conn, :current_user, data)
       {:error, message} -> authenticate_error(conn, message, opts)
     end

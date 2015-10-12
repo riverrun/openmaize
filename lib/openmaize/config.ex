@@ -85,7 +85,7 @@ defmodule Openmaize.Config do
   If there is no role, the user will be redirected to the home page.
   """
   def redirect_pages do
-    default = %{"admin" => "/admin", nil => "/"}
+    default = %{"admin" => "/admin", "user" => "/users", nil => "/"}
     Application.get_env(:openmaize, :redirect_pages, default)
   end
 
@@ -102,8 +102,7 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The secret key for use with Joken (which encodes and decodes the
-  tokens).
+  The secret key used to encode and decode the tokens.
 
   In production, the default key should be changed.
   """

@@ -6,7 +6,17 @@ defmodule Openmaize.Authorize.IdCheckTest do
 
   @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
 
-  def call(conn, path, show) do
+  setup_all do
+    protected = %{"/admin" => ["admin"], "/users" => ["admin", "user"], "/users/:id" => ["user"]}
+    Application.put_env(:openmaize, :protected, protected)
+
+    on_exit fn ->
+      Application.delete_env(:openmaize, :protected)
+    end
+    :ok
+  end
+
+  def call(conn, path, show) do # need to add /users/:id to protected map in config
     assign(conn, :current_user, @user)
     |> put_private(:openmaize_vars, %{path: path, match: "/users"})
     |> IdCheck.call([show: show])

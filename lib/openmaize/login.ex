@@ -8,8 +8,8 @@ defmodule Openmaize.Login do
   """
 
   import Ecto.Query
-  import Openmaize.Report
   import Openmaize.Token
+  import Openmaize.Report
   alias Openmaize.Config
 
   @doc """

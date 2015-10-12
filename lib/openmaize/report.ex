@@ -6,7 +6,6 @@ defmodule Openmaize.Report do
 
   import Plug.Conn
   alias Openmaize.Config
-  alias Openmaize.TokenConfig
 
   @doc """
   Redirect the connection to the login page with an error message.
@@ -39,7 +38,7 @@ defmodule Openmaize.Report do
   This function will be used if the `redirects` option is set to false.
   """
   def send_error(conn, status, message) do
-    send_resp(conn, status, TokenConfig.encode(%{"error" => message})) |> terminate
+    send_resp(conn, status, Poison.encode!(%{"error" => message})) |> terminate
   end
 
   @doc """

@@ -29,8 +29,8 @@ defmodule Openmaize.Token do
 
   import Plug.Conn
   import Openmaize.Report
+  import Openmaize.Token.Base
   alias Openmaize.Config
-  alias Openmaize.TokenConfig
 
   @token_info Config.token_info
 
@@ -38,14 +38,14 @@ defmodule Openmaize.Token do
   Encode JWT.
   """
   def encode(payload) do
-    Joken.Token.encode(TokenConfig, payload)
+    {:ok, encode_token(payload)}
   end
 
   @doc """
   Decode JWT.
   """
   def decode(token) do
-    Joken.Token.decode(TokenConfig, token)
+    decode_token(token)
   end
 
   @doc """
@@ -73,12 +73,4 @@ defmodule Openmaize.Token do
     |> encode
   end
 
-  defp token_expiry_secs do
-    current_time + Config.token_validity
-  end
-
-  defp current_time do
-    {mega, secs, _} = :os.timestamp
-    mega * 1000000 + secs
-  end
 end
