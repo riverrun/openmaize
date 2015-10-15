@@ -2,6 +2,8 @@ defmodule Openmaize.Token.Base do
   @moduledoc """
   """
 
+  use Openmaize.Utils
+
   import Base
   alias Openmaize.Config
 
@@ -11,12 +13,12 @@ defmodule Openmaize.Token.Base do
     data <> "." <> (get_mac(key, data) |> urlenc64)
   end
 
-  defp get_mac(key, data) do
-    :crypto.hmac(:sha512, key, data)
-  end
-
   def decode_token(token, key \\ Config.secret_key) do
     :binary.split(token, ".", [:global]) |> check_all(key)
+  end
+
+  defp get_mac(key, data) do
+    :crypto.hmac(:sha512, key, data)
   end
 
   defp from_map(input) do
@@ -39,35 +41,31 @@ defmodule Openmaize.Token.Base do
 
   defp check_all([enc_header, enc_payload, sign], key) do
     Enum.map([enc_header, enc_payload], &to_map/1)
-    |> check_header
-    |> check_exp
-    |> check_sign(sign, key, enc_header, enc_payload)
+    <|> check_header
+    <|> check_sign(sign, key, enc_header, enc_payload)
+    <|> check_exp
   end
 
-  defp check_header([header, payload]) do
-    case header do
-      %{typ: "JWT", alg: "HS512"} -> {:ok, payload}
-      _ -> {:error, "Incorrect header"}
+  defp check_header([%{alg: alg, typ: "JWT"} = header, payload]) do
+    case alg do
+      "HS512" -> {:ok, payload}
+      other -> {:error, "The #{other} algorithm is not supported."}
     end
   end
-
-  defp check_exp({:ok, payload}) do
-    if Map.get(payload, :exp) > current_time do
-      {:ok, payload}
-    else
-      {:error, "The token has expired"}
-    end
-  end
-  defp check_exp({:error, message}), do: {:error, message}
+  defp check_header(_, _), do: {:error, "Invalid header."}
 
   defp check_sign({:ok, payload}, sign, key, enc_header, enc_payload) do
     if sign |> urldec64 == get_mac(key, enc_header <> "." <> enc_payload) do
       {:ok, payload}
     else
-      {:error, "Invalid token"}
+      {:error, "Invalid token."}
     end
   end
-  defp check_sign({:error, message}, _, _, _, _), do: {:error, message}
+
+  defp check_exp({:ok, %{exp: exp} = payload}) do
+    if exp > current_time, do: {:ok, payload}, else: {:error, "The token has expired."}
+  end
+  defp check_exp({:ok, payload}), do: {:ok, payload}
 
   def token_expiry_secs do
     current_time + Config.token_validity
