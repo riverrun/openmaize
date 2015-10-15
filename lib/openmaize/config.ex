@@ -85,7 +85,7 @@ defmodule Openmaize.Config do
   If there is no role, the user will be redirected to the home page.
   """
   def redirect_pages do
-    default = %{"admin" => "/admin", "user" => "/users", nil => "/"}
+    default = %{"admin" => "/admin", nil => "/"}
     Application.get_env(:openmaize, :redirect_pages, default)
   end
 
@@ -114,6 +114,8 @@ defmodule Openmaize.Config do
   Additional information that can be added to the token. By default,
   the token will have an id, name and role.
 
+  ADD SOME INFO ABOUT iat, nbf and exp
+
   This value takes a list of atoms.
   """
   def token_info do
@@ -124,7 +126,7 @@ defmodule Openmaize.Config do
   The number of minutes that you want the token to be valid for.
   """
   def token_validity do
-    Application.get_env(:openmaize, :token_validity_in_minutes, 24 * 60) * 60
+    Application.get_env(:openmaize, :token_validity, 24 * 60) * 60
   end
 
 end

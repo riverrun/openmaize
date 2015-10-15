@@ -46,13 +46,13 @@ defmodule Openmaize.Token.Base do
     <|> check_exp
   end
 
-  defp check_header([%{alg: alg, typ: "JWT"} = header, payload]) do
+  defp check_header([%{alg: alg, typ: "JWT"}, payload]) do
     case alg do
       "HS512" -> {:ok, payload}
       other -> {:error, "The #{other} algorithm is not supported."}
     end
   end
-  defp check_header(_, _), do: {:error, "Invalid header."}
+  defp check_header(_), do: {:error, "Invalid header."}
 
   defp check_sign({:ok, payload}, sign, key, enc_header, enc_payload) do
     if sign |> urldec64 == get_mac(key, enc_header <> "." <> enc_payload) do
@@ -68,7 +68,7 @@ defmodule Openmaize.Token.Base do
   defp check_exp({:ok, payload}), do: {:ok, payload}
 
   def token_expiry_secs do
-    current_time + Config.token_validity
+    current_time + Config.token_validity * 60
   end
 
   defp current_time do
