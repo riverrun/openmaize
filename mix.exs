@@ -7,7 +7,7 @@ defmodule Openmaize.Mixfile do
 
   def project do
     [app: :openmaize,
-      version: "0.7.5",
+      version: "0.8.0",
       elixir: "~> 1.0",
       name: "Openmaize",
       description: @description,
@@ -17,7 +17,8 @@ defmodule Openmaize.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :cowboy, :plug, :ecto]]
+    [mod: {Openmaize, []},
+     applications: [:logger, :cowboy, :plug, :ecto, :comeonin]]
   end
 
   defp deps do
@@ -25,7 +26,7 @@ defmodule Openmaize.Mixfile do
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.0"},
       {:ecto, "~> 1.0"},
-      {:comeonin, "~> 1.2"},
+      {:comeonin, "~> 1.5"},
       {:poison, "~> 1.5"},
       {:earmark, "~> 0.1", only: :dev},
       {:ex_doc,  "~> 0.10", only: :dev}

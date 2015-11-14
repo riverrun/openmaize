@@ -24,4 +24,12 @@ defmodule Openmaize do
 
   """
 
+  use Application
+
+  @doc false
+  def start(_type, _args) do
+
+    Openmaize.Supervisor.start_link
+  end
+
 end

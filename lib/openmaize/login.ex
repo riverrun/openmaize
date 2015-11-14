@@ -17,7 +17,7 @@ defmodule Openmaize.Login do
 
   If there is no error, a token will be created and sent to the user so that
   the user can make further requests without logging in again.
- 
+
   If the option `redirects` is not set, or set to true, the user will then
   be redirected to the main page / user page. If there is an error, the
   user will be redirected to the login page.
@@ -25,20 +25,20 @@ defmodule Openmaize.Login do
   If `redirects` is set to false, then obviously there will be no redirects.
 
   """
-  def call(%Plug.Conn{params: params} = conn, {false, _}) do
+  def call(%Plug.Conn{params: params} = conn, {false, _, token_opts}) do
     %{"name" => user, "password" => password} =
     Map.take(params, ["name", "password"])
     case login_user(user, password) do
       false -> send_error(conn, 401, "Invalid credentials")
-      user -> add_token(conn, user, nil)
+      user -> add_token(conn, user, token_opts, nil)
     end
   end
-  def call(%Plug.Conn{params: params} = conn, {_, storage}) do
+  def call(%Plug.Conn{params: params} = conn, {_, storage, token_opts}) do
     %{"name" => user, "password" => password} =
     Map.take(params["user"], ["name", "password"])
     case login_user(user, password) do
       false -> handle_error(conn, "Invalid credentials")
-      user -> add_token(conn, user, storage)
+      user -> add_token(conn, user, token_opts, storage)
     end
   end
 

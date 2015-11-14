@@ -29,24 +29,7 @@ defmodule Openmaize.Token do
 
   import Plug.Conn
   import Openmaize.Report
-  import Openmaize.Token.Base
-  alias Openmaize.Config
-
-  @token_info Config.token_info
-
-  @doc """
-  Encode JWT.
-  """
-  def encode(payload) do
-    {:ok, encode_token(payload)}
-  end
-
-  @doc """
-  Decode JWT.
-  """
-  def decode(token) do
-    decode_token(token)
-  end
+  import Openmaize.Token.Create
 
   @doc """
   Generate token based on the user information and the `token_info`
@@ -55,22 +38,16 @@ defmodule Openmaize.Token do
   The token is then either stored in a cookie or sent in the body of the
   response.
   """
-  def add_token(conn, user, storage) when storage == :cookie do
+  def add_token(conn, user, opts, storage) when storage == :cookie do
     role = Map.get(user, :role)
-    {:ok, token} = generate_token(user)
+    {:ok, token} = generate_token(user, opts)
     put_resp_cookie(conn, "access_token", token, [http_only: true])
     |> handle_info(role, "You have been logged in")
   end
-  def add_token(conn, user, _storage) do
-    {:ok, token} = generate_token(user)
+  def add_token(conn, user, opts, _storage) do
+    {:ok, token} = generate_token(user, opts)
     token_string = ~s({"access_token": #{token}})
     send_resp(conn, 200, token_string) |> terminate
-  end
-
-  defp generate_token(user) do
-    Map.take(user, @token_info)
-    |> Map.merge(%{exp: token_expiry_secs})
-    |> encode
   end
 
 end

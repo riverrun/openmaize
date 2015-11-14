@@ -33,7 +33,7 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
-  import Openmaize.Token
+  import Openmaize.Token.Verify
   import Openmaize.Report
 
   @behaviour Plug

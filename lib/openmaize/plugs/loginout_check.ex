@@ -36,6 +36,9 @@ defmodule Openmaize.LoginoutCheck do
 
       plug Openmaize.LoginoutCheck, redirects: false
 
+
+  ADDED TOKEN OPTS -- nbf_delay and token_validity
+
   """
 
   import Plug.Conn
@@ -51,7 +54,10 @@ defmodule Openmaize.LoginoutCheck do
   is not for the login or logout page, the connection is returned.
   """
   def call(%Plug.Conn{path_info: path_info} = conn, opts) do
-    opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :storage, :cookie)}
+    opts = {Keyword.get(opts, :redirects, true),
+            Keyword.get(opts, :storage, :cookie),
+            {Keyword.get(opts, :nbf_delay, 0),
+            Keyword.get(opts, :token_validity, 86400)}}
     case Enum.at(path_info, -1) do
       "login" -> handle_login(conn, opts)
       "logout" -> handle_logout(conn, opts)

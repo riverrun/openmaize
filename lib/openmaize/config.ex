@@ -8,12 +8,10 @@ defmodule Openmaize.Config do
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
   | crypto_mod         | atom    | :bcrypt  |
+  | token_alg          | atom    | :sha512  |
   | login_dir          | string  | "/admin" |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
   | protected          | list    | %{"/admin" => ["admin"]} |
-  | secret_key         | string  | "you will never guess" |
-  | token_info         | list    | [:id, :name, :role]    |
-  | token_validity     | integer | 24 * 60  |
 
   The values for user_model and repo should be module names.
   If, for example, your app is called Coolapp and your user
@@ -29,12 +27,10 @@ defmodule Openmaize.Config do
         user_model: Coolapp.User,
         repo: Coolapp.Repo,
         crypto_mod: :bcrypt,
+        token_alg: :sha256,
         login_dir: "admin",
         redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
         protected: %{"/admin" => ["admin"], "/users" => ["admin", "user"], "/users/:id" => ["user"]}
-        secret_key: "so hard to guess",
-        token_info: [:email, :shoesize],
-        token_validity: 7 * 24 * 60
 
   """
 
@@ -70,6 +66,21 @@ defmodule Openmaize.Config do
   end
 
   @doc """
+  The algorithm used to sign the token.
+
+  The default value is :sha512, and :sha256 is also supported.
+  """
+  def get_token_alg do
+    case token_alg do
+      :sha256 -> {"HS256", :sha256}
+      _ -> {"HS512", :sha512}
+    end
+  end
+  defp token_alg do
+    Application.get_env(:openmaize, :token_alg, :sha512)
+  end
+
+  @doc """
   The login directory. For example, the default value of "/admin" means
   that the login page is "/admin/login".
   """
@@ -99,34 +110,6 @@ defmodule Openmaize.Config do
   def protected do
     default = %{"/admin" => ["admin"]}
     Application.get_env(:openmaize, :protected, default)
-  end
-
-  @doc """
-  The secret key used to encode and decode the tokens.
-
-  In production, the default key should be changed.
-  """
-  def secret_key do
-    Application.get_env(:openmaize, :secret_key, "you will never guess")
-  end
-
-  @doc """
-  Additional information that can be added to the token. By default,
-  the token will have an id, name and role.
-
-  ADD SOME INFO ABOUT iat, nbf and exp
-
-  This value takes a list of atoms.
-  """
-  def token_info do
-    Application.get_env(:openmaize, :token_info, []) ++ [:id, :name, :role]
-  end
-
-  @doc """
-  The number of minutes that you want the token to be valid for.
-  """
-  def token_validity do
-    Application.get_env(:openmaize, :token_validity, 24 * 60) * 60
   end
 
 end
