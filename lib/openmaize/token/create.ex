@@ -6,9 +6,6 @@ defmodule Openmaize.Token.Create do
   import Openmaize.Token.Tools
   alias Openmaize.Config
 
-  @header_alg Config.get_token_alg |> elem(0)
-  @encode_alg Config.get_token_alg |> elem(1)
-
   @doc """
   Generate token.
   """
@@ -16,7 +13,7 @@ defmodule Openmaize.Token.Create do
     nbf = get_nbf(nbf_delay)
     Map.take(user, [:id, :name, :role])
     |> Map.merge(%{nbf: nbf, exp: get_expiry(nbf, token_validity)})
-    |> encode
+    |> encode(Config.get_token_alg)
   end
 
   defp get_nbf(nbf_delay) when is_integer(nbf_delay) do
@@ -29,10 +26,10 @@ defmodule Openmaize.Token.Create do
   end
   defp get_expiry(_, _), do: raise ArgumentError, message: "exp should be an integer."
 
-  defp encode(payload) do
-    data = (%{typ: "JWT", alg: @header_alg, kid: current_kid} |> from_map) <>
+  defp encode(payload, {header_alg, encode_alg}) do
+    data = (%{typ: "JWT", alg: header_alg, kid: current_kid} |> from_map) <>
     "." <> (payload |> from_map)
-    {:ok, data <> "." <> (get_mac(data, @encode_alg, current_kid) |> urlenc64)}
+    {:ok, data <> "." <> (get_mac(data, encode_alg, current_kid) |> urlenc64)}
   end
 
   defp from_map(input) do
