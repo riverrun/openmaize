@@ -15,7 +15,7 @@ defmodule Openmaize.Token do
   token as the information is not encrypted -- it is just encoded.
 
   The JWTs need to be stored somewhere, either in cookies or sessionStorage
-  (or localStorage), so that they can be used in subsequent requests. 
+  (or localStorage), so that they can be used in subsequent requests.
   If you want to store the token in sessionStorage, you will need to add
   the token to sessionStorage with the front-end framework you are using
   and add the token to the request headers for each request.

@@ -5,20 +5,19 @@ defmodule Openmaize.Token.Verify do
   use ErrorPipe
   import Base
   import Openmaize.Token.Tools
-  alias Openmaize.Config
 
   @doc """
   Decode JWT.
   """
   def decode(token) do
-    :binary.split(token, ".", [:global]) |> verify_token(Config.secret_key) # key to kid
+    :binary.split(token, ".", [:global]) |> verify_token
   end
 
-  def verify_token([enc_header, enc_payload, sign], key) do
+  def verify_token([enc_header, enc_payload, sign]) do
     error_pipe(
       Enum.map([enc_header, enc_payload], &to_map/1)
       |> check_header
-      |> check_sign(sign, key, enc_header, enc_payload)
+      |> check_sign(sign, enc_header, enc_payload)
       |> check_nbf
       |> check_exp)
   end
@@ -43,7 +42,7 @@ defmodule Openmaize.Token.Verify do
   end
   defp check_header(_), do: {:error, "Invalid header."}
 
-  defp check_sign({:ok, payload, alg, kid}, sign, key, enc_header, enc_payload) do
+  defp check_sign({:ok, payload, alg, kid}, sign, enc_header, enc_payload) do
     if sign |> urldec64 == get_mac(enc_header <> "." <> enc_payload, alg, kid) do
       {:ok, payload}
     else
@@ -52,13 +51,13 @@ defmodule Openmaize.Token.Verify do
   end
 
   defp check_nbf({:ok, %{nbf: nbf} = payload}) do
-    nbf > current_time && {:ok, payload} || {:error, "The token cannot be used yet."}
+    nbf < current_time && {:ok, Map.delete(payload, :nbf)} || {:error, "The token cannot be used yet."}
   end
-  defp check_nbf({:ok, payload}), do: {:error, "There is no nbf value in the token."}
+  defp check_nbf({:ok, _payload}), do: {:error, "There is no nbf value in the token."}
 
   defp check_exp({:ok, %{exp: exp} = payload}) do
-    exp < current_time && {:ok, payload} || {:error, "The token has expired."}
+    exp > current_time && {:ok, Map.delete(payload, :exp)} || {:error, "The token has expired."}
   end
-  defp check_exp({:ok, payload}), do: {:error, "There is no exp value in the token."}
+  defp check_exp({:ok, _payload}), do: {:error, "There is no exp value in the token."}
 
 end

@@ -37,7 +37,7 @@ defmodule Openmaize.LoginoutCheck do
       plug Openmaize.LoginoutCheck, redirects: false
 
 
-  ADDED TOKEN OPTS -- nbf_delay and token_validity
+  ADDED TOKEN OPTS -- token_validity
 
   """
 
@@ -56,8 +56,7 @@ defmodule Openmaize.LoginoutCheck do
   def call(%Plug.Conn{path_info: path_info} = conn, opts) do
     opts = {Keyword.get(opts, :redirects, true),
             Keyword.get(opts, :storage, :cookie),
-            {Keyword.get(opts, :nbf_delay, 0),
-            Keyword.get(opts, :token_validity, 86400)}}
+            {0, Keyword.get(opts, :token_validity, 86400)}}
     case Enum.at(path_info, -1) do
       "login" -> handle_login(conn, opts)
       "logout" -> handle_logout(conn, opts)
