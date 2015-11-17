@@ -12,59 +12,73 @@ defmodule Openmaize.AuthenticateTest do
     {:ok, exp_token} = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
     |> generate_token({-10, 0})
 
-    {:ok, %{user_token: user_token, invalid_token: user_token <> "a", exp_token: exp_token}}
+    Application.put_env(:openmaize, :token_alg, :sha256)
+    {:ok, user_256_token} = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
+    |> generate_token({-10, 86400})
+    Application.delete_env(:openmaize, :token_alg)
+
+    {:ok, %{user_token: user_token, exp_token: exp_token, user_256_token: user_256_token}}
   end
 
-  def call(conn, opts \\ []) do
-    conn |> Authenticate.call(opts) |> send_resp(200, "")
+  def call(url, token, storage) when storage == :cookie do
+    conn(:get, url) |> put_req_cookie("access_token", token) |> Authenticate.call([])
+  end
+
+  def call(url, token, _) do
+    conn(:get, url) |> put_req_header("authorization", "Bearer #{token}")
+    |> Authenticate.call([storage: nil])
   end
 
   test "redirect for expired token", %{exp_token: exp_token} do
-    conn = conn(:get, "/admin")
-    |> put_req_cookie("access_token", exp_token)
-    |> Authenticate.call([])
+    conn = call("/admin", exp_token, :cookie)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "http://www.example.com/admin/login"}
     assert conn.status == 302
   end
 
   test "correct token stored in cookie", %{user_token: user_token} do
-    conn = conn(:get, "/")
-    |> put_req_cookie("access_token", user_token)
-    |> call
+    conn = call("/", user_token, :cookie) |> send_resp(200, "")
     assert conn.status == 200
     assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
   end
 
-  test "redirect for invalid token stored in cookie", %{invalid_token: invalid_token} do
-    conn = conn(:get, "/")
-    |> put_req_cookie("access_token", invalid_token)
-    |> Authenticate.call([])
+  test "redirect for invalid token stored in cookie", %{user_token: user_token} do
+    conn = call("/", user_token <> "a", :cookie)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "http://www.example.com/admin/login"}
     assert conn.status == 302
   end
 
   test "correct token stored in sessionStorage", %{user_token: user_token} do
-    conn = conn(:get, "/")
-    |> put_req_header("authorization", "Bearer #{user_token}")
-    |> call([storage: nil])
+    conn = call("/", user_token, :session) |> send_resp(200, "")
     assert conn.status == 200
     assert conn.assigns ==  %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
   end
 
-  test "redirect for invalid token stored in sessionStorage", %{invalid_token: invalid_token} do
-    conn = conn(:get, "/")
-    |> put_req_header("authorization", "Bearer #{invalid_token}")
-    |> Authenticate.call([storage: nil])
+  test "redirect for invalid token stored in sessionStorage", %{user_token: user_token} do
+    conn = call("/", user_token <> "a", :session)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "http://www.example.com/admin/login"}
     assert conn.status == 302
   end
 
   test "missing token" do
-    conn = conn(:get, "/") |> call
+    conn = conn(:get, "/") |> Authenticate.call([]) |> send_resp(200, "")
     assert conn.status == 200
     assert conn.assigns == %{current_user: nil}
   end
+
+  test "correct token using sha256", %{user_256_token: user_256_token} do
+    conn = call("/", user_256_token, :cookie) |> send_resp(200, "")
+    assert conn.status == 200
+    assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
+  end
+
+  test "redirect for invalid token using sha256", %{user_256_token: user_256_token} do
+    conn = call("/", user_256_token <> "a", :cookie)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "http://www.example.com/admin/login"}
+    assert conn.status == 302
+  end
+
 end
