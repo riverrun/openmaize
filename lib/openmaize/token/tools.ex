@@ -2,22 +2,23 @@ defmodule Openmaize.Token.Tools do
   @moduledoc """
   """
 
-  alias Openmaize.Config
+  alias Openmaize.Keymanager
 
   def get_mac(data, alg, kid) do
     :crypto.hmac(alg, get_key(kid), data)
   end
 
-  def get_key(_kid) do
-    "My hovercraft is full of eels!"
+  def get_key(kid) do
+    #"My hovercraft is full of eels!"
+    Keymanager.get_key(kid)
   end
 
   def current_kid do
-    "1"
+    Keymanager.get_current_kid
   end
 
   def current_time do
-    {mega, secs, _} = :os.timestamp
-    mega * 1000000 + secs
+    {mega, secs, micro} = :os.timestamp
+    trunc(((mega * 1000000 + secs) * 1000) + (micro / 1000))
   end
 end
