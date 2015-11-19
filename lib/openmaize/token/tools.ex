@@ -9,7 +9,6 @@ defmodule Openmaize.Token.Tools do
   end
 
   def get_key(kid) do
-    #"My hovercraft is full of eels!"
     Keymanager.get_key(kid)
   end
 
