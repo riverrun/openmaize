@@ -43,7 +43,7 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "redirect for invalid token stored in cookie", %{user_token: user_token} do
-    conn = call("/", user_token <> "a", :cookie)
+    conn = call("/users", user_token <> "a", :cookie)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "http://www.example.com/admin/login"}
     assert conn.status == 302
@@ -56,9 +56,16 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "redirect for invalid token stored in sessionStorage", %{user_token: user_token} do
-    conn = call("/", user_token <> "a", :session)
+    conn = call("/users", user_token <> "a", :session)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "http://www.example.com/admin/login"}
+    assert conn.status == 302
+  end
+
+  test "redirect to home page for invalid token for unprotected page", %{user_token: user_token} do
+    conn = call("/", user_token <> "a", :cookie)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "http://www.example.com/"}
     assert conn.status == 302
   end
 
@@ -75,7 +82,7 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "redirect for invalid token using sha256", %{user_256_token: user_256_token} do
-    conn = call("/", user_256_token <> "a", :cookie)
+    conn = call("/users", user_256_token <> "a", :cookie)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "http://www.example.com/admin/login"}
     assert conn.status == 302
