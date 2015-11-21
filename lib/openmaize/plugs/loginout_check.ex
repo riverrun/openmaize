@@ -15,12 +15,14 @@ defmodule Openmaize.LoginoutCheck do
   the cookie is deleted. If `redirects` is set to true, the user is then
   redirected to the home page.
 
-  There are two options:
+  There are three options:
   * redirects
       * if true, which is the default, redirect on login / logout
   * storage
       * storage method for the token -- the default is :cookie
       * if redirects is set to false, storage is automatically set to nil
+  * token_validity
+      * length of validity of token -- the default is 86400 seconds (one day)
 
   ## Examples
 
@@ -36,8 +38,9 @@ defmodule Openmaize.LoginoutCheck do
 
       plug Openmaize.LoginoutCheck, redirects: false
 
+  Call LoginoutCheck and set the token validity to two hours:
 
-  ADDED TOKEN OPTS -- token_validity
+      plug Openmaize.LoginoutCheck, token_validity: 7200
 
   """
 

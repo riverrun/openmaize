@@ -62,11 +62,10 @@ defmodule Openmaize.AuthenticateTest do
     assert conn.status == 302
   end
 
-  test "redirect to home page for invalid token for unprotected page", %{user_token: user_token} do
-    conn = call("/", user_token <> "a", :cookie)
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "http://www.example.com/"}
-    assert conn.status == 302
+  test "invalid token for unprotected page", %{user_token: user_token} do
+    conn = call("/", user_token <> "a", :cookie) |> send_resp(200, "")
+    assert conn.status == 200
+    assert conn.assigns ==  %{current_user: nil}
   end
 
   test "missing token" do

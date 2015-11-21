@@ -35,6 +35,7 @@ defmodule Openmaize.Authenticate do
   import Plug.Conn
   import Openmaize.Token.Verify
   import Openmaize.Report
+  alias Openmaize.Config
 
   @behaviour Plug
 
@@ -86,5 +87,10 @@ defmodule Openmaize.Authenticate do
   defp authenticate_error(conn, message, {false, _}) do
     send_error(conn, 401, message)
   end
-  defp authenticate_error(conn, message, _), do: handle_error(conn, message)
+  defp authenticate_error(%Plug.Conn{request_path: path} = conn, message, _) do
+    case :binary.match(path, Map.keys(Config.protected)) do
+      {0, _} -> handle_error(conn, message)
+      _ -> assign(conn, :current_user, nil)
+    end
+  end
 end

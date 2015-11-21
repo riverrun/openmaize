@@ -8,17 +8,10 @@ defmodule Openmaize.Report do
   alias Openmaize.Config
 
   @doc """
-  Redirect the connection with an error message.
-
-  If the path is protected, the connection will be redirected to the login
-  page. If the path is not protected, it will be redirected to the home
-  page.
+  Redirect the connection to the login page with an error message.
   """
-  def handle_error(%Plug.Conn{request_path: path} = conn, message) do
-    case :binary.match(path, Map.keys(Config.protected)) do
-      {0, _} -> redirect_to_login(conn, %{"error" => message})
-      _ -> redirect_to(conn, "/", %{"error" => message})
-    end
+  def handle_error(conn, message) do
+    redirect_to_login(conn, %{"error" => message})
   end
 
   @doc """
