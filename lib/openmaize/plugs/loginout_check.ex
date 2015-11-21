@@ -22,7 +22,7 @@ defmodule Openmaize.LoginoutCheck do
       * storage method for the token -- the default is :cookie
       * if redirects is set to false, storage is automatically set to nil
   * token_validity
-      * length of validity of token -- the default is 86400 seconds (one day)
+      * length of validity of token (in minutes) -- the default is 1440 minutes (one day)
 
   ## Examples
 
@@ -40,7 +40,7 @@ defmodule Openmaize.LoginoutCheck do
 
   Call LoginoutCheck and set the token validity to two hours:
 
-      plug Openmaize.LoginoutCheck, token_validity: 7200
+      plug Openmaize.LoginoutCheck, token_validity: 120
 
   """
 
@@ -59,7 +59,7 @@ defmodule Openmaize.LoginoutCheck do
   def call(%Plug.Conn{path_info: path_info} = conn, opts) do
     opts = {Keyword.get(opts, :redirects, true),
             Keyword.get(opts, :storage, :cookie),
-            {0, Keyword.get(opts, :token_validity, 86400)}}
+            {0, Keyword.get(opts, :token_validity, 1440)}}
     case Enum.at(path_info, -1) do
       "login" -> handle_login(conn, opts)
       "logout" -> handle_logout(conn, opts)

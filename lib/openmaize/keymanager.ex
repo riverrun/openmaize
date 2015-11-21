@@ -1,7 +1,8 @@
 defmodule Openmaize.Keymanager do
   use GenServer
 
-  @rotate_time 4 * 7 * 86_400_000
+  @oneday 86_400_000
+  @rotate_time 4 * 7 * @oneday
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: Keymanager)
