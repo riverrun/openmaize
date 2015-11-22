@@ -53,7 +53,7 @@ defmodule Openmaize.LoginoutCheck do
   def init(opts), do: opts
 
   @doc """
-  Check the path and handle login or logout is necessary. If the path
+  Check the path and handle login or logout if necessary. If the path
   is not for the login or logout page, the connection is returned.
   """
   def call(%Plug.Conn{path_info: path_info} = conn, opts) do

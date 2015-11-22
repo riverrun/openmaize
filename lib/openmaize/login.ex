@@ -22,7 +22,7 @@ defmodule Openmaize.Login do
   be redirected to the main page / user page. If there is an error, the
   user will be redirected to the login page.
 
-  If `redirects` is set to false, then obviously there will be no redirects.
+  If `redirects` is set to false, then there will be no redirects.
 
   """
   def call(%Plug.Conn{params: params} = conn, {false, _, token_opts}) do

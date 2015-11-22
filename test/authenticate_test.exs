@@ -50,13 +50,13 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "correct token stored in sessionStorage", %{user_token: user_token} do
-    conn = call("/", user_token, :session) |> send_resp(200, "")
+    conn = call("/", user_token, nil) |> send_resp(200, "")
     assert conn.status == 200
     assert conn.assigns ==  %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
   end
 
   test "redirect for invalid token stored in sessionStorage", %{user_token: user_token} do
-    conn = call("/users", user_token <> "a", :session)
+    conn = call("/users", user_token <> "a", nil)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "http://www.example.com/admin/login"}
     assert conn.status == 302

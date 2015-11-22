@@ -12,11 +12,18 @@ defmodule Openmaize.Signup do
   and adds an entry for the password hash.
   
   Before hashing the password, it is checked for strength. This check has
-  two options: min_length and extra_chars. extra_chars checks that the
-  password contains at least one digit and one punctuation character,
-  and is true by default. min_length refers to the minimum length of
-  the password and defaults to 8 characters if extra_chars is true, but
-  12 characters if extra_chars is false.
+  three options:
+  
+    * min_length -- minimum allowable length of the password
+    * extra_chars -- check for punctuation characters (including spaces) and digits
+    * common -- check to see if the password is too common (easy to guess)
+
+  The default value for `min_length` is 8 characters if `extra_chars` is true,
+  but 12 characters if `extra_chars` is false. This is because the password
+  should be longer if the character set is restricted to upper and lower case
+  letters.
+
+  `extra_chars` and `common` are true by default.
 
   The documentation for the Comeonin.Password module can give you more
   information about the advantages and disadvantages of checking password

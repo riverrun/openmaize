@@ -11,7 +11,7 @@ defmodule Openmaize.Config do
   | token_alg          | atom    | :sha512  |
   | login_dir          | string  | "/admin" |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
-  | protected          | list    | %{"/admin" => ["admin"]} |
+  | protected          | map     | %{"/admin" => ["admin"]} |
 
   The values for user_model and repo should be module names.
   If, for example, your app is called Coolapp and your user

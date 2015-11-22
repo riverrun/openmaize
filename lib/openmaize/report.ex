@@ -2,6 +2,9 @@ defmodule Openmaize.Report do
   @moduledoc """
   This module provides error and info messages and handles redirects if
   the option `redirects` is set to true.
+
+  If you are using Phoenix, then the error and info messages will be
+  sent to `phoenix_flash` to be shown in the web browser.
   """
 
   import Plug.Conn
@@ -49,7 +52,6 @@ defmodule Openmaize.Report do
   def terminate(conn), do: conn |> put_private(:openmaize_skip, true) |> halt
 
   defp redirect_to(%Plug.Conn{scheme: scheme, host: host} = conn, address, message) do
-    IO.inspect host
     if Mix.env == :dev, do: host = host <> ":4000"
     unless map_size(message) == 0, do: conn = send_message(conn, message)
     conn

@@ -2,14 +2,13 @@ defmodule Openmaize.Keymanager do
   use GenServer
 
   @oneday 86_400_000
-  @rotate_time 4 * 7 * @oneday
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: Keymanager)
   end
 
   def init([]) do
-    Process.send_after(self, :rotate, @rotate_time)
+    Process.send_after(self, :rotate, 4 * 7 * @oneday)
     {:ok, %{key_1: get_key, key_2: get_key, current_kid: "1"}}
   end
 
@@ -31,8 +30,8 @@ defmodule Openmaize.Keymanager do
   end
 
   def handle_info(:rotate, state) do
-    state = update_map(state)
-    Process.send_after(self, :rotate, @rotate_time)
+    state = update_state(state)
+    Process.send_after(self, :rotate, 4 * 7 * @oneday)
     {:noreply, state}
   end
 
@@ -40,10 +39,10 @@ defmodule Openmaize.Keymanager do
     {:noreply, state}
   end
 
-  defp update_map(%{current_kid: "1"} = state) do
+  defp update_state(%{current_kid: "1"} = state) do
     %{state | current_kid: "2", key_2: get_key}
   end
-  defp update_map(%{current_kid: "2"} = state) do
+  defp update_state(%{current_kid: "2"} = state) do
     %{state | current_kid: "1", key_1: get_key}
   end
 

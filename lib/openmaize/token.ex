@@ -20,10 +20,10 @@ defmodule Openmaize.Token do
   the token to sessionStorage with the front-end framework you are using
   and add the token to the request headers for each request.
 
-  If you do not store the token in a cookie, then you will not need to use
-  the `protect_from_forgery` (csrf protection) plug. However, if you are
-  storing the token in sessionStorage, there is then a risk of cross-site
-  scripting attack.
+  If you decide to store the token in sessionStorage, and not in a cookie,
+  you will not need to use the `protect_from_forgery` (csrf protection) plug.
+  However, storing tokens in sessionStorage opens up the risk of cross-site
+  scripting attacks.
 
   """
 
@@ -32,8 +32,7 @@ defmodule Openmaize.Token do
   import Openmaize.Token.Create
 
   @doc """
-  Generate token based on the user information and the `token_info`
-  setting in the config.
+  Generate token based on the user information.
 
   The token is then either stored in a cookie or sent in the body of the
   response.
