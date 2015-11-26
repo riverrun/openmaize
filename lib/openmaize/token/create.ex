@@ -1,6 +1,16 @@
 defmodule Openmaize.Token.Create do
   @moduledoc """
   Module to create JSON Web Tokens.
+
+  ## Default token
+
+  The header contains values for `typ`, which is "JWT", `alg`, which can be
+  "HS256" or "HS512" (the default), and `kid`, which is used to identify
+  which key was used in the signature.
+
+  The main body of the token has user information and values for `nbf`, which
+  is the time before which the token cannot be used, and `exp`, which is the
+  time when the token expires.
   """
 
   import Base
@@ -9,6 +19,14 @@ defmodule Openmaize.Token.Create do
 
   @doc """
   Generate a JSON Web Token.
+
+  This function is usually called by the `add_token` function in the
+  Openmaize.Token module, but it can also be called directly.
+
+  `user` is a map containing the user information, which needs to contain
+  values for `id`, `name` and `role`, `nbf_delay` is the number of minutes
+  in the future after which the token can be used, and `token_validity`
+  is the number of minutes that the token will be valid for.
   """
   def generate_token(user, {nbf_delay, token_validity}) do
     nbf = get_nbf(nbf_delay * 60_000)

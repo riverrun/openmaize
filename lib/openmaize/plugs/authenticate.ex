@@ -75,7 +75,7 @@ defmodule Openmaize.Authenticate do
 
   defp check_token("Bearer " <> token, conn, opts), do: check_token(token, conn, opts)
   defp check_token(token, conn, opts) when is_binary(token) do
-    case decode(token) do
+    case verify_token(token) do
       {:ok, data} -> assign(conn, :current_user, data)
       {:error, message} -> authenticate_error(conn, message, opts)
     end

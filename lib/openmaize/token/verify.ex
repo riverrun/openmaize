@@ -8,16 +8,18 @@ defmodule Openmaize.Token.Verify do
   import Openmaize.Token.Tools
 
   @doc """
-  Decode JWT.
+  Decode the JWT and check that it is valid.
+
+  As well as checking that the token is a valid JWT, this function also
+  checks that it has a `kid` value in the header, `nbf` and `exp` values
+  in the body, and that it uses a supported algorithm, either HMAC-sha512
+  or HMAC-sha256.
   """
-  def decode(token) do
-    :binary.split(token, ".", [:global]) |> verify_token
+  def verify_token(token) do
+    :binary.split(token, ".", [:global]) |> check_valid
   end
 
-  @doc """
-  Verify that the JWT is valid.
-  """
-  def verify_token([enc_header, enc_payload, sign]) do
+  defp check_valid([enc_header, enc_payload, sign]) do
     error_pipe(
       Enum.map([enc_header, enc_payload], &to_map/1)
       |> check_header

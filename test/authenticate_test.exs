@@ -12,12 +12,16 @@ defmodule Openmaize.AuthenticateTest do
     {:ok, exp_token} = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
     |> generate_token({0, 0})
 
+    {:ok, nbf_token} = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
+    |> generate_token({10, 10})
+
     Application.put_env(:openmaize, :token_alg, :sha256)
     {:ok, user_256_token} = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
     |> generate_token({0, 86400})
     Application.delete_env(:openmaize, :token_alg)
 
-    {:ok, %{user_token: user_token, exp_token: exp_token, user_256_token: user_256_token}}
+    {:ok, %{user_token: user_token, exp_token: exp_token,
+            nbf_token: nbf_token, user_256_token: user_256_token}}
   end
 
   def call(url, token, storage) when storage == :cookie do
@@ -31,6 +35,13 @@ defmodule Openmaize.AuthenticateTest do
 
   test "redirect for expired token", %{exp_token: exp_token} do
     conn = call("/admin", exp_token, :cookie)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/admin/login"}
+    assert conn.status == 302
+  end
+
+  test "redirect for token that cannot be used yet", %{nbf_token: nbf_token} do
+    conn = call("/admin", nbf_token, :cookie)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/admin/login"}
     assert conn.status == 302

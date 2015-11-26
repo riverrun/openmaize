@@ -9,6 +9,7 @@ defmodule Openmaize.Config do
   | repo               | module  | N/A      |
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
+  | keyrotate_days     | int     | 28       |
   | login_dir          | string  | "/admin" |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
   | protected          | map     | %{"/admin" => ["admin"]} |
@@ -78,6 +79,13 @@ defmodule Openmaize.Config do
   end
   defp token_alg do
     Application.get_env(:openmaize, :token_alg, :sha512)
+  end
+
+  @doc """
+  The number of days after which the keys will be rotated.
+  """
+  def keyrotate_days do
+    Application.get_env(:openmaize, :keyrotate_days, 28)
   end
 
   @doc """
