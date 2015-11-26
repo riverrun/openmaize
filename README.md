@@ -2,10 +2,6 @@
 
 Authentication and authorization library for Elixir
 
-Openmaize is an authentication and authorization library for Elixir.
-It is still under heavy development and has had limited testing
-in production.
-
 ## Goals
 
 Openmaize aims to provide developers the following:
@@ -20,11 +16,19 @@ mechanism that is easy to use.
 
   ```elixir
   defp deps do
-    [ {:openmaize, "~> 0.7"} ]
+    [ {:openmaize, "~> 0.8"} ]
   end
   ```
 
-2. Run `mix do deps.get, compile`
+2. List `:openmaize` as an application dependency
+
+  ```elixir
+  def application do
+    [applications: [:logger, :openmaize]]
+  end
+  ```
+
+3. Run `mix do deps.get, compile`
 
 ## Use
 

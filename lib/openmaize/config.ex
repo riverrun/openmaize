@@ -29,6 +29,7 @@ defmodule Openmaize.Config do
         repo: Coolapp.Repo,
         crypto_mod: :bcrypt,
         token_alg: :sha256,
+        keyrotate_days: 7,
         login_dir: "admin",
         redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
         protected: %{"/admin" => ["admin"], "/users" => ["admin", "user"], "/users/:id" => ["user"]}
