@@ -28,7 +28,7 @@ defmodule Openmaize.Authorize.IdCheckTest do
     path = "/users/10/edit"
     conn = conn(:get, path) |> call(path, true)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-    {"location", "http://www.example.com/users"}
+    {"location", "/users"}
     assert conn.status == 302
   end
 
@@ -36,7 +36,7 @@ defmodule Openmaize.Authorize.IdCheckTest do
     path = "/users/3/edit"
     conn = conn(:get, path) |> call(path, true)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-    {"location", "http://www.example.com/users"}
+    {"location", "/users"}
     assert conn.status == 302
   end
 
@@ -44,7 +44,7 @@ defmodule Openmaize.Authorize.IdCheckTest do
     path = "/users/3"
     conn = conn(:get, path) |> call(path, false)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-    {"location", "http://www.example.com/users"}
+    {"location", "/users"}
     assert conn.status == 302
   end
 
@@ -53,7 +53,7 @@ defmodule Openmaize.Authorize.IdCheckTest do
             |> assign(:current_user, @user)
             |> IdCheck.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users"}
+           {"location", "/users"}
     assert conn.status == 302
   end
 

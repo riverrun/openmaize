@@ -32,7 +32,7 @@ defmodule Openmaize.AuthenticateTest do
   test "redirect for expired token", %{exp_token: exp_token} do
     conn = call("/admin", exp_token, :cookie)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "http://www.example.com/admin/login"}
+      {"location", "/admin/login"}
     assert conn.status == 302
   end
 
@@ -45,7 +45,7 @@ defmodule Openmaize.AuthenticateTest do
   test "redirect for invalid token stored in cookie", %{user_token: user_token} do
     conn = call("/users", user_token <> "a", :cookie)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "http://www.example.com/admin/login"}
+      {"location", "/admin/login"}
     assert conn.status == 302
   end
 
@@ -58,7 +58,7 @@ defmodule Openmaize.AuthenticateTest do
   test "redirect for invalid token stored in sessionStorage", %{user_token: user_token} do
     conn = call("/users", user_token <> "a", nil)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "http://www.example.com/admin/login"}
+      {"location", "/admin/login"}
     assert conn.status == 302
   end
 
@@ -83,7 +83,7 @@ defmodule Openmaize.AuthenticateTest do
   test "redirect for invalid token using sha256", %{user_256_token: user_256_token} do
     conn = call("/users", user_256_token <> "a", :cookie)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "http://www.example.com/admin/login"}
+      {"location", "/admin/login"}
     assert conn.status == 302
   end
 

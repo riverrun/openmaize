@@ -8,7 +8,7 @@ defmodule Openmaize.ReportTest do
     conn = conn(:get, "/admin")
     |> Report.handle_error("You have beautiful thighs!")
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/admin/login"}
+           {"location", "/admin/login"}
     assert conn.status == 302
   end
 
@@ -16,7 +16,7 @@ defmodule Openmaize.ReportTest do
     conn = conn(:get, "/admin")
     |> Report.handle_error("user", "What are you doing here?")
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users"}
+           {"location", "/users"}
     assert conn.status == 302
   end
 
@@ -24,7 +24,7 @@ defmodule Openmaize.ReportTest do
     conn = conn(:get, "/admin")
     |> Report.handle_info("I hear the mangoes are doing very well, and so are the gooseberries.")
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/"}
+           {"location", "/"}
     assert conn.status == 302
   end
 
@@ -32,7 +32,7 @@ defmodule Openmaize.ReportTest do
     conn = conn(:get, "/admin")
     |> Report.handle_info("user", "I'd love to give you more information, but I'm too expensive.")
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users"}
+           {"location", "/users"}
     assert conn.status == 302
   end
 

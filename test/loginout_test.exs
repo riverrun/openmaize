@@ -19,7 +19,7 @@ defmodule Openmaize.LoginoutTest do
   test "redirect on logout" do
     conn = conn(:get, "/admin/logout") |> LoginoutCheck.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/"}
+           {"location", "/"}
     assert conn.status == 302
     assert conn.private.openmaize_skip == true
   end

@@ -21,7 +21,7 @@ defmodule Openmaize.AuthorizeTest do
             |> assign(:current_user, @user)
             |> Authorize.call([])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users"}
+           {"location", "/users"}
     assert conn.status == 302
   end
 
@@ -56,7 +56,7 @@ defmodule Openmaize.AuthorizeTest do
     conn = Base.authorized?({:error, "You have 10 minutes to spend it"},
     conn(:get, "/admin"), {true, false})
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/admin/login"}
+           {"location", "/admin/login"}
     assert conn.status == 302
   end
 
@@ -64,7 +64,7 @@ defmodule Openmaize.AuthorizeTest do
     conn = Base.authorized?({:error, "user", "You have 10 minutes to spend it"},
     conn(:get, "/admin"), {true, false})
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users"}
+           {"location", "/users"}
     assert conn.status == 302
   end
 

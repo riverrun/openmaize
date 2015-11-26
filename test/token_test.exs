@@ -10,7 +10,7 @@ defmodule Openmaize.TokenTest do
     token = conn.resp_cookies["access_token"]
     assert token.http_only == true
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "http://www.example.com/users"}
+           {"location", "/users"}
     assert conn.status == 302
   end
 
