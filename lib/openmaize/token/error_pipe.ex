@@ -1,5 +1,9 @@
 defmodule ErrorPipe do
   @moduledoc """
+  Customized pipe.
+
+  This pipe behaves like the regular Elixir pipe, but it exits if
+  a tuple with {:error, message} is returned.
   """
 
   defmacro __using__(_) do

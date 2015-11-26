@@ -1,5 +1,6 @@
 defmodule Openmaize.Token.Verify do
   @moduledoc """
+  Module to verify JSON Web Tokens.
   """
 
   use ErrorPipe
@@ -13,6 +14,9 @@ defmodule Openmaize.Token.Verify do
     :binary.split(token, ".", [:global]) |> verify_token
   end
 
+  @doc """
+  Verify that the JWT is valid.
+  """
   def verify_token([enc_header, enc_payload, sign]) do
     error_pipe(
       Enum.map([enc_header, enc_payload], &to_map/1)

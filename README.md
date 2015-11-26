@@ -56,14 +56,6 @@ See the relevant module documentation for more details.
 There is an example of Openmaize being used with Phoenix at
 [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
 
-## TODO
-
-* [ ] Add customizable unique identifier for user model
-    * currently the identifier is name -- allow developers to customize this
-    * planned for when there is support for variables as Map keys -- Elixir 1.2
-* [ ] Add more plugs / checks
-* [ ] Add warning when not using https
-
 ### License
 
 BSD

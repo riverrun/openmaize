@@ -1,5 +1,6 @@
 defmodule Openmaize.Token.Create do
   @moduledoc """
+  Module to create JSON Web Tokens.
   """
 
   import Base
@@ -7,7 +8,7 @@ defmodule Openmaize.Token.Create do
   alias Openmaize.Config
 
   @doc """
-  Generate token.
+  Generate a JSON Web Token.
   """
   def generate_token(user, {nbf_delay, token_validity}) do
     nbf = get_nbf(nbf_delay * 60_000)
