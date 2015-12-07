@@ -7,7 +7,7 @@ defmodule Openmaize.Mixfile do
 
   def project do
     [app: :openmaize,
-      version: "0.8.0",
+      version: "0.8.1",
       elixir: "~> 1.0",
       name: "Openmaize",
       description: @description,
