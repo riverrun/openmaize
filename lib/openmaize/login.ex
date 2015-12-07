@@ -25,20 +25,14 @@ defmodule Openmaize.Login do
   If `redirects` is set to false, then there will be no redirects.
 
   """
-  def call(%Plug.Conn{params: params} = conn, {false, _, token_opts}) do
+  def call(%Plug.Conn{params: params} = conn, {redirects, storage, token_opts}) do
     %{"name" => user, "password" => password} =
     Map.take(params["user"], ["name", "password"])
-    case login_user(user, password) do
-      false -> send_error(conn, 401, "Invalid credentials")
-      user -> add_token(conn, user, token_opts, nil)
-    end
-  end
-  def call(%Plug.Conn{params: params} = conn, {_, storage, token_opts}) do
-    %{"name" => user, "password" => password} =
-    Map.take(params["user"], ["name", "password"])
-    case login_user(user, password) do
-      false -> handle_error(conn, "Invalid credentials")
-      user -> add_token(conn, user, token_opts, storage)
+    case {login_user(user, password), redirects} do
+      {false, false} -> send_error(conn, 401, "Invalid credentials")
+      {false, true} -> handle_error(conn, "Invalid credentials")
+      {user, false} -> add_token(conn, user, token_opts, nil)
+      {user, true} -> add_token(conn, user, token_opts, storage)
     end
   end
 
