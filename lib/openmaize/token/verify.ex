@@ -3,7 +3,7 @@ defmodule Openmaize.Token.Verify do
   Module to verify JSON Web Tokens.
   """
 
-  use ErrorPipe
+  use Openmaize.Token.ErrorPipe
   import Base
   import Openmaize.Token.Tools
 

@@ -1,4 +1,4 @@
-defmodule ErrorPipe do
+defmodule Openmaize.Token.ErrorPipe do
   @moduledoc """
   Customized pipe.
 
@@ -8,7 +8,7 @@ defmodule ErrorPipe do
 
   defmacro __using__(_) do
     quote do
-      import ErrorPipe
+      import Openmaize.Token.ErrorPipe
     end
   end
 
