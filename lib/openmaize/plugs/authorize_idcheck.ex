@@ -44,18 +44,15 @@ defmodule Openmaize.Authorize.IdCheck do
   @doc """
   Verify that the user, based on id, is authorized to access the page / resource.
   """
-  def call(%Plug.Conn{private: private, assigns: assigns} = conn, opts) do
-    if Map.get(private, :openmaize_skip) == true do
-      conn
-    else
-      opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :show, false)}
-      data = Map.get(assigns, :current_user)
-      case part_check(conn, data) do
-        {:ok, :nomatch} -> conn
-        {:ok, path, match} -> run_check(conn, opts, data, path, match)
-        {:error, message} -> authorized?({:error, message}, conn, opts)
-        {:error, role, message} -> authorized?({:error, role, message}, conn, opts)
-      end
+  def call(%Plug.Conn{private: %{openmaize_skip: true}} = conn, _opts), do: conn
+  def call(%Plug.Conn{assigns: assigns} = conn, opts) do
+    opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :show, false)}
+    data = Map.get(assigns, :current_user)
+    case part_check(conn, data) do
+      {:ok, :nomatch} -> conn
+      {:ok, path, match} -> run_check(conn, opts, data, path, match)
+      {:error, message} -> authorized?({:error, message}, conn, opts)
+      {:error, role, message} -> authorized?({:error, role, message}, conn, opts)
     end
   end
   defp run_check(conn, {redirects, false}, data, path, match) do

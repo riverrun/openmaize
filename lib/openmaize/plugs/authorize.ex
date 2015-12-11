@@ -32,13 +32,10 @@ defmodule Openmaize.Authorize do
   @doc """
   Verify that the user is authorized to access the requested page / resource.
   """
-  def call(%Plug.Conn{private: private, assigns: assigns} = conn, opts) do
-    if Map.get(private, :openmaize_skip) == true do
-      conn
-    else
-      opts = {Keyword.get(opts, :redirects, true)}
-      full_check(conn, opts, Map.get(assigns, :current_user))
-    end
+  def call(%Plug.Conn{private: %{openmaize_skip: true}} = conn, _opts), do: conn
+  def call(%Plug.Conn{assigns: assigns} = conn, opts) do
+    opts = {Keyword.get(opts, :redirects, true)}
+    full_check(conn, opts, Map.get(assigns, :current_user))
   end
 
 end
