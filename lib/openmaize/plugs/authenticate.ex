@@ -55,7 +55,10 @@ defmodule Openmaize.Authenticate do
   """
   def call(%Plug.Conn{private: %{openmaize_skip: true}} = conn, _opts), do: conn
   def call(conn, opts) do
-    opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :storage, :cookie)}
+    opts = case Keyword.get(opts, :redirects, true) do
+             true -> {true, Keyword.get(opts, :storage, :cookie)}
+             false -> {false, nil}
+    end
     run(conn, opts)
   end
   defp run(conn, {_, :cookie} = opts) do
