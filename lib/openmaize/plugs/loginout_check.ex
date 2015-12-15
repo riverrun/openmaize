@@ -57,12 +57,14 @@ defmodule Openmaize.LoginoutCheck do
   is not for the login or logout page, the connection is returned.
   """
   def call(%Plug.Conn{path_info: path_info} = conn, opts) do
-    opts = {Keyword.get(opts, :redirects, true),
-            Keyword.get(opts, :storage, :cookie),
-            {0, Keyword.get(opts, :token_validity, 1440)}}
+    {redirects, storage} = case Keyword.get(opts, :redirects, true) do
+                             true -> {true, Keyword.get(opts, :storage, :cookie)}
+                             false -> {false, nil}
+                           end
+    token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
     case Enum.at(path_info, -1) do
-      "login" -> handle_login(conn, opts)
-      "logout" -> handle_logout(conn, opts)
+      "login" -> handle_login(conn, {redirects, storage, token_opts})
+      "logout" -> handle_logout(conn, {redirects, storage, token_opts})
       _ -> conn
     end
   end
