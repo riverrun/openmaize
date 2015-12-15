@@ -29,7 +29,13 @@ defmodule Openmaize.Signup do
   information about the advantages and disadvantages of checking password
   strength.
   """
+
+  @deprecated """
+  This function has been deprecated and will be removed in version 0.10.
+  """
+
   def create_user(user_params, opts \\ []) do
+    IO.write :stderr, @deprecated
     Comeonin.create_user(user_params, opts)
   end
 

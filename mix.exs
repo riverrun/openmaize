@@ -1,13 +1,15 @@
 defmodule Openmaize.Mixfile do
   use Mix.Project
 
+  @version "0.9.0"
+
   @description """
   Authentication and authorization library for Elixir using Plug.
   """
 
   def project do
     [app: :openmaize,
-      version: "0.9.0",
+      version: @version,
       elixir: "~> 1.0",
       name: "Openmaize",
       description: @description,

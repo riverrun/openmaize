@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.9.0
+
+* Enhancements
+    * Added more lightweight authorization function plugs.
+* Deprecations
+    * Authorize and AuthorizeIdcheck module plugs.
+    * Signup module.
+
 ## v0.8.0
 
 * Enhancements
