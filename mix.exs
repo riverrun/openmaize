@@ -20,7 +20,7 @@ defmodule Openmaize.Mixfile do
 
   def application do
     [mod: {Openmaize, []},
-     applications: [:logger, :cowboy, :plug, :ecto, :comeonin]]
+     applications: [:logger, :cowboy, :plug, :ecto]]
   end
 
   defp deps do
@@ -28,7 +28,6 @@ defmodule Openmaize.Mixfile do
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.0"},
       {:ecto, "~> 1.0"},
-      {:comeonin, "~> 1.6"},
       {:poison, "~> 1.5"},
       {:earmark, "~> 0.1", only: :dev},
       {:ex_doc,  "~> 0.10", only: :dev}
