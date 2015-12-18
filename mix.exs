@@ -27,10 +27,10 @@ defmodule Openmaize.Mixfile do
     [
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.0"},
-      {:ecto, "~> 1.0"},
+      {:ecto, "~> 1.1"},
       {:poison, "~> 1.5"},
       {:earmark, "~> 0.1", only: :dev},
-      {:ex_doc,  "~> 0.10", only: :dev}
+      {:ex_doc,  "~> 0.11", only: :dev}
     ]
   end
 
