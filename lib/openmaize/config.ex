@@ -113,8 +113,7 @@ defmodule Openmaize.Config do
   Paths that should be protected. This is a map associating each path
   with a role.
 
-  The path is the start of the path. For example, "/users" refers to
-  all paths that start with "/users".
+  This option will be removed in version 0.10.
   """
   def protected do
     default = %{"/admin" => ["admin"]}

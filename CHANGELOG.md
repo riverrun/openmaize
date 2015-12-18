@@ -8,8 +8,6 @@
     * Authorize and AuthorizeIdcheck module plugs.
         * These will be removed in version 0.10.
         * The functions in the AccessControl module can be used instead.
-* Backward incompatible changes
-    * Removed Signup module.
 
 ## v0.8.0
 
