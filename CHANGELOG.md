@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.10.0
+
+* Changes
+    * Removed deprected functions (Authorize and AuthorizeIdCheck modules).
+
 ## v0.9.0
 
 * Enhancements
