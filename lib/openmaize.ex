@@ -10,15 +10,9 @@ defmodule Openmaize do
   * Openmaize.Authenticate
       * authenticates the user
       * sets (adds to the assigns map) the current_user variable
-  * Openmaize.Authorize
-      * checks to see if the user is authorized to access the page / resource
-      * authorization is based on user role
 
-  There is also the following plug, which can be used to perform an extra
-  authorization check based on user id:
-
-  * Openmaize.Authorize.IdCheck
-      * checks to see if the user, based on id, is authorized to access the page / resource
+  There are also plugs that can be used for authorization in the
+  Openmaize.AccessControl module.
 
   See the relevant module documentation for more details.
 
