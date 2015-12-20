@@ -1,12 +1,14 @@
 defmodule Openmaize.AccessControl do
   @moduledoc """
-  Function plugs.
+  Function plugs to handle authorization.
   """
 
   import Openmaize.Report
 
   @doc """
   Verify that the user is authorized to access the requested page / resource.
+
+  This check is based on user role.
   """
   def authorize(%Plug.Conn{private: %{openmaize_skip: true}} = conn, _opts), do: conn
   def authorize(%Plug.Conn{assigns: assigns} = conn, opts) do
@@ -15,7 +17,11 @@ defmodule Openmaize.AccessControl do
   end
 
   @doc """
-  Verify that the user, and user id, is authorized to access the requested page / resource.
+  Verify that the user, based on the user id, is authorized to access the
+  requested page / resource.
+
+  This check only performs a check to see if the user id is correct. You will
+  need to use the `authorize` plug to verify the user's role.
   """
   def authorize_id(%Plug.Conn{params: %{"id" => id}, assigns: assigns} = conn, opts) do
     redirects = Keyword.get(opts, :redirects, true)

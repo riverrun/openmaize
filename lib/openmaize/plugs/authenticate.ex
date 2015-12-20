@@ -53,7 +53,7 @@ defmodule Openmaize.Authenticate do
   If there is an error, the user is either redirected to the login page
   or an error message is sent to the user. The connection is also halted.
   """
-  def call(%{private: %{openmaize_skip: true}} = conn, _opts), do: conn
+  def call(%Plug.Conn{private: %{openmaize_skip: true}} = conn, _opts), do: conn
   def call(conn, opts) do
     opts = case Keyword.get(opts, :redirects, true) do
              true -> {true, Keyword.get(opts, :storage, :cookie)}
@@ -65,7 +65,7 @@ defmodule Openmaize.Authenticate do
     conn = fetch_cookies(conn)
     Map.get(conn.req_cookies, "access_token") |> check_token(conn, opts)
   end
-  defp run(%{req_headers: headers} = conn, opts) do
+  defp run(%Plug.Conn{req_headers: headers} = conn, opts) do
     get_token(headers) |> Enum.at(0) |> check_token(conn, opts)
   end
 
@@ -87,7 +87,7 @@ defmodule Openmaize.Authenticate do
   defp authenticate_error(conn, message, {false, _}) do
     send_error(conn, 401, message)
   end
-  defp authenticate_error(%{request_path: path} = conn, message, _) do
+  defp authenticate_error(%Plug.Conn{request_path: path} = conn, message, _) do
     case :binary.match(path, Map.keys(Config.protected)) do
       {0, _} -> handle_error(conn, message)
       _ -> assign(conn, :current_user, nil)

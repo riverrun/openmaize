@@ -51,8 +51,8 @@ defmodule Openmaize.Report do
   """
   def terminate(conn), do: conn |> put_private(:openmaize_skip, true) |> halt
 
-  defp redirect_to(%{resp_headers: resp_headers} = conn, address, message) do
-    unless map_size(message) == 0, do: conn = send_message(conn, message)
+  defp redirect_to(%Plug.Conn{resp_headers: resp_headers} = conn, address, message) do
+    unless map_size(message) == 0, do: conn = add_message(conn, message)
     new_headers = [{"content-type", "text/html; charset=utf-8"}, {"location", address}]
     %{conn | resp_headers: new_headers ++ resp_headers}
     |> send_resp(302, "")
@@ -63,7 +63,7 @@ defmodule Openmaize.Report do
     redirect_to(conn, "#{Config.login_dir}/login", message)
   end
 
-  defp send_message(conn, message) do
+  defp add_message(conn, message) do
     if Map.get(conn.private, :phoenix_flash) do
       put_private(conn, :phoenix_flash, message)
     else
