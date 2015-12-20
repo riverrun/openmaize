@@ -24,6 +24,15 @@ defmodule Openmaize.AuthorizeTest do
     assert conn.status == 302
   end
 
+  test "redirect for no user" do
+    conn = conn(:get, "/admin")
+            |> assign(:current_user, nil)
+            |> authorize([roles: ["admin", "user"]])
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+           {"location", "/admin/login"}
+    assert conn.status == 302
+  end
+
   test "insufficient permissions with no redirect" do
     conn = conn(:get, "/admin")
             |> assign(:current_user, @user)

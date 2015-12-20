@@ -34,8 +34,6 @@ defmodule Openmaize.Authenticate do
 
   import Plug.Conn
   import Openmaize.Token.Verify
-  import Openmaize.Report
-  alias Openmaize.Config
 
   @behaviour Plug
 
@@ -74,23 +72,13 @@ defmodule Openmaize.Authenticate do
   end
 
   defp check_token("Bearer " <> token, conn, opts), do: check_token(token, conn, opts)
-  defp check_token(token, conn, opts) when is_binary(token) do
+  defp check_token(token, conn, _opts) when is_binary(token) do
     case verify_token(token) do
       {:ok, data} -> assign(conn, :current_user, data)
-      {:error, message} -> authenticate_error(conn, message, opts)
+      {:error, _message} -> assign(conn, :current_user, nil)
     end
   end
   defp check_token(_, conn, _) do
     assign(conn, :current_user, nil)
-  end
-
-  defp authenticate_error(conn, message, {false, _}) do
-    send_error(conn, 401, message)
-  end
-  defp authenticate_error(%Plug.Conn{request_path: path} = conn, message, _) do
-    case :binary.match(path, Map.keys(Config.protected)) do
-      {0, _} -> handle_error(conn, message)
-      _ -> assign(conn, :current_user, nil)
-    end
   end
 end
