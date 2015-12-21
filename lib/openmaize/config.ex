@@ -26,7 +26,7 @@ defmodule Openmaize.Config do
       config :openmaize,
         user_model: Coolapp.User,
         repo: Coolapp.Repo,
-        crypto_mod: :bcrypt,
+        crypto_mod: :pbkdf2,
         token_alg: :sha256,
         keyrotate_days: 7,
         login_dir: "admin",

@@ -13,14 +13,14 @@ defmodule Openmaize.Signup do
 
   The example schema below is the most basic setup for Openmaize:
 
-    schema "users" do
-      field :name, :string
-      field :role, :string
-      field :password, :string, virtual: true
-      field :password_hash, :string
+      schema "users" do
+        field :name, :string
+        field :role, :string
+        field :password, :string, virtual: true
+        field :password_hash, :string
 
-      timestamps
-    end
+        timestamps
+      end
 
   In the example above, the `name` is used to identify the user, the
   `role` is needed for authorization, and the `password` and the
@@ -57,13 +57,13 @@ defmodule Openmaize.Signup do
 
   The following options are available:
 
-    * min_length -- the minimum length of the password (default is 8 characters)
-    * max_length -- the maximum length of the password (default is 80 characters)
+  * min_length - the minimum length of the password (default is 8 characters)
+  * max_length - the maximum length of the password (default is 80 characters)
 
   These additional options are available if you have installed NotQwerty123:
 
-    * extra_chars -- check for punctuation characters (including spaces) and digits
-    * common -- check to see if the password is too common (easy to guess)
+  * extra_chars - check for punctuation characters (including spaces) and digits
+  * common - check to see if the password is too common (easy to guess)
 
   See the documentation for NotQwerty123.PasswordStrength for more details about
   these options.
@@ -73,8 +73,8 @@ defmodule Openmaize.Signup do
   The following example first checks that the password is at least 12 characters
   long before hashing it:
 
-    changeset
-    |> Openmaize.Signup.create_user(params, [min_length: 12])
+      changeset
+      |> Openmaize.Signup.create_user(params, [min_length: 12])
 
   """
   def create_user(changeset, params, opts \\ []) do

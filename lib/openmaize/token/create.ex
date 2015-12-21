@@ -24,8 +24,8 @@ defmodule Openmaize.Token.Create do
   Openmaize.Token module, but it can also be called directly.
 
   `user` is a map containing the user information, which needs to contain
-  values for `id`, `name` and `role`, `nbf_delay` is the number of minutes
-  in the future after which the token can be used, and `token_validity`
+  values for `id`, `name`, `role`, `nbf_delay`, which is the number of minutes
+  in the future after which the token can be used, and `token_validity`, which
   is the number of minutes that the token will be valid for.
   """
   def generate_token(user, {nbf_delay, token_validity}) do
