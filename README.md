@@ -4,11 +4,15 @@ Authentication and authorization library for Elixir
 
 ## Goals
 
-Openmaize aims to provide developers the following:
+Openmaize is an authentication and authorization library that aims to be:
 
-* a secure, but lightweight, framework-agnostic authentication and authorization
-mechanism that is easy to use.
-* excellent documentation.
+* secure
+* lightweight
+* easy to use
+* well documented
+
+It should work with any application that uses Plug, but it has only been
+tested with the Phoenix Web Framework.
 
 ## Installation
 
@@ -16,7 +20,7 @@ mechanism that is easy to use.
 
   ```elixir
   defp deps do
-    [ {:openmaize, "~> 0.8"} ]
+    [ {:openmaize, "~> 0.10"} ]
   end
   ```
 
@@ -46,14 +50,9 @@ Openmaize provides the following main plugs:
 * Openmaize.Authenticate
   * authenticates the user
   * sets (adds to the assigns map) the current_user variable
-* Openmaize.Authorize
-  * checks to see if the user is authorized to access the page / resource
 
-There is also the following plug, which can be used to perform an extra
-authorization check based on user id:
-
-* Openmaize.Authorize.IdCheck
-  * checks to see if the user, based on id, is authorized to access the page / resource
+There are also plugs that can be used for authorization in the
+Openmaize.AccessControl module.
 
 See the relevant module documentation for more details.
 

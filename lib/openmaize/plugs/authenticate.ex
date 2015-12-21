@@ -9,16 +9,14 @@ defmodule Openmaize.Authenticate do
   Phoenix, can then be used in your templates. If no token is found, the
   current_user is set to nil.
 
-  There are two options:
-  * redirects
-      * if true, which is the default, redirect on login / logout
-  * storage
-      * storage method for the token -- the default is :cookie
-      * if redirects is set to false, storage is automatically set to nil
+  There is one option:
+
+  * storage - storage method for the token -- the default is :cookie
+  Set the storage method to nil if you want to use sessionStorage or localStorage
 
   ## Examples
 
-  Call Authenticate without any options:
+  Call Authenticate without any options (the token will be stored in a cookie):
 
       plug Openmaize.Authenticate
 
@@ -26,16 +24,10 @@ defmodule Openmaize.Authenticate do
 
       plug Openmaize.Authenticate, storage: nil
 
-  Call Authenticate without redirects:
-
-      plug Openmaize.Authenticate, redirects: false
-
   """
 
   import Plug.Conn
   import Openmaize.Token.Verify
-  import Openmaize.Report
-  alias Openmaize.Config
 
   @behaviour Plug
 
@@ -48,49 +40,33 @@ defmodule Openmaize.Authenticate do
 
   If the authentication is successful, a map, called `:current_user`,
   providing the user information is added to the `assigns` map in the
-  Plug connection. If there is no token, the `:current_user` is set to nil.
-
-  If there is an error, the user is either redirected to the login page
-  or an error message is sent to the user. The connection is also halted.
+  Plug connection. If there is no token, or if the token is invalid,
+  the `:current_user` is set to nil.
   """
-  def call(%Plug.Conn{private: private} = conn, opts) do
-    if Map.get(private, :openmaize_skip) == true do
-      conn
-    else
-      opts = {Keyword.get(opts, :redirects, true), Keyword.get(opts, :storage, :cookie)}
-      run(conn, opts)
-    end
+  def call(%Plug.Conn{private: %{openmaize_skip: true}} = conn, _opts), do: conn
+  def call(conn, opts) do
+    run(conn, Keyword.get(opts, :storage, :cookie))
   end
-  defp run(conn, {_, :cookie} = opts) do
+  defp run(conn, :cookie) do
     conn = fetch_cookies(conn)
-    Map.get(conn.req_cookies, "access_token") |> check_token(conn, opts)
+    Map.get(conn.req_cookies, "access_token") |> check_token(conn)
   end
-  defp run(%Plug.Conn{req_headers: headers} = conn, opts) do
-    get_token(headers) |> Enum.at(0) |> check_token(conn, opts)
+  defp run(%Plug.Conn{req_headers: headers} = conn, _opts) do
+    get_token(headers) |> Enum.at(0) |> check_token(conn)
   end
 
   defp get_token(headers) do
     for {k, v} <- headers, k == "authorization" or k == "access-token", do: v
   end
 
-  defp check_token("Bearer " <> token, conn, opts), do: check_token(token, conn, opts)
-  defp check_token(token, conn, opts) when is_binary(token) do
+  defp check_token("Bearer " <> token, conn), do: check_token(token, conn)
+  defp check_token(token, conn) when is_binary(token) do
     case verify_token(token) do
       {:ok, data} -> assign(conn, :current_user, data)
-      {:error, message} -> authenticate_error(conn, message, opts)
+      {:error, _message} -> assign(conn, :current_user, nil)
     end
   end
-  defp check_token(_, conn, _) do
+  defp check_token(_, conn) do
     assign(conn, :current_user, nil)
-  end
-
-  defp authenticate_error(conn, message, {false, _}) do
-    send_error(conn, 401, message)
-  end
-  defp authenticate_error(%Plug.Conn{request_path: path} = conn, message, _) do
-    case :binary.match(path, Map.keys(Config.protected)) do
-      {0, _} -> handle_error(conn, message)
-      _ -> assign(conn, :current_user, nil)
-    end
   end
 end

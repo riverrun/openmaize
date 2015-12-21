@@ -2,67 +2,42 @@ defmodule Openmaize.Authorize.IdCheckTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.Authorize.IdCheck
+  import Openmaize.AccessControl
 
   @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
 
-  def call(conn, path, show) do
-    assign(conn, :current_user, @user)
-    |> put_private(:openmaize_vars, %{path: path, match: "/users"})
-    |> IdCheck.call([show: show])
+  def call(conn, id, opts) do
+    %{conn | params: %{"id" => id}}
+    |> assign(:current_user, @user)
+    |> authorize_id(opts)
   end
 
-  test "user with correct id can edit" do
+  test "user with correct id can access page" do
     path = "/users/1/edit"
-    conn = conn(:get, path) |> call(path, true) |> send_resp(200, "")
+    conn = conn(:get, path) |> call("1", [redirects: true]) |> send_resp(200, "")
     assert conn.status == 200
   end
 
-  test "user with correct id can show" do
-    path = "/users/1"
-    conn = conn(:get, path) |> call(path, true) |> send_resp(200, "")
-    assert conn.status == 200
-  end
-
-  test "user with wrong id, but start of id is the same" do
+  test "user with wrong id cannot access resource and is redirected" do
     path = "/users/10/edit"
-    conn = conn(:get, path) |> call(path, true)
+    conn = conn(:get, path) |> call("10", [redirects: true])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
     {"location", "/users"}
     assert conn.status == 302
   end
 
-  test "user with wrong id -- cannot edit" do
-    path = "/users/3/edit"
-    conn = conn(:get, path) |> call(path, true)
+  test "user with wrong id and no options is redirected" do
+    path = "/users/10/edit"
+    conn = conn(:get, path) |> call("10", [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
     {"location", "/users"}
     assert conn.status == 302
   end
 
-  test "user with wrong id -- cannot show" do
-    path = "/users/3"
-    conn = conn(:get, path) |> call(path, false)
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-    {"location", "/users"}
-    assert conn.status == 302
-  end
-
-  test "redirect for insufficient permissions" do
-    conn = conn(:get, "/admin")
-            |> assign(:current_user, @user)
-            |> IdCheck.call([])
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "/users"}
-    assert conn.status == 302
-  end
-
-  test "able to view user page as user" do
-    conn = conn(:get, "/users")
-            |> assign(:current_user, @user)
-            |> IdCheck.call([])
-            |> send_resp(200, "")
-    assert conn.status == 200
+  test "user with wrong id cannot access resource" do
+    path = "/users/10/edit"
+    conn = conn(:get, path) |> call("10", [redirects: false])
+    assert conn.status == 403
   end
 
 end

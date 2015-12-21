@@ -41,10 +41,6 @@ defmodule Openmaize.Keymanager do
     {:noreply, state}
   end
 
-  def code_change(_old_vsn, state, _extra) do
-    {:ok, state}
-  end
-
   defp update_state(%{current_kid: "1"} = state) do
     %{state | current_kid: "2", key_2: get_key}
   end

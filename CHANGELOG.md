@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.10.0
+
+* Changes
+    * Removed deprected functions (Authorize and AuthorizeIdCheck modules).
+
+## v0.9.0
+
+* Enhancements
+    * Added more lightweight authorization function plugs in the AccessControl module.
+* Deprecations
+    * Authorize and AuthorizeIdcheck module plugs.
+        * These will be removed in version 0.10.
+        * The functions in the AccessControl module can be used instead.
+
 ## v0.8.0
 
 * Enhancements

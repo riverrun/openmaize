@@ -12,7 +12,6 @@ defmodule Openmaize.Config do
   | keyrotate_days     | int     | 28       |
   | login_dir          | string  | "/admin" |
   | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
-  | protected          | map     | %{"/admin" => ["admin"]} |
 
   The values for user_model and repo should be module names.
   If, for example, your app is called Coolapp and your user
@@ -27,12 +26,11 @@ defmodule Openmaize.Config do
       config :openmaize,
         user_model: Coolapp.User,
         repo: Coolapp.Repo,
-        crypto_mod: :bcrypt,
+        crypto_mod: :pbkdf2,
         token_alg: :sha256,
         keyrotate_days: 7,
         login_dir: "admin",
         redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
-        protected: %{"/admin" => ["admin"], "/users" => ["admin", "user"], "/users/:id" => ["user"]}
 
   """
 
@@ -107,18 +105,6 @@ defmodule Openmaize.Config do
   def redirect_pages do
     default = %{"admin" => "/admin", nil => "/"}
     Application.get_env(:openmaize, :redirect_pages, default)
-  end
-
-  @doc """
-  Paths that should be protected. This is a map associating each path
-  with a role.
-
-  The path is the start of the path. For example, "/users" refers to
-  all paths that start with "/users".
-  """
-  def protected do
-    default = %{"/admin" => ["admin"]}
-    Application.get_env(:openmaize, :protected, default)
   end
 
 end

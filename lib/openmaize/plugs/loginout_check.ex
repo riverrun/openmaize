@@ -1,6 +1,8 @@
 defmodule Openmaize.LoginoutCheck do
   @moduledoc """
-  Plug to check if the path is for the login or logout page and handles the
+  Plug to handle login and logout requests.
+
+  This module checks if the path is for the login or logout page and handles the
   login or logout if necessary. If the path is different, the connection is
   returned without any further checks being performed.
 
@@ -16,13 +18,11 @@ defmodule Openmaize.LoginoutCheck do
   redirected to the home page.
 
   There are three options:
-  * redirects
-      * if true, which is the default, redirect on login / logout
-  * storage
-      * storage method for the token -- the default is :cookie
-      * if redirects is set to false, storage is automatically set to nil
-  * token_validity
-      * length of validity of token (in minutes) -- the default is 1440 minutes (one day)
+
+  * redirects - if true, which is the default, redirect on login / logout
+  * storage - storage method for the token -- the default is :cookie
+  If redirects is set to false, storage is automatically set to nil
+  * token_validity - length of validity of token (in minutes) -- the default is 1440 minutes (one day)
 
   ## Examples
 
@@ -57,12 +57,14 @@ defmodule Openmaize.LoginoutCheck do
   is not for the login or logout page, the connection is returned.
   """
   def call(%Plug.Conn{path_info: path_info} = conn, opts) do
-    opts = {Keyword.get(opts, :redirects, true),
-            Keyword.get(opts, :storage, :cookie),
-            {0, Keyword.get(opts, :token_validity, 1440)}}
+    {redirects, storage} = case Keyword.get(opts, :redirects, true) do
+                             true -> {true, Keyword.get(opts, :storage, :cookie)}
+                             false -> {false, nil}
+                           end
+    token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
     case Enum.at(path_info, -1) do
-      "login" -> handle_login(conn, opts)
-      "logout" -> handle_logout(conn, opts)
+      "login" -> handle_login(conn, {redirects, storage, token_opts})
+      "logout" -> handle_logout(conn, {redirects, storage, token_opts})
       _ -> conn
     end
   end
