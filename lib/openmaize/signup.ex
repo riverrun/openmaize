@@ -42,7 +42,7 @@ defmodule Openmaize.Signup do
       end
     end
   else
-    defp add_pass_changeset(changeset, password, opts) do
+    defp add_pass_changeset(changeset, password, _opts) do
       put_change(changeset, :password_hash, Config.get_crypto_mod.hashpwsalt(password))
     end
   end
