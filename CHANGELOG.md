@@ -4,6 +4,7 @@
 
 * Changes
     * Removed deprected functions (Authorize and AuthorizeIdCheck modules).
+    * Removed check for protected page in Authenticate module.
 
 ## v0.9.0
 
