@@ -25,8 +25,9 @@ defmodule Openmaize.Login do
   If `redirects` is set to false, then there will be no redirects.
 
   """
-  def call(%Plug.Conn{params: params} = conn, {redirects, storage, token_opts}) do
-    %{"name" => user, "password" => password} = Map.take(params["user"], ["name", "password"])
+  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {redirects, storage, token_opts}) do
+    user = Map.get(user_params, Config.unique_id)
+    password = Map.get(user_params, "password")
     case {login_user(user, password), redirects} do
       {false, false} -> send_error(conn, 401, "Invalid credentials")
       {false, true} -> handle_error(conn, "Invalid credentials")
@@ -35,8 +36,10 @@ defmodule Openmaize.Login do
   end
 
   defp login_user(user, password) do
+    uniq = Config.unique_id |> String.to_atom |> IO.inspect
     from(user in Config.user_model,
-    where: user.name == ^user,
+    #where: user.name == ^user,
+    where: field(user, ^uniq) == ^user,
     select: user)
     |> Config.repo.one
     |> check_user(password)
