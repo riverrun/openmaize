@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.10.2
+
+* Enhancements
+    * Added unique_id config value, so it's possible to use `email`, or anything else, instead of `name` to identify the user.
+
 ## v0.10.0
 
 * Changes
