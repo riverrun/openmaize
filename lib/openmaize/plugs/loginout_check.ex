@@ -45,8 +45,10 @@ defmodule Openmaize.LoginoutCheck do
   """
 
   import Plug.Conn
-  alias Openmaize.Login
-  alias Openmaize.Logout
+  import Ecto.Query
+  import Openmaize.Report
+  import Openmaize.Token
+  alias Openmaize.Config
 
   @behaviour Plug
 
@@ -64,16 +66,50 @@ defmodule Openmaize.LoginoutCheck do
     token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
     case Enum.at(path_info, -1) do
       "login" -> handle_login(conn, {redirects, storage, token_opts})
-      "logout" -> handle_logout(conn, {redirects, storage, token_opts})
+      "logout" -> handle_logout(conn, storage)
       _ -> conn
     end
   end
 
-  defp handle_login(%Plug.Conn{method: "POST"} = conn, opts), do: Login.call(conn, opts)
+  defp handle_login(%Plug.Conn{method: "POST", params: %{"user" => user_params}} = conn, opts) do
+    user_params |> find_user(Config.unique_id) |> handle_auth(conn, opts)
+  end
   defp handle_login(conn, _opts) do
     conn |> assign(:current_user, nil) |> put_private(:openmaize_skip, true)
   end
 
-  defp handle_logout(conn, opts), do: assign(conn, :current_user, nil) |> Logout.call(opts)
+  defp find_user(%{"name" => name, "password" => password}, uniq) do
+    uniq |> String.to_atom |> check_user(name, password)
+  end
+  defp check_user(uniq, user, password) do
+    from(u in Config.user_model,
+         where: field(u, ^uniq) == ^user,
+         select: u)
+    |> Config.repo.one
+    |> check_pass(password)
+  end
 
+  defp check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
+  defp check_pass(%{confirmed: false}, _), do: Config.get_crypto_mod.dummy_checkpw
+  defp check_pass(user, password) do
+    Config.get_crypto_mod.checkpw(password, user.password_hash) and user
+  end
+
+  defp handle_auth(false, conn, {false, _, _}) do
+    send_error(conn, 401, "Invalid credentials")
+  end
+  defp handle_auth(false, conn, {true, _, _}) do
+    handle_error(conn, "Invalid credentials")
+  end
+  defp handle_auth(user, conn, {_, storage, token_opts}) do
+    add_token(conn, user, token_opts, storage)
+  end
+
+  defp handle_logout(conn, storage), do: assign(conn, :current_user, nil) |> logout_user(storage)
+
+  defp logout_user(conn, nil), do: conn
+  defp logout_user(conn, :cookie) do
+    delete_resp_cookie(conn, "access_token")
+    |> handle_info("You have been logged out")
+  end
 end

@@ -37,7 +37,7 @@ defmodule Openmaize.Token do
   The token is then either stored in a cookie or sent in the body of the
   response.
   """
-  def add_token(conn, user, opts, storage) when storage == :cookie do
+  def add_token(conn, user, opts, :cookie) do
     role = Map.get(user, :role)
     {:ok, token} = generate_token(user, opts)
     put_resp_cookie(conn, "access_token", token, [http_only: true])
