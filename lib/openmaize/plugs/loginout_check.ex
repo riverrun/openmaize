@@ -78,8 +78,8 @@ defmodule Openmaize.LoginoutCheck do
     conn |> assign(:current_user, nil) |> put_private(:openmaize_skip, true)
   end
 
-  defp find_user(%{"name" => name, "password" => password}, uniq) do
-    uniq |> String.to_atom |> check_user(name, password)
+  defp find_user(%{"name" => user, "password" => password}, uniq) do
+    uniq |> String.to_atom |> check_user(user, password)
   end
   defp check_user(uniq, user, password) do
     from(u in Config.user_model,
@@ -95,17 +95,15 @@ defmodule Openmaize.LoginoutCheck do
     Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 
-  defp handle_auth(false, conn, {false, _, _}) do
-    send_error(conn, 401, "Invalid credentials")
-  end
-  defp handle_auth(false, conn, {true, _, _}) do
-    handle_error(conn, "Invalid credentials")
+  defp handle_auth(false, conn, {redirects, _, _}) do
+    handle_error(conn, "Invalid credentials", redirects)
   end
   defp handle_auth(user, conn, {_, storage, token_opts}) do
     add_token(conn, user, token_opts, storage)
   end
 
-  defp handle_logout(conn, storage), do: assign(conn, :current_user, nil) |> logout_user(storage)
+  defp handle_logout(conn, storage),
+    do: assign(conn, :current_user, nil) |> logout_user(storage)
 
   defp logout_user(conn, nil), do: conn
   defp logout_user(conn, :cookie) do

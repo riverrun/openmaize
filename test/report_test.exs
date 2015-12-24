@@ -4,17 +4,17 @@ defmodule Openmaize.ReportTest do
 
   alias Openmaize.Report
 
-  test "handle_error/2" do
+  test "handle_error for no user with redirects" do
     conn = conn(:get, "/admin")
-    |> Report.handle_error("You have beautiful thighs!")
+    |> Report.handle_error("You have beautiful thighs!", true)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "/admin/login"}
     assert conn.status == 302
   end
 
-  test "handle_error/3" do
+  test "handle_error for unauthorized access with redirects" do
     conn = conn(:get, "/admin")
-    |> Report.handle_error("user", "What are you doing here?")
+    |> Report.handle_error("user", "What are you doing here?", true)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "/users"}
     assert conn.status == 302
@@ -36,10 +36,18 @@ defmodule Openmaize.ReportTest do
     assert conn.status == 302
   end
 
-  test "send_error/3 no redirects" do
+  test "handle_error for no user with no redirects" do
     conn = conn(:get, "/admin")
-    |> Report.send_error(401, "Get out of here!")
+    |> Report.handle_error("Get out of here!", false)
     assert conn.status == 401
+    assert conn.halted == true
+    assert conn.private.openmaize_skip == true
+  end
+
+  test "handle_error for unauthorized access with no redirects" do
+    conn = conn(:get, "/admin")
+    |> Report.handle_error("user", "Get out of here!", false)
+    assert conn.status == 403
     assert conn.halted == true
     assert conn.private.openmaize_skip == true
   end
