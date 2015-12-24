@@ -90,7 +90,8 @@ defmodule Openmaize.LoginoutCheck do
   end
 
   defp check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
-  defp check_pass(%{confirmed: false}, _), do: Config.get_crypto_mod.dummy_checkpw
+  defp check_pass(%{confirmable: true, confirmed: false}, _),
+    do: Config.get_crypto_mod.dummy_checkpw
   defp check_pass(user, password) do
     Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end

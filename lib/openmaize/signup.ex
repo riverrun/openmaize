@@ -22,7 +22,8 @@ defmodule Openmaize.Signup do
         timestamps
       end
 
-  In the example above, the `name` is used to identify the user, the
+  In the example above, the `name` is used to identify the user and
+  can be changed by setting the `unique_id` value in the config, the
   `role` is needed for authorization, and the `password` and the
   `password_hash` fields are needed for the `create_user` function
   in this module. Note the addition of `virtual: true` to the definition

@@ -1,6 +1,7 @@
 defmodule Openmaize.Config do
   @moduledoc """
   This module provides an abstraction layer for configuration.
+
   The following are valid configuration items.
 
   | name               | type    | default  |

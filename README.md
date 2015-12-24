@@ -20,7 +20,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   defp deps do
-    [ {:openmaize, "~> 0.10"} ]
+    [ {:openmaize, "~> 0.11"} ]
   end
   ```
 
@@ -37,9 +37,9 @@ tested with the Phoenix Web Framework.
 ## Use
 
 Before you use Openmaize, you need to make sure that your user model
-contains an `id` and a `role`. You will also need a `unique_id`, which
-is configurable, for the user, such as `name`, which is the default,
-`username` or `email`.
+contains an `id` and a `role`. You will also need a `unique_id`, such
+as `name`, `email` or `username`, for the user. The default `unique_id`
+is `name`, but you can change this in the config.
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
