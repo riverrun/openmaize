@@ -8,6 +8,7 @@ defmodule Openmaize.Report do
   """
 
   import Plug.Conn
+  import Openmaize.Phoenix.Tools
   alias Openmaize.Config
 
   @doc """
@@ -20,10 +21,10 @@ defmodule Openmaize.Report do
   user.
   """
   def handle_error(conn, message, true) do
-    redirect_to_login(conn, %{"error" => message})
+    redirect_to(conn, "#{Config.redirect_pages["login"]}", %{"error" => message})
   end
   def handle_error(conn, message, false) do
-    send_resp(conn, 401, Poison.encode!(%{"error" => message})) |> terminate
+    send_resp(conn, 401, Poison.encode!(%{"error" => message})) |> halt()
   end
 
   @doc """
@@ -39,8 +40,8 @@ defmodule Openmaize.Report do
   def handle_error(conn, role, message, true) do
     redirect_to(conn, "#{Config.redirect_pages[role]}", %{"error" => message})
   end
-  def handle_error(conn, role, message, false) do
-    send_resp(conn, 403, Poison.encode!(%{"error" => message})) |> terminate
+  def handle_error(conn, _role, message, false) do
+    send_resp(conn, 403, Poison.encode!(%{"error" => message})) |> halt()
   end
 
   @doc """
@@ -53,34 +54,6 @@ defmodule Openmaize.Report do
   """
   def handle_info(conn, role, message) do
     redirect_to(conn, "#{Config.redirect_pages[role]}", %{"info" => message})
-  end
-
-  @doc """
-  Return and halt the connection. Also, set the openmaize_skip value to true,
-  which means that subsequent Openmaize plugs will just return the connection
-  without performing any further checks.
-  """
-  def terminate(conn), do: conn |> put_private(:openmaize_skip, true) |> halt
-
-  defp redirect_to(%Plug.Conn{resp_headers: resp_headers} = conn, address, message) do
-    unless map_size(message) == 0, do: conn = add_message(conn, message)
-    new_headers = [{"content-type", "text/html; charset=utf-8"}, {"location", address}]
-    %{conn | resp_headers: new_headers ++ resp_headers}
-    |> send_resp(302, "")
-    |> terminate
-  end
-
-  defp redirect_to_login(conn, message) do
-    redirect_to(conn, "#{Config.login_dir}/login", message)
-  end
-
-  defp add_message(conn, message) do
-    if Map.get(conn.private, :phoenix_flash) do
-      put_private(conn, :phoenix_flash, message)
-    else
-      IO.inspect message
-      conn
-    end
   end
 
 end

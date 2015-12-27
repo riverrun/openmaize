@@ -41,7 +41,6 @@ defmodule Openmaize.ReportTest do
     |> Report.handle_error("Get out of here!", false)
     assert conn.status == 401
     assert conn.halted == true
-    assert conn.private.openmaize_skip == true
   end
 
   test "handle_error for unauthorized access with no redirects" do
@@ -49,7 +48,6 @@ defmodule Openmaize.ReportTest do
     |> Report.handle_error("user", "Get out of here!", false)
     assert conn.status == 403
     assert conn.halted == true
-    assert conn.private.openmaize_skip == true
   end
 
 end
