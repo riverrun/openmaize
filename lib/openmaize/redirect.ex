@@ -1,10 +1,12 @@
-defmodule Openmaize.Phoenix.Tools do
+defmodule Openmaize.Redirect do
   @moduledoc """
-  Various tools that are used with the management of JSON Web Tokens.
+  Handle redirects and error / info reporting.
   """
 
   import Plug.Conn
 
+  @doc """
+  """
   def redirect_to(%Plug.Conn{resp_headers: resp_headers} = conn, address, message) do
     new_headers = [{"content-type", "text/html; charset=utf-8"}, {"location", address}]
     %{conn | resp_headers: new_headers ++ resp_headers}
@@ -14,7 +16,11 @@ defmodule Openmaize.Phoenix.Tools do
   end
 
   defp print_message(conn, message) do
-    IO.inspect message
-    conn
+    if Map.get(conn.private, :phoenix_flash) do
+      put_private(conn, :phoenix_flash, message)
+    else
+      IO.inspect message
+      conn
+    end
   end
 end

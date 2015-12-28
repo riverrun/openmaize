@@ -43,7 +43,6 @@ defmodule Openmaize.AccessControl do
       plug :authorize, roles: ["admin", "user"], redirects: false
 
   """
-  def authorize(%Plug.Conn{private: %{openmaize_skip: true}} = conn, _opts), do: conn
   def authorize(%Plug.Conn{assigns: assigns} = conn, opts) do
     opts = {Keyword.get(opts, :roles, []), Keyword.get(opts, :redirects, true)}
     full_check(conn, opts, Map.get(assigns, :current_user))

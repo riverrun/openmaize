@@ -2,8 +2,8 @@ defmodule Openmaize.Login do
   @moduledoc """
   Plug to handle login.
 
-  This module provides the `login_user` function, which handles the login
-  POST request.
+  ## Examples
+
   """
 
   import Ecto.Query
@@ -16,6 +16,7 @@ defmodule Openmaize.Login do
   def init(opts), do: opts
 
   @doc """
+  Handle the login POST request.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
     {redirects, storage} = case Keyword.get(opts, :redirects, true) do

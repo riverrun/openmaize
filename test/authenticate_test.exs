@@ -24,12 +24,16 @@ defmodule Openmaize.AuthenticateTest do
             nbf_token: nbf_token, user_256_token: user_256_token}}
   end
 
-  def call(url, token, storage) when storage == :cookie do
-    conn(:get, url) |> put_req_cookie("access_token", token) |> Authenticate.call([])
+  def call(url, token, :cookie) do
+    conn(:get, url)
+    |> put_req_cookie("access_token", token)
+    |> fetch_cookies
+    |> Authenticate.call([])
   end
 
   def call(url, token, _) do
-    conn(:get, url) |> put_req_header("authorization", "Bearer #{token}")
+    conn(:get, url)
+    |> put_req_header("authorization", "Bearer #{token}")
     |> Authenticate.call([storage: nil])
   end
 

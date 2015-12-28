@@ -8,7 +8,7 @@ defmodule Openmaize.Report do
   """
 
   import Plug.Conn
-  import Openmaize.Phoenix.Tools
+  import Openmaize.Redirect
   alias Openmaize.Config
 
   @doc """

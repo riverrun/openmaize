@@ -1,6 +1,9 @@
 defmodule Openmaize.Logout do
   @moduledoc """
-  Plug to handle login and logout requests.
+  Plug to handle logout requests.
+
+  ## Examples
+
   """
 
   import Plug.Conn
@@ -13,14 +16,18 @@ defmodule Openmaize.Logout do
   @doc """
   """
   def call(conn, opts) do
-    handle_logout(conn, Keyword.get(opts, :storage, :cookie))
+    {redirects, storage} = case Keyword.get(opts, :redirects, true) do
+                             true -> {true, Keyword.get(opts, :storage, :cookie)}
+                             false -> {false, nil}
+                           end
+    handle_logout(conn, {redirects, storage})
   end
 
-  defp handle_logout(conn, storage),
-    do: assign(conn, :current_user, nil) |> logout_user(storage)
+  defp handle_logout(conn, opts),
+    do: assign(conn, :current_user, nil) |> logout_user(opts)
 
-  defp logout_user(conn, nil), do: conn
-  defp logout_user(conn, :cookie) do
+  defp logout_user(conn, {_, nil}), do: conn
+  defp logout_user(conn, {redirects, :cookie}) do
     delete_resp_cookie(conn, "access_token")
     |> handle_info("You have been logged out")
   end

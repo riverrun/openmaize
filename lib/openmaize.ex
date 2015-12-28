@@ -2,17 +2,15 @@ defmodule Openmaize do
   @moduledoc """
   Openmaize is an authentication / authorization library for Elixir.
 
-  It uses Plug extensively and provides the following main plugs:
+  It uses Plug extensively and provides the following plugs:
 
-  * Openmaize.LoginoutCheck
-      * checks the path to see if it is for the login or logout page
-      * handles login or logout if necessary
   * Openmaize.Authenticate
-      * authenticates the user
-      * sets (adds to the assigns map) the current_user variable
-
-  There are also plugs that can be used for authorization in the
-  Openmaize.AccessControl module.
+    * authenticates the user
+    * sets (adds to the assigns map) the current_user variable
+  * Openmaize.AccessControl.authorize
+  * Openmaize.AccessControl.authorize_id
+  * Openmaize.Login
+  * Openmaize.Logout
 
   See the relevant module documentation for more details.
 
