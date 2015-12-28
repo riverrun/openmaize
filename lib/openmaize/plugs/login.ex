@@ -19,9 +19,9 @@ defmodule Openmaize.Login do
   Handle the login POST request.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
-    {redirects, storage} = case Keyword.get(opts, :redirects, true) do
-                             true -> {true, Keyword.get(opts, :storage, :cookie)}
-                             false -> {false, nil}
+    {redirects, storage} = case Keyword.get(opts, :storage, :cookie) do
+                             :cookie -> {Keyword.get(opts, :redirects, true), :cookie}
+                             nil -> {false, nil}
                            end
     token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
     user_params
@@ -50,8 +50,8 @@ defmodule Openmaize.Login do
   defp handle_auth(false, conn, {redirects, _, _}) do
     handle_error(conn, "Invalid credentials", redirects)
   end
-  defp handle_auth(user, conn, {_, storage, token_opts}) do
-    add_token(conn, user, token_opts, storage)
+  defp handle_auth(user, conn, opts) do
+    add_token(conn, user, opts)
   end
 
 end
