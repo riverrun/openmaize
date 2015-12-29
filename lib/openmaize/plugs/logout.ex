@@ -2,7 +2,24 @@ defmodule Openmaize.Logout do
   @moduledoc """
   Plug to handle logout requests.
 
-  ## Examples
+  There is one option:
+
+  * redirects - if true, which is the default, redirect on login
+
+  ## Examples with Phoenix
+
+  In the `web/router.ex` file, add the following line (you can use
+  a different controller and route):
+
+      get "/logout", PageController, :logout
+
+  And then in the `page_controller.ex` file, add:
+
+      plug Openmaize.Logout when action in [:logout]
+
+  If you stored the token in a cookie, but you want redirects set to false:
+
+      plug Openmaize.Logout, [redirects: false] when action in [:logout]
 
   """
 
@@ -11,23 +28,26 @@ defmodule Openmaize.Logout do
 
   @behaviour Plug
 
-  def init(opts), do: opts
-
-  @doc """
-  """
-  def call(conn, opts) do
-    {redirects, storage} = {Keyword.get(opts, :redirects, true),
-                            Keyword.get(opts, :storage, :cookie)}
-    handle_logout(conn, {redirects, storage})
+  def init(opts) do
+    Keyword.get(opts, :redirects, true)
   end
 
-  defp handle_logout(conn, opts),
-    do: assign(conn, :current_user, nil) |> logout_user(opts)
+  @doc """
+  Handle logout.
 
-  defp logout_user(conn, {_, nil}), do: conn
-  defp logout_user(conn, {true, :cookie}) do
+  If the token was stored in a cookie, the cookie will be deleted.
+  If the token was not stored in a cookie, then you will need to use
+  your front end framework to delete the token.
+  """
+  def call(%Plug.Conn{req_cookies: %{"access_token" => _token}} = conn, redirects) do
+    assign(conn, :current_user, nil) |> logout_user(redirects)
+  end
+  def call(conn, _opts), do: assign(conn, :current_user, nil) |> halt
+
+  defp logout_user(conn, true) do
     delete_resp_cookie(conn, "access_token")
     |> handle_info("You have been logged out")
   end
-  defp logout_user(conn, {false, :cookie}), do: delete_resp_cookie(conn, "access_token")
+  defp logout_user(conn, false),
+    do: delete_resp_cookie(conn, "access_token") |> halt
 end

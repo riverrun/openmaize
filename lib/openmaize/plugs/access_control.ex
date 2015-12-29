@@ -36,16 +36,16 @@ defmodule Openmaize.AccessControl do
   Only allow users with the role "admin" to access the create and update pages
   (this means that the other pages are unprotected):
 
-      plug :authorize, roles: ["admin"] when action in [:create, :update]
+      plug :authorize, [roles: ["admin"]] when action in [:create, :update]
 
   Allow users with the role "admin" or "user" to access pages, and set redirects to false:
 
       plug :authorize, roles: ["admin", "user"], redirects: false
 
   """
-  def authorize(%Plug.Conn{assigns: assigns} = conn, opts) do
+  def authorize(%Plug.Conn{assigns: %{current_user: current_user}} = conn, opts) do
     opts = {Keyword.get(opts, :roles, []), Keyword.get(opts, :redirects, true)}
-    full_check(conn, opts, Map.get(assigns, :current_user))
+    full_check(conn, opts, current_user)
   end
 
   @doc """
@@ -59,11 +59,14 @@ defmodule Openmaize.AccessControl do
 
   * redirects - if true, which is the default, redirect on login / logout
   """
-  def authorize_id(%Plug.Conn{params: %{"id" => id}, assigns: assigns} = conn, opts) do
+  def authorize_id(%Plug.Conn{params: %{"id" => id},
+                              assigns: %{current_user: current_user}} = conn, opts) do
     redirects = Keyword.get(opts, :redirects, true)
-    id_check(conn, redirects, id, Map.get(assigns, :current_user))
+    id_check(conn, redirects, id, current_user)
   end
 
+  defp full_check(_conn, {[], _}, _),
+    do: raise ArgumentError, "You need to set the `roles` option for :authorize"
   defp full_check(conn, {_, redirects}, nil), do: nouser_error(conn, redirects)
   defp full_check(conn, {roles, redirects}, %{role: role}) do
     if role in roles, do: conn, else: nopermit_error(conn, role, redirects)
@@ -87,5 +90,4 @@ defmodule Openmaize.AccessControl do
     message = "You do not have permission to view #{path}"
     handle_error(conn, role, message, redirects)
   end
-
 end

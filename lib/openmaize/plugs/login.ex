@@ -2,7 +2,35 @@ defmodule Openmaize.Login do
   @moduledoc """
   Plug to handle login.
 
-  ## Examples
+  There are three options:
+
+  * redirects - if true, which is the default, redirect on login
+  * storage - storage method for the token
+    * the default is :cookie
+    * if redirects is set to false, storage is automatically set to nil
+  * token_validity - length of validity of token (in minutes)
+    * the default is 1440 minutes (one day)
+
+  ## Examples with Phoenix
+
+  In the `web/router.ex` file, add the following line (you can use
+  a different controller and route):
+
+      post "/login", PageController, :login_user
+
+  And then in the `page_controller.ex` file, add:
+
+      plug Openmaize.Login when action in [:login_user]
+
+  If you want to use sessionStorage to store the token (this will also set
+  redirects to false):
+
+      plug Openmaize.Login, [storage: nil] when action in [:login_user]
+
+  If you want to store the token in sessionStorage and have the token valid
+  for just two hours:
+
+      plug Openmaize.Login, [storage: nil, token_validity: 120] when action in [:login_user]
 
   """
 
@@ -13,20 +41,20 @@ defmodule Openmaize.Login do
 
   @behaviour Plug
 
-  def init(opts), do: opts
+  def init(opts) do
+    {case Keyword.get(opts, :storage, :cookie) do
+      :cookie -> {Keyword.get(opts, :redirects, true), :cookie}
+      nil -> {false, nil}
+    end, {0, Keyword.get(opts, :token_validity, 1440)}}
+  end
 
   @doc """
   Handle the login POST request.
+
+  If the login is successful, a JSON Web Token will be returned.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
-    {redirects, storage} = case Keyword.get(opts, :storage, :cookie) do
-                             :cookie -> {Keyword.get(opts, :redirects, true), :cookie}
-                             nil -> {false, nil}
-                           end
-    token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
-    user_params
-    |> find_user(Config.unique_id)
-    |> handle_auth(conn, {redirects, storage, token_opts})
+    user_params |> find_user(Config.unique_id) |> handle_auth(conn, opts)
   end
 
   defp find_user(%{"name" => user, "password" => password}, uniq) do
@@ -53,5 +81,4 @@ defmodule Openmaize.Login do
   defp handle_auth(user, conn, opts) do
     add_token(conn, user, opts)
   end
-
 end
