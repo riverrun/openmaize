@@ -58,7 +58,9 @@ defmodule Openmaize.Login do
     user_params |> find_user(Config.unique_id) |> handle_auth(conn, opts)
   end
 
-  defp find_user(%{"name" => user, "password" => password}, uniq) do
+  defp find_user(user_params, uniq) do
+    user = Map.get(user_params, uniq)
+    password = Map.get(user_params, "password")
     uniq |> String.to_atom |> check_user(user, password)
   end
   defp check_user(uniq, user, password) do
