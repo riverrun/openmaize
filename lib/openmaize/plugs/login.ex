@@ -42,10 +42,11 @@ defmodule Openmaize.Login do
   @behaviour Plug
 
   def init(opts) do
-    {case Keyword.get(opts, :storage, :cookie) do
-      :cookie -> {Keyword.get(opts, :redirects, true), :cookie}
-      nil -> {false, nil}
-    end, {0, Keyword.get(opts, :token_validity, 1440)}}
+    token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
+    case Keyword.get(opts, :storage, :cookie) do
+      :cookie -> {Keyword.get(opts, :redirects, true), :cookie, token_opts}
+      nil -> {false, nil, token_opts}
+    end
   end
 
   @doc """
