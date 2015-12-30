@@ -5,9 +5,10 @@ defmodule Openmaize.Authenticate do
   For more information about Json Web Tokens, see the documentation for
   the Openmaize.Token module.
 
-  This module also sets the current_user variable, which, if you are using
-  Phoenix, can then be used in your templates. If no token is found, the
-  current_user is set to nil.
+  It is important to note that this module only checks the identity of
+  the user. For authorization / access control, you need to perform
+  further checks - see the Openmaize.AccessControl module for more
+  information.
 
   ## Examples using Phoenix
 
@@ -33,10 +34,9 @@ defmodule Openmaize.Authenticate do
   request headers, and authenticates the user based on the information in
   the token.
 
-  If the authentication is successful, a map, called `current_user`,
-  providing the user information is added to the `assigns` map in the
-  Plug connection. If there is no token, or if the token is invalid,
-  the `current_user` is set to nil.
+  It also sets the current_user variable, which, if you are using
+  Phoenix, can then be used in your templates. If no token is found, the
+  current_user is set to nil.
   """
   def call(%Plug.Conn{req_cookies: %{"access_token" => token}} = conn, _opts) do
     check_token(token) |> set_current_user(conn)

@@ -7,7 +7,7 @@ defmodule Openmaize.Login do
   * redirects - if true, which is the default, redirect on login
   * storage - storage method for the token
     * the default is :cookie
-    * if redirects is set to false, storage is automatically set to nil
+    * if storage is set to nil, redirects is automatically set to false
   * token_validity - length of validity of token (in minutes)
     * the default is 1440 minutes (one day)
 

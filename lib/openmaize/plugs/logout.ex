@@ -6,6 +6,10 @@ defmodule Openmaize.Logout do
 
   * redirects - if true, which is the default, redirect on login
 
+  If the token was stored in sessionStorage, then redirects is automatically
+  set to false. You will also need to use the front end framework to delete
+  the token.
+
   ## Examples with Phoenix
 
   In the `web/router.ex` file, add the following line (you can use
