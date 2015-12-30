@@ -1,6 +1,7 @@
 defmodule Openmaize.Config do
   @moduledoc """
   This module provides an abstraction layer for configuration.
+
   The following are valid configuration items.
 
   | name               | type    | default  |
@@ -11,8 +12,7 @@ defmodule Openmaize.Config do
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
   | keyrotate_days     | int     | 28       |
-  | login_dir          | string  | "/admin" |
-  | redirect_pages     | map     | %{"admin" => "/admin", nil => "/"} |
+  | redirect_pages     | map     | %{"admin" => "/admin", nil => "/", "login" => "/login"} |
 
   The values for user_model and repo should be module names.
   If, for example, your app is called Coolapp and your user
@@ -31,7 +31,6 @@ defmodule Openmaize.Config do
         crypto_mod: :pbkdf2,
         token_alg: :sha256,
         keyrotate_days: 7,
-        login_dir: "admin",
         redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
 
   """
@@ -99,14 +98,6 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The login directory. For example, the default value of "/admin" means
-  that the login page is "/admin/login".
-  """
-  def login_dir do
-    Application.get_env(:openmaize, :login_dir, "/admin")
-  end
-
-  @doc """
   The pages users should be redirected to after logging in. This is a
   map where the key is the role of the user and the value is the page
   to be redirected to.
@@ -114,7 +105,7 @@ defmodule Openmaize.Config do
   If there is no role, the user will be redirected to the home page.
   """
   def redirect_pages do
-    default = %{"admin" => "/admin", nil => "/"}
+    default = %{"admin" => "/admin", nil => "/", "login" => "/login"}
     Application.get_env(:openmaize, :redirect_pages, default)
   end
 

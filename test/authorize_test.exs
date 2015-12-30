@@ -7,45 +7,50 @@ defmodule Openmaize.AuthorizeTest do
   @admin %{id: 2, name: "Big Boss", role: "admin"}
   @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
 
+  def call(path, current_user, roles, redirects \\ true) do
+    conn(:get, path)
+    |> assign(:current_user, current_user)
+    |> authorize([roles: roles, redirects: redirects])
+  end
+
   test "correct token with role admin" do
-    conn = conn(:get, "/admin")
-            |> assign(:current_user, @admin)
-            |> authorize([roles: ["admin"]])
-            |> send_resp(200, "")
+    conn = call("/admin", @admin, ["admin"]) |> send_resp(200, "")
+    assert conn.status == 200
+  end
+
+  test "correct token with role user" do
+    conn = call("/users", @user, ["user"]) |> send_resp(200, "")
     assert conn.status == 200
   end
 
   test "redirect for insufficient permissions" do
-    conn = conn(:get, "/admin")
-            |> assign(:current_user, @user)
-            |> authorize([roles: ["admin"]])
+    conn = call("/admin", @user, ["admin"])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "/users"}
     assert conn.status == 302
   end
 
   test "redirect for no user" do
-    conn = conn(:get, "/admin")
-            |> assign(:current_user, nil)
-            |> authorize([roles: ["admin", "user"]])
+    conn = call("/admin", nil, ["admin", "user"])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "/admin/login"}
     assert conn.status == 302
   end
 
+  test "no user with no redirect" do
+    conn = call("/admin", nil, ["admin"], false)
+    assert conn.status == 401
+  end
+
   test "insufficient permissions with no redirect" do
-    conn = conn(:get, "/admin")
-            |> assign(:current_user, @user)
-            |> authorize([roles: ["admin"], redirects: false])
+    conn = call("/admin", @admin, ["user"], false)
     assert conn.status == 403
   end
 
-  test "able to view user page as user" do
-    conn = conn(:get, "/users")
-            |> assign(:current_user, @user)
-            |> authorize([roles: ["user"]])
-            |> send_resp(200, "")
-    assert conn.status == 200
+  test "roles option not set" do
+    assert_raise ArgumentError, fn ->
+      call("/admin", @admin, [])
+    end
   end
 
 end

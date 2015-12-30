@@ -20,7 +20,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   defp deps do
-    [ {:openmaize, "~> 0.10"} ]
+    [ {:openmaize, "~> 0.11"} ]
   end
   ```
 
@@ -37,24 +37,26 @@ tested with the Phoenix Web Framework.
 ## Use
 
 Before you use Openmaize, you need to make sure that your user model
-contains an `id` and a `role`. You will also need a `unique_id`, which
-is configurable, for the user, such as `name`, which is the default,
-`username` or `email`.
+contains an `id` and a `role`. You will also need a `unique_id`, such
+as `name`, `email` or `username`, for the user. The default `unique_id`
+is `name`, but you can change this in the config.
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
 
-Openmaize provides the following main plugs:
+Openmaize provides the following plugs:
 
-* Openmaize.LoginoutCheck
-  * checks the path to see if it is for the login or logout page
-  * handles login or logout if necessary
 * Openmaize.Authenticate
-  * authenticates the user
-  * sets (adds to the assigns map) the current_user variable
-
-There are also plugs that can be used for authorization in the
-Openmaize.AccessControl module.
+    * authenticates the user
+    * sets (adds to the assigns map) the current_user variable
+* Openmaize.AccessControl.authorize
+    * check, based on the user's role, to see if the user is authorized to access the page
+* Openmaize.AccessControl.authorize_id
+    * check, based on user id, to see if the user is authorized to access the page
+* Openmaize.Login
+    * handle login POST request
+* Openmaize.Logout
+    * handle logout request
 
 See the relevant module documentation for more details.
 
