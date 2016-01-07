@@ -6,6 +6,10 @@ defmodule Openmaize.Redirect do
   import Plug.Conn
 
   @doc """
+  Redirect the connection and report errors / info.
+
+  If you are using Phoenix, the error / info messages will be displayed
+  on the screen - using Phoenix flash.
   """
   def redirect_to(%Plug.Conn{resp_headers: resp_headers} = conn, address, message) do
     new_headers = [{"content-type", "text/html; charset=utf-8"}, {"location", address}]

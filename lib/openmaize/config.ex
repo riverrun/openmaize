@@ -12,7 +12,8 @@ defmodule Openmaize.Config do
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
   | keyrotate_days     | int     | 28       |
-  | redirect_pages     | map     | %{"admin" => "/admin", nil => "/", "login" => "/login"} |
+  | redirect_pages     | map     | %{"admin" => "/admin"} |
+  | redirect_login     | string  | "/login" |
 
   The values for user_model and repo should be module names.
   If, for example, your app is called Coolapp and your user
@@ -31,7 +32,8 @@ defmodule Openmaize.Config do
         crypto_mod: :pbkdf2,
         token_alg: :sha256,
         keyrotate_days: 7,
-        redirect_pages: %{"admin" => "/admin", "user" => "/users", nil => "/"},
+        redirect_pages: %{"admin" => "/admin"},
+        redirect_login: "/admin/login"
 
   """
 
@@ -91,22 +93,28 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The number of days after which the keys will be rotated.
+  The number of days after which the JWT signing keys will be rotated.
   """
   def keyrotate_days do
     Application.get_env(:openmaize, :keyrotate_days, 28)
   end
 
   @doc """
-  The pages users should be redirected to after logging in. This is a
-  map where the key is the role of the user and the value is the page
-  to be redirected to.
+  The pages users should be redirected to after logging in or if there
+  is an error.
 
-  If there is no role, the user will be redirected to the home page.
+  This is a map where the key is the role of the user and the value is
+  the page to be redirected to.
   """
   def redirect_pages do
-    default = %{"admin" => "/admin", nil => "/", "login" => "/login"}
-    Application.get_env(:openmaize, :redirect_pages, default)
+    Application.get_env(:openmaize, :redirect_pages, %{"admin" => "/admin"})
+  end
+
+  @doc """
+  The login page that unauthenticated users should be redirected to.
+  """
+  def redirect_login do
+    Application.get_env(:openmaize, :redirect_login, "/login")
   end
 
 end

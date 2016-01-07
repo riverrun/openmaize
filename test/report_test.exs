@@ -8,7 +8,7 @@ defmodule Openmaize.ReportTest do
     conn = conn(:get, "/admin")
     |> Report.handle_error("You have beautiful thighs!", true)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "/admin/login"}
+           {"location", "/login"}
     assert conn.status == 302
   end
 

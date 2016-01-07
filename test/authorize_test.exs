@@ -33,7 +33,7 @@ defmodule Openmaize.AuthorizeTest do
   test "redirect for no user" do
     conn = call("/admin", nil, ["admin", "user"])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-           {"location", "/admin/login"}
+           {"location", "/login"}
     assert conn.status == 302
   end
 
