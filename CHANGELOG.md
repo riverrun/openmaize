@@ -2,9 +2,6 @@
 
 ## v0.12.0-dev
 
-* Changes
-    * Added `redirect_login` config value. The login page is no longer set in the `redirect_pages` config value.
-
 ## v0.11.0
 
 * Enhancements

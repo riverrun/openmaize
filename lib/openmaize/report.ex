@@ -21,7 +21,7 @@ defmodule Openmaize.Report do
   user.
   """
   def handle_error(conn, message, true) do
-    redirect_to(conn, "#{Config.redirect_login}", %{"error" => message})
+    redirect_to(conn, "#{Config.redirect_pages["login"]}", %{"error" => message})
   end
   def handle_error(conn, message, false) do
     send_resp(conn, 401, Poison.encode!(%{"error" => message})) |> halt()

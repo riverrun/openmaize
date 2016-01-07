@@ -12,8 +12,7 @@ defmodule Openmaize.Config do
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
   | keyrotate_days     | int     | 28       |
-  | redirect_pages     | map     | %{"admin" => "/admin"} |
-  | redirect_login     | string  | "/login" |
+  | redirect_pages     | map     | %{"admin" => "/admin", "login" => "/login"} |
 
   The values for user_model and repo should be module names.
   If, for example, your app is called Coolapp and your user
@@ -32,8 +31,7 @@ defmodule Openmaize.Config do
         crypto_mod: :pbkdf2,
         token_alg: :sha256,
         keyrotate_days: 7,
-        redirect_pages: %{"admin" => "/admin"},
-        redirect_login: "/admin/login"
+        redirect_pages: %{"admin" => "/admin", "login" => "/admin/login"}
 
   """
 
@@ -105,16 +103,13 @@ defmodule Openmaize.Config do
 
   This is a map where the key is the role of the user and the value is
   the page to be redirected to.
+
+  There is also a "login" key, which refers to the login page that
+  unauthorized users shoud be redirected to.
   """
   def redirect_pages do
-    Application.get_env(:openmaize, :redirect_pages, %{"admin" => "/admin"})
-  end
-
-  @doc """
-  The login page that unauthenticated users should be redirected to.
-  """
-  def redirect_login do
-    Application.get_env(:openmaize, :redirect_login, "/login")
+    Map.merge(%{"login" => "/login"},
+    Application.get_env(:openmaize, :redirect_pages, %{"admin" => "/admin"}))
   end
 
 end
