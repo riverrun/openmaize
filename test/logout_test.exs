@@ -29,8 +29,21 @@ defmodule Openmaize.LogoutTest do
     conn = call(user_token, :cookie, true)
     assert conn.resp_cookies["access_token"] ==
       %{max_age: 0, universal_time: {{1970, 1, 1}, {0, 0, 0}}}
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+           {"location", "/"}
     assert conn.halted == true
     assert conn.status == 302
+  end
+
+  test "logout with redirect to login page", %{user_token: user_token} do
+    Application.put_env(:openmaize, :redirect_pages, %{"logout" => "/login"})
+    conn = call(user_token, :cookie, true)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+           {"location", "/login"}
+    assert conn.halted == true
+    assert conn.status == 302
+    Application.put_env(:openmaize, :redirect_pages,
+                        %{"admin" => "/admin", "user" => "/users"})
   end
 
   test "logout with cookie and without redirect", %{user_token: user_token} do

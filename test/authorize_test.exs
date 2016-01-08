@@ -37,6 +37,16 @@ defmodule Openmaize.AuthorizeTest do
     assert conn.status == 302
   end
 
+  test "redirect to custom login page for no user" do
+    Application.put_env(:openmaize, :redirect_pages, %{"login" => "/admin/login"})
+    conn = call("/admin", nil, ["admin", "user"])
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/admin/login"}
+    assert conn.status == 302
+    Application.put_env(:openmaize, :redirect_pages,
+                        %{"admin" => "/admin", "user" => "/users"})
+  end
+
   test "no user with no redirect" do
     conn = call("/admin", nil, ["admin"], false)
     assert conn.status == 401

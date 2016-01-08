@@ -2,6 +2,9 @@
 
 ## v0.12.0-dev
 
+* Bug fixes
+    * Fixed the bug with unique_id being set to name in the generate_token funcion.
+
 ## v0.11.0
 
 * Enhancements
