@@ -72,14 +72,17 @@ defmodule Openmaize.Login do
   end
 
   defp check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
-  defp check_pass(%{confirmable: true, confirmed: false}, _),
-    do: Config.get_crypto_mod.dummy_checkpw
+  defp check_pass(%{confirmed: false}, _),
+    do: {:error, "You have to confirm your email address before continuing."}
   defp check_pass(user, password) do
     Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 
   defp handle_auth(false, conn, {redirects, _, _}) do
     handle_error(conn, "Invalid credentials", redirects)
+  end
+  defp handle_auth({:error, message}, conn, {redirects, _, _}) do
+    handle_error(conn, message, redirects)
   end
   defp handle_auth(user, conn, opts) do
     add_token(conn, user, opts)
