@@ -2,7 +2,7 @@ defmodule Openmaize.AuthorizeTest do
   use ExUnit.Case
   use Plug.Test
 
-  import Openmaize.AccessControl
+  use Openmaize.AccessControl
 
   @admin %{id: 2, name: "Big Boss", role: "admin"}
   @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}

@@ -28,8 +28,7 @@ defmodule Openmaize.Token do
   """
 
   import Plug.Conn
-  import Openmaize.Report
-  import Openmaize.Token.Create
+  import Openmaize.{Report, Token.Create}
 
   @doc """
   Generate token based on the user information.

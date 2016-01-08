@@ -32,59 +32,77 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login, [storage: nil, token_validity: 120] when action in [:login_user]
 
+  ## Overriding these functions
+
   """
 
-  import Ecto.Query
-  import Openmaize.Report
-  import Openmaize.Token
-  alias Openmaize.Config
+  defmacro __using__(_) do
+    quote do
+      @behaviour Plug
 
-  @behaviour Plug
+      import Ecto.Query
+      import Openmaize.{Report, Token}
+      alias Openmaize.Config
 
-  def init(opts) do
-    token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
-    case Keyword.get(opts, :storage, :cookie) do
-      :cookie -> {Keyword.get(opts, :redirects, true), :cookie, token_opts}
-      nil -> {false, nil, token_opts}
+      def init(opts) do
+        token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
+        case Keyword.get(opts, :storage, :cookie) do
+          :cookie -> {Keyword.get(opts, :redirects, true), :cookie, token_opts}
+          nil -> {false, nil, token_opts}
+        end
+      end
+
+      @doc """
+      Handle the login POST request.
+
+      If the login is successful, a JSON Web Token will be returned.
+      """
+      def call(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
+        user_params |> find_user(Config.unique_id) |> handle_auth(conn, opts)
+      end
+
+      @doc """
+      """
+      def find_user(%{^uniq => user, "password" => password}, uniq) do
+        uniq |> String.to_atom |> check_user(user, password)
+      end
+
+      @doc """
+      Find the user in the database and check the password.
+      """
+      def check_user(uniq, user, password) do
+        from(u in Config.user_model,
+             where: field(u, ^uniq) == ^user,
+             select: u)
+        |> Config.repo.one
+        |> check_pass(password)
+      end
+
+      @doc """
+      Check the password with the user's stored password hash.
+      """
+      def check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
+      def check_pass(%{confirmed: false}, _),
+        do: {:error, "You have to confirm your email address before continuing."}
+      def check_pass(user, password) do
+        Config.get_crypto_mod.checkpw(password, user.password_hash) and user
+      end
+
+      @doc """
+      Either call the function to create the token or handle the error.
+      """
+      def handle_auth(false, conn, {redirects, _, _}) do
+        handle_error(conn, "Invalid credentials", redirects)
+      end
+      def handle_auth({:error, message}, conn, {redirects, _, _}) do
+        handle_error(conn, message, redirects)
+      end
+      def handle_auth(user, conn, opts) do
+        add_token(conn, user, opts)
+      end
+
+      defoverridable [init: 1, call: 2, find_user: 2, check_user: 3,
+                      check_pass: 2, handle_auth: 3]
     end
-  end
-
-  @doc """
-  Handle the login POST request.
-
-  If the login is successful, a JSON Web Token will be returned.
-  """
-  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
-    user_params |> find_user(Config.unique_id) |> handle_auth(conn, opts)
-  end
-
-  defp find_user(user_params, uniq) do
-    user = Map.get(user_params, uniq)
-    password = Map.get(user_params, "password")
-    uniq |> String.to_atom |> check_user(user, password)
-  end
-  defp check_user(uniq, user, password) do
-    from(u in Config.user_model,
-         where: field(u, ^uniq) == ^user,
-         select: u)
-    |> Config.repo.one
-    |> check_pass(password)
-  end
-
-  defp check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
-  defp check_pass(%{confirmed: false}, _),
-    do: {:error, "You have to confirm your email address before continuing."}
-  defp check_pass(user, password) do
-    Config.get_crypto_mod.checkpw(password, user.password_hash) and user
-  end
-
-  defp handle_auth(false, conn, {redirects, _, _}) do
-    handle_error(conn, "Invalid credentials", redirects)
-  end
-  defp handle_auth({:error, message}, conn, {redirects, _, _}) do
-    handle_error(conn, message, redirects)
-  end
-  defp handle_auth(user, conn, opts) do
-    add_token(conn, user, opts)
   end
 end
