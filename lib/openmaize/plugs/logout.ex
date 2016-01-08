@@ -31,14 +31,9 @@ defmodule Openmaize.Logout do
 
   defmacro __using__(_) do
     quote do
-      @behaviour Plug
 
       import Plug.Conn
       import Openmaize.Report
-
-      def init(opts) do
-        Keyword.get(opts, :redirects, true)
-      end
 
       @doc """
       Handle logout.
@@ -47,10 +42,11 @@ defmodule Openmaize.Logout do
       If the token was not stored in a cookie, then you will need to use
       your front end framework to delete the token.
       """
-      def call(%Plug.Conn{req_cookies: %{"access_token" => _token}} = conn, redirects) do
+      def logout(%Plug.Conn{req_cookies: %{"access_token" => _token}} = conn, opts) do
+        redirects = Keyword.get(opts, :redirects, true)
         assign(conn, :current_user, nil) |> logout_user(redirects)
       end
-      def call(conn, _opts), do: assign(conn, :current_user, nil) |> halt
+      def logout(conn, _opts), do: assign(conn, :current_user, nil) |> halt
 
       def logout_user(conn, true) do
         delete_resp_cookie(conn, "access_token")
@@ -58,7 +54,7 @@ defmodule Openmaize.Logout do
       end
       def logout_user(conn, false), do: delete_resp_cookie(conn, "access_token") |> halt
 
-      defoverridable [init: 1, call: 2, logout_user: 2]
+      defoverridable [logout: 2, logout_user: 2]
     end
   end
 end

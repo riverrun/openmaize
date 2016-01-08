@@ -38,32 +38,24 @@ defmodule Openmaize.Login do
 
   defmacro __using__(_) do
     quote do
-      @behaviour Plug
 
       import Ecto.Query
       import Openmaize.{Report, Token}
       alias Openmaize.Config
-
-      def init(opts) do
-        token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
-        case Keyword.get(opts, :storage, :cookie) do
-          :cookie -> {Keyword.get(opts, :redirects, true), :cookie, token_opts}
-          nil -> {false, nil, token_opts}
-        end
-      end
 
       @doc """
       Handle the login POST request.
 
       If the login is successful, a JSON Web Token will be returned.
       """
-      def call(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
-        user_params |> find_user(Config.unique_id) |> handle_auth(conn, opts)
-      end
-
-      @doc """
-      """
-      def find_user(%{^uniq => user, "password" => password}, uniq) do
+      def login(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
+        token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
+        opts = case Keyword.get(opts, :storage, :cookie) do
+                 :cookie -> {Keyword.get(opts, :redirects, true), :cookie, token_opts}
+                 nil -> {false, nil, token_opts}
+               end
+        uniq = Config.unique_id
+        %{^uniq => user, "password" => password} = user_params
         uniq |> String.to_atom |> check_user(user, password)
       end
 
@@ -83,7 +75,7 @@ defmodule Openmaize.Login do
       """
       def check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
       def check_pass(%{confirmed: false}, _),
-        do: {:error, "You have to confirm your email address before continuing."}
+      do: {:error, "You have to confirm your email address before continuing."}
       def check_pass(user, password) do
         Config.get_crypto_mod.checkpw(password, user.password_hash) and user
       end
@@ -101,8 +93,7 @@ defmodule Openmaize.Login do
         add_token(conn, user, opts)
       end
 
-      defoverridable [init: 1, call: 2, find_user: 2, check_user: 3,
-                      check_pass: 2, handle_auth: 3]
+      defoverridable [login: 2, check_user: 3, check_pass: 2, handle_auth: 3]
     end
   end
 end
