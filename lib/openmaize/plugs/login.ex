@@ -36,9 +36,8 @@ defmodule Openmaize.Login do
 
   """
 
-  import Ecto.Query
   import Openmaize.{Report, Token}
-  alias Openmaize.Config
+  alias Openmaize.LoginTools
 
   @behaviour Plug
 
@@ -49,7 +48,7 @@ defmodule Openmaize.Login do
            end
     {redirects, storage, {0, Keyword.get(opts, :token_validity, 1440)},
      Keyword.get(opts, :unique_id, :name),
-     Keyword.get(opts, :database_call, &check_user/3)}
+     Keyword.get(opts, :database_call, &LoginTools.check_user/3)}
   end
 
   @doc """
@@ -61,28 +60,6 @@ defmodule Openmaize.Login do
            {redirects, storage, token_opts, uniq, db_call}) do
     db_call.(uniq, to_string(uniq), user_params)
     |> handle_auth(conn, {redirects, storage, token_opts, uniq})
-  end
-
-  @doc """
-  Find the user in the database and check the password.
-  """
-  def check_user(uniq, unique, user_params) do
-    %{^unique => user, "password" => password} = user_params
-    from(u in Config.user_model,
-         where: field(u, ^uniq) == ^user,
-         select: u)
-    |> Config.repo.one
-    |> check_pass(password)
-  end
-
-  @doc """
-  Check the password with the user's stored password hash.
-  """
-  def check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
-  def check_pass(%{confirmed: false}, _),
-  do: {:error, "You have to confirm your email address before continuing."}
-  def check_pass(user, password) do
-    Config.get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 
   @doc """
