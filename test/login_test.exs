@@ -2,27 +2,29 @@ defmodule Openmaize.LoginTest do
   use ExUnit.Case
   use Plug.Test
 
-  use Openmaize.Login
+  alias Openmaize.Login
 
   def call(name, password, uniq, opts) do
     conn(:post, "/login",
          %{"user" => %{uniq => name, "password" => password}})
-    |> login(opts)
+    |> Login.call(opts)
   end
 
-  def check_user(:name, "name", user_params), do: user_params
-  def check_user(:email, "email", user_params), do: user_params
-
-  def handle_auth(res, _, _), do: res
+  def custom_check(:name, "name", _user_params), do: false
+  def custom_check(:email, "email", _user_params), do: false
 
   test "get user params with name" do
-    assert call("fred", "hard2guess", "name", []) ==
-     %{"name" => "fred", "password" => "hard2guess"}
+    opts = {true, :cookie, {0, 1440}, :name, &custom_check/3}
+    conn = call("fred", "hard2guess", "name", opts)
+    assert conn.params["user"] == %{"name" => "fred", "password" => "hard2guess"}
+    assert conn.status == 302
   end
 
   test "get user params with email" do
-    assert call("fred@mail.com", "hard2guess", "email", [unique_id: :email]) ==
-      %{"email" => "fred@mail.com", "password" => "hard2guess"}
+    opts = {true, :cookie, {0, 1440}, :email, &custom_check/3}
+    conn = call("fred@mail.com", "hard2guess", "email", opts)
+    assert conn.params["user"] == %{"email" => "fred@mail.com", "password" => "hard2guess"}
+    assert conn.status == 302
   end
 
 end

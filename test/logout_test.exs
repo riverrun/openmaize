@@ -2,8 +2,8 @@ defmodule Openmaize.LogoutTest do
   use ExUnit.Case
   use Plug.Test
 
-  use Openmaize.Logout
   import Openmaize.Token.Create
+  alias Openmaize.Logout
 
   setup_all do
     {:ok, user_token} = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
@@ -16,13 +16,13 @@ defmodule Openmaize.LogoutTest do
     conn(:get, "/logout")
     |> put_req_cookie("access_token", token)
     |> fetch_cookies
-    |> logout(redirects: redirects)
+    |> Logout.call(redirects)
   end
 
   def call(token, _) do
     conn(:get, "/logout")
     |> put_req_header("authorization", "Bearer #{token}")
-    |> logout(redirects: false)
+    |> Logout.call(false)
   end
 
   test "logout with cookie and redirect", %{user_token: user_token} do
