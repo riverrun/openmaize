@@ -2,6 +2,10 @@
 
 ## v0.12.0-dev
 
+* Changes
+    * Moved the unique_id config value to an option for the Openmaize.Login login function.
+    * Changed how the Openmaize.Login and Openmaize.Logout modules are called.
+    * Made the functions in the Openmaize.Login and Openmaize.Logout modules overridable.
 * Bug fixes
     * Fixed the bug with unique_id being set to name in the generate_token funcion.
 

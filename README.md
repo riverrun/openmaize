@@ -36,10 +36,8 @@ tested with the Phoenix Web Framework.
 
 ## Use
 
-Before you use Openmaize, you need to make sure that your user model
-contains an `id` and a `role`. You will also need a `unique_id`, such
-as `name`, `email` or `username`, for the user. The default `unique_id`
-is `name`, but you can change this in the config.
+Before you use Openmaize, you need to make sure that your user model is
+configured correctly. See the documentation for Openmaize.Signup for details.
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.

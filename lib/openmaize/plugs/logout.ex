@@ -29,6 +29,8 @@ defmodule Openmaize.Logout do
 
   ## Overriding these functions
 
+  The `logout/2` and `logout_user/2` functions can be overridden.
+
   """
 
   defmacro __using__(_) do

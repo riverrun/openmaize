@@ -2,7 +2,7 @@ defmodule Openmaize.Login do
   @moduledoc """
   Plug to handle login.
 
-  There are three options:
+  There are four options:
 
   * redirects - if true, which is the default, redirect on login
   * storage - storage method for the token
@@ -10,6 +10,8 @@ defmodule Openmaize.Login do
     * if storage is set to nil, redirects is automatically set to false
   * token_validity - length of validity of token (in minutes)
     * the default is 1440 minutes (one day)
+  * unique_id - the name which is used to identify the user (in the database)
+    * the default is `:name`
 
   ## Examples with Phoenix
 
@@ -29,10 +31,10 @@ defmodule Openmaize.Login do
 
       plug login, [storage: nil] when action in [:login_user]
 
-  If you want to store the token in sessionStorage and have the token valid
+  If you want to use `email` to identify the user and have the token valid
   for just two hours:
 
-      plug login, [storage: nil, token_validity: 120] when action in [:login_user]
+      plug login, [token_validity: 120, unique_id: :email] when action in [:login_user]
 
   ## Overriding these functions
 
