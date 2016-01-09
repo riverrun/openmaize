@@ -28,16 +28,15 @@ defmodule Openmaize.Token.Create do
   in the future after which the token can be used, and `token_validity`, which
   is the number of minutes that the token will be valid for.
   """
-  def generate_token(user, {nbf_delay, token_validity}) do
+  def generate_token(user, uniq, {nbf_delay, token_validity}) do
     nbf = get_nbf(nbf_delay * 60_000)
-    uniq = Config.unique_id |> String.to_atom
     Map.take(user, [:id, uniq, :role])
     |> Map.merge(%{nbf: nbf, exp: get_expiry(nbf, token_validity * 60_000)})
     |> encode(Config.get_token_alg)
   end
 
   defp get_nbf(nbf_delay) when is_integer(nbf_delay) do
-    current_time + nbf_delay
+    current_time + nbf_delay - 10_000
   end
   defp get_nbf(_), do: raise ArgumentError, message: "nbf should be an integer."
 

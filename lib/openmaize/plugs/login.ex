@@ -50,19 +50,19 @@ defmodule Openmaize.Login do
       """
       def login(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
         token_opts = {0, Keyword.get(opts, :token_validity, 1440)}
+        uniq = Keyword.get(opts, :unique_id, :name)
         opts = case Keyword.get(opts, :storage, :cookie) do
-                 :cookie -> {Keyword.get(opts, :redirects, true), :cookie, token_opts}
-                 nil -> {false, nil, token_opts}
+                 :cookie -> {Keyword.get(opts, :redirects, true), :cookie, token_opts, uniq}
+                 nil -> {false, nil, token_opts, uniq}
                end
-        uniq = Config.unique_id
-        %{^uniq => user, "password" => password} = user_params
-        uniq |> String.to_atom |> check_user(user, password)
+        check_user(uniq, to_string(uniq), user_params) |> handle_auth(conn, opts)
       end
 
       @doc """
       Find the user in the database and check the password.
       """
-      def check_user(uniq, user, password) do
+      def check_user(uniq, unique, user_params) do
+        %{^unique => user, "password" => password} = user_params
         from(u in Config.user_model,
              where: field(u, ^uniq) == ^user,
              select: u)
@@ -75,7 +75,7 @@ defmodule Openmaize.Login do
       """
       def check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
       def check_pass(%{confirmed: false}, _),
-      do: {:error, "You have to confirm your email address before continuing."}
+        do: {:error, "You have to confirm your email address before continuing."}
       def check_pass(user, password) do
         Config.get_crypto_mod.checkpw(password, user.password_hash) and user
       end
@@ -83,10 +83,10 @@ defmodule Openmaize.Login do
       @doc """
       Either call the function to create the token or handle the error.
       """
-      def handle_auth(false, conn, {redirects, _, _}) do
+      def handle_auth(false, conn, {redirects, _, _, _}) do
         handle_error(conn, "Invalid credentials", redirects)
       end
-      def handle_auth({:error, message}, conn, {redirects, _, _}) do
+      def handle_auth({:error, message}, conn, {redirects, _, _, _}) do
         handle_error(conn, message, redirects)
       end
       def handle_auth(user, conn, opts) do

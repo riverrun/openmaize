@@ -10,17 +10,19 @@ defmodule Openmaize.LoginTest do
     |> login(opts)
   end
 
-  def check_user(:name, user, password), do: {user, password}
-  def check_user(:email, user, password), do: {user, password}
+  def check_user(:name, "name", user_params), do: user_params
+  def check_user(:email, "email", user_params), do: user_params
+
+  def handle_auth(res, _, _), do: res
 
   test "get user params with name" do
-    assert call("fred", "hard2guess", "name", []) == {"fred", "hard2guess"}
+    assert call("fred", "hard2guess", "name", []) ==
+     %{"name" => "fred", "password" => "hard2guess"}
   end
 
   test "get user params with email" do
-    Application.put_env(:openmaize, :unique_id, "email")
-    assert call("fred@mail.com", "hard2guess", "email", []) == {"fred@mail.com", "hard2guess"}
-    Application.put_env(:openmaize, :unique_id, "name")
+    assert call("fred@mail.com", "hard2guess", "email", [unique_id: :email]) ==
+      %{"email" => "fred@mail.com", "password" => "hard2guess"}
   end
 
 end

@@ -2,7 +2,7 @@ defmodule Openmaize.Authorize.IdCheckTest do
   use ExUnit.Case
   use Plug.Test
 
-  use Openmaize.AccessControl
+  import Openmaize.AccessControl
 
   @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
 
