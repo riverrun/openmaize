@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.12.0-dev
+## v0.12.0
 
 * Enhancements
     * Added option to call custom function to access the database with Openmaize.Login.
