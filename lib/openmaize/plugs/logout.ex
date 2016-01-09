@@ -48,10 +48,10 @@ defmodule Openmaize.Logout do
   end
   def call(conn, _opts), do: assign(conn, :current_user, nil) |> halt
 
-  defp logout_user(conn, true) do
+  def logout_user(conn, true) do
     delete_resp_cookie(conn, "access_token")
     |> handle_info("You have been logged out")
   end
-  defp logout_user(conn, false),
-    do: delete_resp_cookie(conn, "access_token") |> halt
+  def logout_user(conn, false), do: delete_resp_cookie(conn, "access_token") |> halt
+
 end

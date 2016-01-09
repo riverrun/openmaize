@@ -22,10 +22,12 @@ defmodule Openmaize.Signup do
         timestamps
       end
 
-  In the example above, the `name` is used to identify the user and
-  can be changed by setting the `unique_id` value in the config, the
-  `role` is needed for authorization, and the `password` and the
-  `password_hash` fields are needed for the `create_user` function
+  In the example above, the `:name` is used to identify the user. This can
+  be set to any other value, such as `:email`. See the documentation for
+  Openmaize.Login for details about logging in with a different value.
+
+  The `:role` is needed for authorization, and the `:password` and the
+  `:password_hash` fields are needed for the `create_user` function
   in this module. Note the addition of `virtual: true` to the definition
   of the password field. This means that it will not be stored in the
   database.

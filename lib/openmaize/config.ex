@@ -8,7 +8,6 @@ defmodule Openmaize.Config do
   | :----------------- | :------ | -------: |
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
-  | unique_id          | string  | "name"   |
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
   | keyrotate_days     | int     | 28       |
@@ -27,7 +26,6 @@ defmodule Openmaize.Config do
       config :openmaize,
         user_model: Coolapp.User,
         repo: Coolapp.Repo,
-        unique_id: "email",
         crypto_mod: :pbkdf2,
         token_alg: :sha256,
         keyrotate_days: 7,
@@ -47,15 +45,6 @@ defmodule Openmaize.Config do
   """
   def repo do
     Application.get_env(:openmaize, :repo)
-  end
-
-  @doc """
-  The unique identifier for the user model.
-
-  This is the unique identifier in your user model. The default is "name".
-  """
-  def unique_id do
-    Application.get_env(:openmaize, :unique_id, "name")
   end
 
   @doc """

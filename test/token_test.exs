@@ -5,11 +5,11 @@ defmodule Openmaize.TokenTest do
   import Openmaize.Token
   import Openmaize.Token.Verify
 
-  @token_opts {-10, 86400}
+  @token_opts {0, 86400}
 
   test "token stored in cookie with redirects" do
     user = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
-    conn = conn(:get, "/") |> add_token(user, {true, :cookie, @token_opts})
+    conn = conn(:get, "/") |> add_token(user, {true, :cookie, @token_opts, :name})
     token = conn.resp_cookies["access_token"].value
     {:ok, data} = verify_token(token)
     assert data.name
@@ -20,7 +20,7 @@ defmodule Openmaize.TokenTest do
 
   test "token stored in cookie without redirects" do
     user = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
-    conn = conn(:get, "/") |> add_token(user, {false, :cookie, @token_opts})
+    conn = conn(:get, "/") |> add_token(user, {false, :cookie, @token_opts, :name})
     token = conn.resp_cookies["access_token"]
     assert token.http_only == true
     assert conn.status == 200
@@ -28,19 +28,17 @@ defmodule Openmaize.TokenTest do
 
   test "token not stored in cookie without redirects" do
     user = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
-    conn = conn(:get, "/") |> add_token(user, {false, nil, @token_opts})
+    conn = conn(:get, "/") |> add_token(user, {false, nil, @token_opts, :name})
     assert String.starts_with?(conn.resp_body, "{\"access_token\":")
     assert conn.status == 200
   end
 
   test "token with custom unique_id" do
-    Application.put_env(:openmaize, :unique_id, "email")
     user = %{id: 1, email: "ray@mail.com", role: "user"}
-    conn = conn(:get, "/") |> add_token(user, {true, :cookie, @token_opts})
+    conn = conn(:get, "/") |> add_token(user, {true, :cookie, @token_opts, :email})
     token = conn.resp_cookies["access_token"].value
     {:ok, data} = verify_token(token)
     assert data.email
-    Application.put_env(:openmaize, :unique_id, "name")
   end
 
 end
