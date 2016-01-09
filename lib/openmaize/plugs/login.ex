@@ -2,7 +2,7 @@ defmodule Openmaize.Login do
   @moduledoc """
   Plug to handle login.
 
-  There are four options:
+  There are five options:
 
   * redirects - if true, which is the default, redirect on login
   * storage - storage method for the token
@@ -12,6 +12,8 @@ defmodule Openmaize.Login do
     * the default is 1440 minutes (one day)
   * unique_id - the name which is used to identify the user (in the database)
     * the default is `:name`
+  * database_call - a custom function to query the database
+    * if you are using Ecto, you will probably not need this
 
   ## Examples with Phoenix
 
@@ -34,6 +36,14 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login, [token_validity: 120, unique_id: :email] when action in [:login_user]
 
+  ## Custom function to query the database
+
+  To call a custom query function:
+
+      plug Openmaize.Login, [database_call: &custom_query/3] when action in [:login_user]
+
+  In the above example, this module will use the custom_query function
+  instead of LoginTools.check_user.
   """
 
   import Openmaize.{Report, Token}

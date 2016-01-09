@@ -1,5 +1,9 @@
 defmodule Openmaize.LoginTools do
   @moduledoc """
+  Query the database and check the user's password.
+
+  The `check_user` function is called by Openmaize.Login, but
+  this can be replaced with a custom function.
   """
 
   import Ecto.Query
@@ -17,6 +21,9 @@ defmodule Openmaize.LoginTools do
     |> check_pass(password)
   end
 
+  @doc """
+  Check the password with the password hash stored in the database.
+  """
   def check_pass(nil, _), do: get_crypto_mod.dummy_checkpw
   def check_pass(%{confirmed: false}, _),
     do: {:error, "You have to confirm your email address before continuing."}
