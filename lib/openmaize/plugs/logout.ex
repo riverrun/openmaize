@@ -19,11 +19,13 @@ defmodule Openmaize.Logout do
 
   And then in the `page_controller.ex` file, add:
 
-      plug Openmaize.Logout when action in [:logout]
+      use Openmaize.Logout
+
+      plug logout when action in [:logout]
 
   If you stored the token in a cookie, but you want redirects set to false:
 
-      plug Openmaize.Logout, [redirects: false] when action in [:logout]
+      plug logout, [redirects: false] when action in [:logout]
 
   ## Overriding these functions
 

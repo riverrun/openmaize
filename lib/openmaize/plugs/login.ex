@@ -20,19 +20,33 @@ defmodule Openmaize.Login do
 
   And then in the `page_controller.ex` file, add:
 
-      plug Openmaize.Login when action in [:login_user]
+      use Openmaize.Login
+
+      plug login when action in [:login_user]
 
   If you want to use sessionStorage to store the token (this will also set
   redirects to false):
 
-      plug Openmaize.Login, [storage: nil] when action in [:login_user]
+      plug login, [storage: nil] when action in [:login_user]
 
   If you want to store the token in sessionStorage and have the token valid
   for just two hours:
 
-      plug Openmaize.Login, [storage: nil, token_validity: 120] when action in [:login_user]
+      plug login, [storage: nil, token_validity: 120] when action in [:login_user]
 
   ## Overriding these functions
+
+  The `login/2`, `check_user/3`, `check_pass/2` and `handle_auth/3` functions can
+  be overridden.
+
+  In the following example, errors are handled differently:
+
+      use Openmaize.Login
+
+      def handle_auth(false, conn, {redirects, _, _, _}) do
+        halt(conn)
+        IO.puts "Oh no, we're going to crash!!!"
+      end
 
   """
 

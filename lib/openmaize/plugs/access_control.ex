@@ -20,7 +20,22 @@ defmodule Openmaize.AccessControl do
   If the current user is nil, the user will be redirected to the login page,
   or just sent a 401 error message.
 
-  ## Customizing the `authorize` and `authorize_id`functions
+  ## Customizing the `authorize` and `authorize_id` functions
+
+  These functions can be customized to create new function plugs. In the
+  following example, `authorize_id` is customized to allow users with the
+  role "admin" to access any page:
+
+      import Openmaize.AccessControl
+
+      def custom_auth(%Plug.Conn{assigns: %{current_user: %{role: "admin"}}} = conn, _opts) do
+        conn
+      end
+      def custom_auth(conn, opts), do: authorize_id(conn, opts)
+
+  This `custom_auth` function can be called just like any other plug:
+
+      plug custom_auth when action in [:show, :edit, :create]
 
   """
 
