@@ -35,7 +35,7 @@ defmodule Openmaize.AccessControl do
 
   This `custom_auth` function can be called just like any other plug:
 
-      plug custom_auth when action in [:show, :edit, :create]
+      plug :custom_auth when action in [:show, :edit, :create]
 
   """
 

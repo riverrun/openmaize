@@ -17,10 +17,10 @@ defmodule Openmaize.LoginTools do
     |> check_pass(password)
   end
 
-  defp check_pass(nil, _), do: get_crypto_mod.dummy_checkpw
-  defp check_pass(%{confirmed: false}, _),
+  def check_pass(nil, _), do: get_crypto_mod.dummy_checkpw
+  def check_pass(%{confirmed: false}, _),
     do: {:error, "You have to confirm your email address before continuing."}
-  defp check_pass(user, password) do
+  def check_pass(user, password) do
     get_crypto_mod.checkpw(password, user.password_hash) and user
   end
 end
