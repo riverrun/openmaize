@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.13.0-dev
+
+* Changes
+    * Made password_hash value configurable.
+
 ## v0.12.0
 
 * Enhancements

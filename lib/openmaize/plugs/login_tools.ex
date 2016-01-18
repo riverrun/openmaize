@@ -7,27 +7,28 @@ defmodule Openmaize.LoginTools do
   """
 
   import Ecto.Query
-  import Openmaize.Config
+  alias Openmaize.Config
 
   @doc """
   Find the user in the database and check the password.
   """
   def check_user(uniq, unique, user_params) do
     %{^unique => user, "password" => password} = user_params
-    from(u in user_model,
+    from(u in Config.user_model,
          where: field(u, ^uniq) == ^user,
          select: u)
-    |> repo.one
-    |> check_pass(password)
+    |> Config.repo.one
+    |> check_pass(password, Config.hash_name)
   end
 
   @doc """
   Check the password with the password hash stored in the database.
   """
-  def check_pass(nil, _), do: get_crypto_mod.dummy_checkpw
+  def check_pass(nil, _), do: Config.get_crypto_mod.dummy_checkpw
   def check_pass(%{confirmed: false}, _),
     do: {:error, "You have to confirm your email address before continuing."}
-  def check_pass(user, password) do
-    get_crypto_mod.checkpw(password, user.password_hash) and user
+  def check_pass(user, password, hash_name) do
+    %{^hash_name => hash} = user
+    Config.get_crypto_mod.checkpw(password, hash) and user
   end
 end

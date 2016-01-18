@@ -8,6 +8,7 @@ defmodule Openmaize.Config do
   | :----------------- | :------ | -------: |
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
+  | hash_name          | atom    | :password_hash |
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
   | keyrotate_days     | int     | 28       |
@@ -26,6 +27,7 @@ defmodule Openmaize.Config do
       config :openmaize,
         user_model: Coolapp.User,
         repo: Coolapp.Repo,
+        hash_name: :encrypted_password,
         crypto_mod: :pbkdf2,
         token_alg: :sha256,
         keyrotate_days: 7,
@@ -45,6 +47,13 @@ defmodule Openmaize.Config do
   """
   def repo do
     Application.get_env(:openmaize, :repo)
+  end
+
+  @doc """
+  The name in the database for the password hash.
+  """
+  def hash_name do
+    Application.get_env(:openmaize, :hash_name, :password_hash)
   end
 
   @doc """

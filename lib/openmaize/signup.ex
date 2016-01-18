@@ -40,13 +40,13 @@ defmodule Openmaize.Signup do
   if Code.ensure_loaded?(NotQwerty123) do
     defp add_pass_changeset(changeset, password, opts) do
       case NotQwerty123.PasswordStrength.strong_password?(password, opts) do
-        true -> put_change(changeset, :password_hash, Config.get_crypto_mod.hashpwsalt(password))
+        true -> put_change(changeset, Config.hash_name, Config.get_crypto_mod.hashpwsalt(password))
         message -> add_error(changeset, :password, message)
       end
     end
   else
     defp add_pass_changeset(changeset, password, _opts) do
-      put_change(changeset, :password_hash, Config.get_crypto_mod.hashpwsalt(password))
+      put_change(changeset, Config.hash_name, Config.get_crypto_mod.hashpwsalt(password))
     end
   end
 
@@ -88,6 +88,19 @@ defmodule Openmaize.Signup do
     |> put_pass_hash(opts)
   end
 
+  @doc """
+  """
+  def add_confirm_token(changeset, key) do
+    put_change(changeset, :confirmation_token, key)
+  end
+
+  @doc """
+  """
+  def gen_token_link(email) do
+    key = :crypto.strong_rand_bytes(24) |> Base.url_encode64
+    {key, "email=#{URI.encode_www_form(email)}&key=#{key}"}
+  end
+
   defp put_pass_hash(changeset, opts) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
@@ -95,5 +108,4 @@ defmodule Openmaize.Signup do
       _ -> changeset
     end
   end
-
 end
