@@ -16,8 +16,6 @@ defmodule Openmaize.Authenticate do
 
       plug Openmaize.Authenticate
 
-  There are no options. If you are using cookies to store the tokens, make
-  sure that you call `plug fetch_cookies` before Openmaize.Authenticate.
   """
 
   import Plug.Conn
