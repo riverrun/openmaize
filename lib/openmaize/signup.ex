@@ -89,23 +89,37 @@ defmodule Openmaize.Signup do
   end
 
   @doc """
+  Send a confirmation token by email.
+
+  Send a confirmation token and add the token to the database. This function
+  should be called after create_user.
+
+  The third argument is for the mailing function you are going to use.
+
+  ## Examples
+
+  In the following example, the `Mailer.ask_confirm` function takes two
+  arguments - the email address and the query link (everything after, but
+  not including `?`).
+
+      changeset
+      |> Openmaize.Signup.add_confirm_token(email, &Mailer.ask_confirm/2)
+
   """
-  def add_confirm_token(changeset, key) do
+  def add_confirm_token(changeset, email, func) do
+    {key, link} = gen_token_link(email)
+    func.(email, link)
     put_change(changeset, :confirmation_token, key)
   end
 
-  @doc """
-  """
-  def gen_token_link(email) do
+  defp gen_token_link(email) do
     key = :crypto.strong_rand_bytes(24) |> Base.url_encode64
     {key, "email=#{URI.encode_www_form(email)}&key=#{key}"}
   end
 
-  defp put_pass_hash(changeset, opts) do
-    case changeset do
-      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        add_pass_changeset(changeset, password, opts)
-      _ -> changeset
-    end
+  defp put_pass_hash(%Ecto.Changeset{valid?: true,
+                                     changes: %{password: password}} = changeset, opts) do
+    add_pass_changeset(changeset, password, opts)
   end
+  defp put_pass_hash(changeset, _opts), do: changeset
 end
