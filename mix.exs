@@ -26,7 +26,7 @@ defmodule Openmaize.Mixfile do
   defp deps do
     [
       {:cowboy, "~> 1.0"},
-      {:plug, "~> 1.0"},
+      {:plug, "~> 1.1"},
       {:ecto, "~> 1.1"},
       {:comeonin, "~> 2.0"},
       {:not_qwerty123, "~> 1.0", optional: true},
