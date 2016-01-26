@@ -15,6 +15,8 @@ defmodule Openmaize do
     * handle login POST request
   * Openmaize.Logout
     * handle logout request
+  * Openmaize.Confirm.confirm_user
+    * handle email confirmation
 
   See the relevant module documentation for more details.
 

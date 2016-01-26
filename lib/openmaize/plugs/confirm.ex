@@ -1,5 +1,9 @@
 defmodule Openmaize.Confirm do
   @moduledoc """
+  Module to handle email confirmation.
+
+  See the documentation for Openmaize.Signup.add_confirm_token for details
+  about sending the confirmation token.
   """
 
   import Ecto.{Query, Changeset}
@@ -7,9 +11,26 @@ defmodule Openmaize.Confirm do
   alias Openmaize.Config
 
   @doc """
+  Verify the token, update the database and send a confirmation email.
+
+  If the token is valid, `:confirmed`, in the user model, will be set
+  to true, and a confirmation email will be sent to the user.
+
+  If the token is not valid, no changes are made to the database, and no
+  email will be sent.
+
+  ## Examples
+
+  In the following example, Mailer.confirm_success/1 is a function which
+  sends an email to the user, and :confirm is the name of the function
+  in your controller which handles confirmation:
+
+      plug Openmaize.Confirm.confirm_user, &Mailer.confirm_success/1 when action in [:confirm]
+
+  The Mailer.confirm_success function just takes one argument, the email
+  address of the user.
   """
-  def confirm_user(%Plug.Conn{params: %{email: email, key: key}} = _conn, opts) do
-    func = Keyword.get(opts, :confirm_success)
+  def confirm_user(%Plug.Conn{params: %{email: email, key: key}}, func) when is_function(func, 1) do
     email |> URI.decode_www_form |> check_user(key) |> send_receipt(email, func)
   end
 

@@ -11,7 +11,8 @@ defmodule Openmaize.Signup do
 
   ## User model
 
-  The example schema below is the most basic setup for Openmaize:
+  The example schema below is the most basic setup for Openmaize
+  (:name and :password_hash are configurable):
 
       schema "users" do
         field :name, :string
@@ -28,9 +29,10 @@ defmodule Openmaize.Signup do
 
   The `:role` is needed for authorization, and the `:password` and the
   `:password_hash` fields are needed for the `create_user` function
-  in this module. Note the addition of `virtual: true` to the definition
-  of the password field. This means that it will not be stored in the
-  database.
+  in this module (see the documentation for Openmaize.Config for information
+  about changing :password_hash to some other value). Note the addition
+  of `virtual: true` to the definition of the password field. This means
+  that it will not be stored in the database.
 
   """
 
@@ -96,6 +98,13 @@ defmodule Openmaize.Signup do
 
   The second argument is `params`, and the third argument is for the
   mailing function you are going to use.
+
+  Add the following two entries to your user schema:
+
+      field :confirmed, :boolean
+      field :confirmation_token, :string
+
+  `:confirmed` needs to be set to false.
 
   ## Examples
 
