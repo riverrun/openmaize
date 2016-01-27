@@ -6,8 +6,9 @@ defmodule Openmaize.Confirm do
   about sending the confirmation token.
   """
 
-  import Ecto.{Query, Changeset}
+  import Ecto.Changeset
   import Comeonin.Tools
+  import Plug.Conn
   alias Openmaize.{Config, QueryTools}
 
   @doc """
@@ -42,14 +43,15 @@ defmodule Openmaize.Confirm do
   The Mailer.receipt_confirm function just takes one argument, the email
   address of the user.
   """
-  def user_email(%Plug.Conn{params: %{email: email, key: key}}, opts) do
-    {query_func, send_func} = {Keyword.get(opts, :valid_email),
-                               Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
+  def user_email(%Plug.Conn{params: %{"email" => email, "key" => key}} = conn, opts) do
+    {query_func, send_func} = {Keyword.get(opts, :query_function, &QueryTools.find_user/2),
+                               Keyword.get(opts, :valid_email)}
     email
     |> URI.decode_www_form
     |> query_func.(:email)
     |> check_key(key)
     |> send_receipt(email, send_func)
+    halt(conn)
   end
 
   defp check_key(user, key) do
