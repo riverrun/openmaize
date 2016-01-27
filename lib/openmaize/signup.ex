@@ -97,14 +97,13 @@ defmodule Openmaize.Signup do
   function should be called after create_user.
 
   The second argument is `params`, and the third argument is for the
-  mailing function you are going to use.
+  mailing function you are going to use. This is a function that you
+  need to provide.
 
   Add the following two entries to your user schema:
 
-      field :confirmed, :boolean
+      field :confirmed, :boolean, default: false
       field :confirmation_token, :string
-
-  `:confirmed` needs to be set to false.
 
   ## Examples
 

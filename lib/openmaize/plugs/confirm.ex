@@ -19,19 +19,27 @@ defmodule Openmaize.Confirm do
   If the token is not valid, no changes are made to the database, and no
   email will be sent.
 
+  ## Options
+
+  * valid_email - a function to send a confirmation email to the user
+
+  This is a function that you need to provide. See the examples below
+  to see how to set this option when calling `confirm_user`.
+
   ## Examples
 
-  In the following example, Mailer.confirm_success/1 is a function which
+  In the following example, Mailer.receipt_confirm/1 is a function which
   sends an email to the user, and :confirm is the name of the function
   in your controller which handles confirmation:
 
-      plug Openmaize.Confirm.confirm_user, [confirm_success: &Mailer.confirm_success/1] when action in [:confirm]
+      import Openmaize.Confirm
+      plug :confirm_user, [valid_email: &Mailer.receipt_confirm/1] when action in [:confirm]
 
-  The Mailer.confirm_success function just takes one argument, the email
+  The Mailer.receipt_confirm function just takes one argument, the email
   address of the user.
   """
   def confirm_user(%Plug.Conn{params: %{email: email, key: key}}, opts) do
-    func = Keyword.get(opts, :confirm_success)
+    func = Keyword.get(opts, :valid_email)
     email |> URI.decode_www_form |> check_user(key) |> send_receipt(email, func)
   end
 
