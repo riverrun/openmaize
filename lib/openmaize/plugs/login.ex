@@ -12,7 +12,7 @@ defmodule Openmaize.Login do
     * the default is 1440 minutes (one day)
   * unique_id - the name which is used to identify the user (in the database)
     * the default is `:name`
-  * database_call - a custom function to query the database
+  * query_function - a custom function to query the database
     * if you are using Ecto, you will probably not need this
 
   ## Examples with Phoenix
@@ -40,14 +40,14 @@ defmodule Openmaize.Login do
 
   To call a custom query function:
 
-      plug Openmaize.Login, [database_call: &custom_query/3] when action in [:login_user]
+      plug Openmaize.Login, [query_function: &custom_query/2] when action in [:login_user]
 
   In the above example, this module will use the custom_query function
-  instead of LoginTools.check_user.
+  instead of QueryTools.find_user.
   """
 
   import Openmaize.{Report, Token}
-  alias Openmaize.LoginTools
+  alias Openmaize.{Config, QueryTools}
 
   @behaviour Plug
 
@@ -58,7 +58,7 @@ defmodule Openmaize.Login do
            end
     {redirects, storage, {0, Keyword.get(opts, :token_validity, 1440)},
      Keyword.get(opts, :unique_id, :name),
-     Keyword.get(opts, :database_call, &LoginTools.check_user/3)}
+     Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
   end
 
   @doc """
@@ -67,21 +67,29 @@ defmodule Openmaize.Login do
   If the login is successful, a JSON Web Token will be returned.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {redirects, storage, token_opts, uniq, db_call}) do
-    db_call.(uniq, to_string(uniq), user_params)
+           {redirects, storage, token_opts, uniq, query_func}) do
+    unique = to_string(uniq)
+    %{^unique => user_id, "password" => password} = user_params
+    query_func.(user_id, uniq)
+    |> check_pass(password, Config.hash_name)
     |> handle_auth(conn, {redirects, storage, token_opts, uniq})
   end
 
-  @doc """
-  Either call the function to create the token or handle the error.
-  """
-  def handle_auth(false, conn, {redirects, _, _, _}) do
+  defp check_pass(nil, _, _), do: Config.get_crypto_mod.dummy_checkpw
+  defp check_pass(%{confirmed: false}, _, _),
+    do: {:error, "You have to confirm your email address before continuing."}
+  defp check_pass(user, password, hash_name) do
+    %{^hash_name => hash} = user
+    Config.get_crypto_mod.checkpw(password, hash) and user
+  end
+
+  defp handle_auth(false, conn, {redirects, _, _, _}) do
     handle_error(conn, "Invalid credentials", redirects)
   end
-  def handle_auth({:error, message}, conn, {redirects, _, _, _}) do
+  defp handle_auth({:error, message}, conn, {redirects, _, _, _}) do
     handle_error(conn, message, redirects)
   end
-  def handle_auth(user, conn, opts) do
+  defp handle_auth(user, conn, opts) do
     add_token(conn, user, opts)
   end
 end
