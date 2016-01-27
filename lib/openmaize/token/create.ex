@@ -38,12 +38,12 @@ defmodule Openmaize.Token.Create do
   defp get_nbf(nbf_delay) when is_integer(nbf_delay) do
     current_time + nbf_delay - 10_000
   end
-  defp get_nbf(_), do: raise ArgumentError, message: "nbf should be an integer."
+  defp get_nbf(_), do: raise ArgumentError, "nbf should be an integer."
 
   defp get_expiry(nbf, token_validity) when is_integer(token_validity) do
     nbf + token_validity
   end
-  defp get_expiry(_, _), do: raise ArgumentError, message: "exp should be an integer."
+  defp get_expiry(_, _), do: raise ArgumentError, "exp should be an integer."
 
   defp encode(payload, {header_alg, encode_alg}) do
     data = (%{typ: "JWT", alg: header_alg, kid: current_kid} |> from_map) <>

@@ -25,12 +25,13 @@ defmodule Openmaize.Confirm do
   sends an email to the user, and :confirm is the name of the function
   in your controller which handles confirmation:
 
-      plug Openmaize.Confirm.confirm_user, &Mailer.confirm_success/1 when action in [:confirm]
+      plug Openmaize.Confirm.confirm_user, [confirm_success: &Mailer.confirm_success/1] when action in [:confirm]
 
   The Mailer.confirm_success function just takes one argument, the email
   address of the user.
   """
-  def confirm_user(%Plug.Conn{params: %{email: email, key: key}}, func) when is_function(func, 1) do
+  def confirm_user(%Plug.Conn{params: %{email: email, key: key}}, opts) do
+    func = Keyword.get(opts, :confirm_success)
     email |> URI.decode_www_form |> check_user(key) |> send_receipt(email, func)
   end
 
