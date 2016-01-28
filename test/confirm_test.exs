@@ -6,7 +6,8 @@ defmodule Openmaize.ConfirmTest do
 
   @valid_link "email=fred%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
   @invalid_link "email=wrong%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
-  @key "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
+
+  @valid_user %{email: "fred@mail.com", confirmation_token: "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
 
   def call(link, opts) do
     conn(:get, "/confirm?" <> link)
@@ -15,22 +16,20 @@ defmodule Openmaize.ConfirmTest do
   end
 
   def custom_query("fred@mail.com", :email) do
-    %{email: "fred@mail.com", role: "user", confirmed: false,
-      confirmation_token: "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
+    @valid_user
   end
   def custom_query("wrong@mail.com", :email) do
-    %{email: "wrong@mail.com", role: "user", confirmed: false,
-      confirmation_token: "LG9UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
+    %{email: "wrong@mail.com", confirmation_token: "LG9UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
   end
 
-  def custom_send(email) do
-    IO.puts "#{email}"
+  test "Confirmation succeeds for valid token" do
+    result = call(@valid_link, [query_function: &custom_query/2])
+    assert result == {:ok, @valid_user, "fred@mail.com"}
   end
 
   test "Confirmation fails for invalid token" do
-    conn = call(@invalid_link, [query_function: &custom_query/2, valid_email: &custom_send/1])
-    assert conn.halted == true
+    result = call(@invalid_link, [query_function: &custom_query/2])
+    assert result == {:error, "Confirmation for wrong@mail.com failed"}
   end
-
 
 end
