@@ -7,7 +7,8 @@ defmodule Openmaize.Confirm do
   """
 
   import Comeonin.Tools
-  alias Openmaize.QueryTools
+  import Ecto.Changeset
+  alias Openmaize.{Config, QueryTools}
 
   @doc """
   Verify the token sent by email.
@@ -46,6 +47,7 @@ defmodule Openmaize.Confirm do
     {:error, "Confirmation for #{email} failed"}
   end
   defp valid_key(user, email) do
+    put_change(user, :confirmed, true) |> Config.repo.update! # maybe use change instead of put_change
     {:ok, user, email}
   end
 end

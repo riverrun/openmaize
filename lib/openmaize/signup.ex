@@ -96,9 +96,7 @@ defmodule Openmaize.Signup do
   Send a confirmation token and add the token to the database. This
   function should be called after create_user.
 
-  The second argument is `params`, and the third argument is for the
-  mailing function you are going to use. This is a function that you
-  need to provide.
+  The second argument is the confirmation token.
 
   Add the following two entries to your user schema:
 
@@ -107,21 +105,16 @@ defmodule Openmaize.Signup do
 
   ## Examples
 
-  In the following example, the `Mailer.ask_confirm` function takes two
-  arguments - the email address and the query link (everything after, but
-  not including `?`).
-
-      changeset
-      |> Openmaize.Signup.add_confirm_token(params, &Mailer.ask_confirm/2)
-
   """
-  def add_confirm_token(changeset, %{email: email}, func) do
-    {key, link} = gen_token_link(email)
-    func.(email, link)
+  def add_confirm_token(changeset, key) do
     put_change(changeset, :confirmation_token, key)
   end
 
-  defp gen_token_link(email) do
+  @doc """
+  Generate a confirmation token and a link containing the email address
+  and the token.
+  """
+  def gen_token_link(email) do
     key = :crypto.strong_rand_bytes(24) |> Base.url_encode64
     {key, "email=#{URI.encode_www_form(email)}&key=#{key}"}
   end
