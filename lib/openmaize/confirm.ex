@@ -64,7 +64,7 @@ defmodule Openmaize.Confirm do
     {:error, "Confirmation for #{email} failed"}
   end
   defp valid_key(user, email) do
-    put_change(user, :confirmed, true) |> Config.repo.update! # maybe use change instead of put_change
+    change(user, %{confirmed: true}) |> Config.repo.update!
     {:ok, user, email}
   end
 end
