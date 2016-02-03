@@ -2,6 +2,8 @@
 
 ## v0.13.0-dev
 
+* Enhancements
+    * Added a tools to handle email confirmation.
 * Changes
     * Made password_hash value configurable.
 
