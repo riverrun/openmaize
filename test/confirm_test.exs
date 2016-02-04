@@ -5,7 +5,8 @@ defmodule Openmaize.ConfirmTest do
   alias Openmaize.Confirm
 
   @valid_link "email=fred%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
-  @invalid_link "email=wrong%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
+  @invalid_token "email=wrong%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
+  @invalid_link "email=wrong%40mail.com"
 
   @valid_user %{email: "fred@mail.com", confirmation_token: "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
 
@@ -28,8 +29,13 @@ defmodule Openmaize.ConfirmTest do
   end
 
   test "Confirmation fails for invalid token" do
-    result = call(@invalid_link, [query_function: &custom_query/2])
+    result = call(@invalid_token, [query_function: &custom_query/2])
     assert result == {:error, "Confirmation for wrong@mail.com failed"}
+  end
+
+  test "Invalid link error" do
+    result = call(@invalid_link, [query_function: &custom_query/2])
+    assert result == {:error, "Invalid link"}
   end
 
 end

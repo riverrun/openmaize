@@ -32,22 +32,23 @@ defmodule Openmaize.Confirm do
   The `Mailer.receipt_confirm` function is a function that you need to
   write to send an email stating that confirmation was successful.
 
-      def confirm(conn, params) do
+      def confirm(conn, _params) do
         case Openmaize.Confirm.user_email(conn) do
-          {:ok, user, email} ->
+          {:ok, _user, email} ->
             Mailer.receipt_confirm(email)
             conn
             |> put_flash(:info, "You have successfully confirmed your account.")
             |> redirect(to: login_path(conn, :login))
           {:error, message} ->
             conn
-            |> put_flash(:error, "Something went wrong with the confirmation of your account.")
+            |> put_flash(:error, message)
             |> redirect(to: page_path(conn, :index))
         end
       end
 
   """
-  def user_email(%Plug.Conn{params: %{"email" => email, "key" => key}}, opts \\ []) do
+  def user_email(conn, opts \\ [])
+  def user_email(%Plug.Conn{params: %{"email" => email, "key" => key}}, opts) do
     query_func = Keyword.get(opts, :query_function, &QueryTools.find_user/2)
     email
     |> URI.decode_www_form
@@ -55,6 +56,7 @@ defmodule Openmaize.Confirm do
     |> check_key(key)
     |> valid_key(email)
   end
+  def user_email(_, _), do: {:error, "Invalid link"}
 
   defp check_key(user, key) do
     secure_check(user.confirmation_token, key) and user
