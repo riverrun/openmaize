@@ -1,9 +1,9 @@
 # Changelog
 
-## v0.13.0-dev
+## v0.13.0
 
 * Enhancements
-    * Added a tools to handle email confirmation.
+    * Added tools to handle email confirmation.
 * Changes
     * Made password_hash value configurable.
 

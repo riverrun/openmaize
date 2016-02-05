@@ -18,8 +18,11 @@ defmodule Openmaize.Confirm do
 
   ## Options
 
-  There is one option:
+  There are two options:
 
+  * confirmation_validity - the length of time that a confirmation token is valid
+    * the value is in minutes
+    * the default is 1440 minutes (1 day)
   * query_function - a custom function to query the database
     * if you are using Ecto, you will probably not need this
 
@@ -46,19 +49,31 @@ defmodule Openmaize.Confirm do
         end
       end
 
+  To set a 2-hour time limit for the account to be confirmed:
+
+      Openmaize.Confirm.user_email(conn, confirmation_validity: 120)
+
   """
   def user_email(conn, opts \\ [])
   def user_email(%Plug.Conn{params: %{"email" => email, "key" => key}}, opts) do
-    query_func = Keyword.get(opts, :query_function, &QueryTools.find_user/2)
+    {confirm_validity, query_func} = {Keyword.get(opts, :confirmation_validity, 1440),
+                                      Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
     email
     |> URI.decode_www_form
     |> query_func.(:email)
-    |> check_key(key)
+    |> check_key(confirm_validity * 60, key)
     |> valid_key(email)
   end
   def user_email(_, _), do: {:error, "Invalid link"}
 
-  defp check_key(user, key) do
+  defp check_time(sent_at, validity_secs) do
+    (sent_at |> Ecto.DateTime.to_erl
+     |> :calendar.datetime_to_gregorian_seconds) + validity_secs >
+    (:calendar.universal_time |> :calendar.datetime_to_gregorian_seconds)
+  end
+
+  defp check_key(user, validity_secs, key) do
+    check_time(user.confirmation_sent_at, validity_secs) and
     secure_check(user.confirmation_token, key) and user
   end
 
@@ -66,7 +81,7 @@ defmodule Openmaize.Confirm do
     {:error, "Confirmation for #{email} failed"}
   end
   defp valid_key(user, email) do
-    change(user, %{confirmed: true}) |> Config.repo.update!
+    {:ok, user} = change(user, %{confirmed: true}) |> Config.repo.update
     {:ok, user, email}
   end
 end

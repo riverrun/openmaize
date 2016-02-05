@@ -5,10 +5,15 @@ defmodule Openmaize.ConfirmTest do
   alias Openmaize.Confirm
 
   @valid_link "email=fred%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
-  @invalid_token "email=wrong%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
-  @invalid_link "email=wrong%40mail.com"
+  @invalid_link "email=wrong%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
+  @incomplete_link "email=wrong%40mail.com"
 
-  @valid_user %{email: "fred@mail.com", confirmation_token: "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
+  @valid_user %{email: "fred@mail.com", confirmed: false,
+    confirmation_sent_at: Ecto.DateTime.utc,
+    confirmation_token: "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
+  @invalid_user %{email: "wrong@mail.com", confirmed: false,
+    confirmation_sent_at: Ecto.DateTime.utc,
+    confirmation_token: "LG9UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
 
   def call(link, opts) do
     conn(:get, "/confirm?" <> link)
@@ -20,21 +25,28 @@ defmodule Openmaize.ConfirmTest do
     @valid_user
   end
   def custom_query("wrong@mail.com", :email) do
-    %{email: "wrong@mail.com", confirmation_token: "LG9UXGNMpb5LUGEDm62PrwW8c20qZmIw"}
+    @invalid_user
   end
 
   test "Confirmation succeeds for valid token" do
-    #result = call(@valid_link, [query_function: &custom_query/2])
-    #assert result == {:ok, @valid_user, "fred@mail.com"}
+    Application.put_env(:openmaize, :repo, @valid_user)
+    {:ok, user, email} = call(@valid_link, [query_function: &custom_query/2])
+    assert user.confirmed == true
+    assert email == "fred@mail.com"
   end
 
   test "Confirmation fails for invalid token" do
-    result = call(@invalid_token, [query_function: &custom_query/2])
+    result = call(@invalid_link, [query_function: &custom_query/2])
     assert result == {:error, "Confirmation for wrong@mail.com failed"}
   end
 
+  test "Confirmation fails for expired token" do
+    result = call(@valid_link, [query_function: &custom_query/2, confirmation_validity: 0])
+    assert result == {:error, "Confirmation for fred@mail.com failed"}
+  end
+
   test "Invalid link error" do
-    result = call(@invalid_link, [query_function: &custom_query/2])
+    result = call(@incomplete_link, [query_function: &custom_query/2])
     assert result == {:error, "Invalid link"}
   end
 
