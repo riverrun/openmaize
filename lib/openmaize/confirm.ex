@@ -20,7 +20,7 @@ defmodule Openmaize.Confirm do
 
   There are two options:
 
-  * confirmation_validity - the length of time that a confirmation token is valid
+  * key_expires_after - the length of time that a confirmation token is valid
     * the value is in minutes
     * the default is 1440 minutes (1 day)
   * query_function - a custom function to query the database
@@ -51,29 +51,30 @@ defmodule Openmaize.Confirm do
 
   To set a 2-hour time limit for the account to be confirmed:
 
-      Openmaize.Confirm.user_email(conn, confirmation_validity: 120)
+      Openmaize.Confirm.user_email(conn, key_expires_after: 120)
 
   """
   def user_email(conn, opts \\ [])
-  def user_email(%Plug.Conn{params: %{"email" => email, "key" => key}}, opts) do
-    {confirm_validity, query_func} = {Keyword.get(opts, :confirmation_validity, 1440),
-                                      Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
+  def user_email(%Plug.Conn{params: %{"email" => email, "key" => key}},
+                 opts) when byte_size(key) == 32 do
+    {expires_after, query_func} = {Keyword.get(opts, :key_expires_after, 1440),
+                                   Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
     email
     |> URI.decode_www_form
     |> query_func.(:email)
-    |> check_key(confirm_validity * 60, key)
+    |> check_key(expires_after * 60, key)
     |> valid_key(email)
   end
   def user_email(_, _), do: {:error, "Invalid link"}
 
-  defp check_time(sent_at, validity_secs) do
+  defp check_time(sent_at, valid_secs) do
     (sent_at |> Ecto.DateTime.to_erl
-     |> :calendar.datetime_to_gregorian_seconds) + validity_secs >
+     |> :calendar.datetime_to_gregorian_seconds) + valid_secs >
     (:calendar.universal_time |> :calendar.datetime_to_gregorian_seconds)
   end
 
-  defp check_key(user, validity_secs, key) do
-    check_time(user.confirmation_sent_at, validity_secs) and
+  defp check_key(user, valid_secs, key) do
+    check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and user
   end
 
