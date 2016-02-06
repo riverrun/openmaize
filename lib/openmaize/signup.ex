@@ -97,7 +97,7 @@ defmodule Openmaize.Signup do
 
   Add the following three entries to your user schema:
 
-      field :confirmed, :boolean, default: false
+      field :confirmed_at, Ecto.DateTime
       field :confirmation_sent_at, Ecto.DateTime
       field :confirmation_token, :string
 

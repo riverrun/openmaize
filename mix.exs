@@ -30,6 +30,7 @@ defmodule Openmaize.Mixfile do
       {:ecto, "~> 1.1"},
       {:comeonin, "~> 2.0"},
       {:not_qwerty123, "~> 1.0", optional: true},
+      {:postgrex, "~> 0.11", optional: true},
       {:poison, "~> 1.5"},
       {:earmark, "~> 0.1", only: :dev},
       {:ex_doc,  "~> 0.11", only: :dev}

@@ -82,7 +82,7 @@ defmodule Openmaize.Confirm do
     {:error, "Confirmation for #{email} failed"}
   end
   defp valid_key(user, email) do
-    {:ok, user} = change(user, %{confirmed: true}) |> Config.repo.update
+    {:ok, user} = change(user, %{confirmed_at: Ecto.DateTime.utc}) |> Config.repo.update
     {:ok, user, email}
   end
 end

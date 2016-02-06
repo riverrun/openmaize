@@ -76,7 +76,7 @@ defmodule Openmaize.Login do
   end
 
   defp check_pass(nil, _, _), do: Config.get_crypto_mod.dummy_checkpw
-  defp check_pass(%{confirmed: false}, _, _),
+  defp check_pass(%{confirmed_at: nil}, _, _),
     do: {:error, "You have to confirm your email address before continuing."}
   defp check_pass(user, password, hash_name) do
     %{^hash_name => hash} = user
