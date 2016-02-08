@@ -97,9 +97,9 @@ defmodule Openmaize.Signup do
 
   Add the following three entries to your user schema:
 
-      field :confirmed_at, Ecto.DateTime
-      field :confirmation_sent_at, Ecto.DateTime
       field :confirmation_token, :string
+      field :confirmation_sent_at, Ecto.DateTime
+      field :confirmed_at, Ecto.DateTime
 
   ## Examples
 
@@ -114,6 +114,23 @@ defmodule Openmaize.Signup do
     changeset
     |> put_change(:confirmation_token, key)
     |> put_change(:confirmation_sent_at, Ecto.DateTime.utc)
+  end
+
+  @doc """
+  Add a reset token to the user changeset.
+
+  Add the following two entries to your user schema:
+
+  field :reset_token, :string
+  field :reset_sent_at, Ecto.DateTime
+
+  As with `add_confirm_token`, the function `gen_token_link` can be used
+  to generate the token and link.
+  """
+  def add_reset_token(changeset, key) do
+    changeset
+    |> put_change(:reset_token, key)
+    |> put_change(:reset_sent_at, Ecto.DateTime.utc)
   end
 
   @doc """
