@@ -2,8 +2,7 @@ defmodule Openmaize.TokenTest do
   use ExUnit.Case
   use Plug.Test
 
-  import Openmaize.Token
-  import Openmaize.Token.Verify
+  import Openmaize.{Token, Token.Verify}
 
   @token_opts {0, 86400}
 

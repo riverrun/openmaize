@@ -3,9 +3,7 @@ defmodule Openmaize.ConfirmTest do
   #use Openmaize.Case
   use Plug.Test
 
-  alias Openmaize.Confirm
-  alias Openmaize.TestRepo
-  alias Openmaize.User
+  alias Openmaize.{Confirm, QueryTools, TestRepo, User}
 
 
   @valid_link "email=fred%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
@@ -34,28 +32,39 @@ defmodule Openmaize.ConfirmTest do
   def call(link, opts) do
     conn(:get, "/confirm?" <> link)
     |> fetch_query_params
-    |> Confirm.user_email(opts)
+    |> Confirm.call(opts)
   end
 
   test "Confirmation succeeds for valid token" do
-    {:ok, user, email} = call(@valid_link, [])
-    assert user.confirmed_at != nil
-    assert email == "fred@mail.com"
+    opts = {1440, nil, true, :account, &QueryTools.find_user/2}
+    conn = call(@valid_link, opts)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/"}
+    assert conn.status == 302
   end
 
   test "Confirmation fails for invalid token" do
-    result = call(@invalid_link, [])
-    assert result == {:error, "Confirmation for wrong@mail.com failed"}
+    opts = {1440, nil, true, :account, &QueryTools.find_user/2}
+    conn = call(@invalid_link, opts)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/login"}
+    assert conn.status == 302
   end
 
   test "Confirmation fails for expired token" do
-    result = call(@valid_link, [key_expires_after: 0])
-    assert result == {:error, "Confirmation for fred@mail.com failed"}
+    opts = {0, nil, true, :account, &QueryTools.find_user/2}
+    conn = call(@valid_link, opts)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/login"}
+    assert conn.status == 302
   end
 
   test "Invalid link error" do
-    result = call(@incomplete_link, [])
-    assert result == {:error, "Invalid link"}
+    opts = {1440, nil, true, :account, &QueryTools.find_user/2}
+    conn = call(@incomplete_link, opts)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/login"}
+    assert conn.status == 302
   end
 
 end

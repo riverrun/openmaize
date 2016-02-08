@@ -45,7 +45,7 @@ defmodule Openmaize.Report do
   end
 
   @doc """
-  Redirect the connection to the home page with an info message.
+  Redirect the connection to the `logout` page with an info message.
   """
   def handle_info(conn, message) do
     redirect_to(conn, "#{Config.redirect_pages["logout"]}", %{"info" => message})
