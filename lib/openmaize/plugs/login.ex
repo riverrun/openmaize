@@ -84,10 +84,10 @@ defmodule Openmaize.Login do
   end
 
   defp handle_auth(false, conn, {redirects, _, _, _}) do
-    handle_error(conn, "Invalid credentials", redirects)
+    put_message(conn, %{"error" => "Invalid credentials"}, redirects)
   end
   defp handle_auth({:error, message}, conn, {redirects, _, _, _}) do
-    handle_error(conn, message, redirects)
+    put_message(conn, %{"error" => message}, redirects)
   end
   defp handle_auth(user, conn, opts) do
     add_token(conn, user, opts)

@@ -32,7 +32,9 @@ defmodule Openmaize.Confirm do
     |> check_key(confirm_type, key_expiry * 60, key)
     |> complete(conn, email, mail_func, redirects)
   end
-  def call(conn, {_, _, redirects, _, _}), do: handle_error(conn, "Invalid link", redirects)
+  def call(conn, {_, _, redirects, _, _}) do
+    put_message(conn, %{"error" => "Invalid link"}, redirects)
+  end
 
   defp check_key(user, :account, valid_secs, key) do
     check_time(user.confirmation_sent_at, valid_secs) and
@@ -52,9 +54,9 @@ defmodule Openmaize.Confirm do
 
   defp complete({:ok, _user}, conn, email, mail_func, redirects) do
     mail_func && mail_func.(email)
-    handle_info(conn, "Yes, we're in!")
+    put_message(conn, %{"info" => "Account successfully confirmed"}, redirects)
   end
   defp complete(false, conn, email, _, redirects) do
-    handle_error(conn, "Confirmation for #{email} failed", redirects)
+    put_message(conn, %{"error" => "Confirmation for #{email} failed"}, redirects)
   end
 end

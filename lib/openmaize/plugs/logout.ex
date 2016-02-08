@@ -50,7 +50,7 @@ defmodule Openmaize.Logout do
 
   def logout_user(conn, true) do
     delete_resp_cookie(conn, "access_token")
-    |> handle_info("You have been logged out")
+    |> put_message("logout", %{"info" => "You have been logged out"}, true)
   end
   def logout_user(conn, false), do: delete_resp_cookie(conn, "access_token") |> halt
 

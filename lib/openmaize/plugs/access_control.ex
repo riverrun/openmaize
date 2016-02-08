@@ -122,11 +122,11 @@ defmodule Openmaize.AccessControl do
 
   defp nouser_error(%Plug.Conn{request_path: path} = conn, redirects) do
     message = "You have to be logged in to view #{path}"
-    handle_error(conn, message, redirects)
+    put_message(conn, %{"error" => message}, redirects)
   end
 
   defp nopermit_error(%Plug.Conn{request_path: path} = conn, role, redirects) do
     message = "You do not have permission to view #{path}"
-    handle_error(conn, role, message, redirects)
+    put_message(conn, role, %{"error" => message}, redirects)
   end
 end

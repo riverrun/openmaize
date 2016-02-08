@@ -12,50 +12,21 @@ defmodule Openmaize.Report do
   alias Openmaize.Config
 
   @doc """
-  Handle authentication errors.
-
-  These errors relate to there being no current user for a protected page.
-
-  If redirects is set to true, the user will be redirected to the login
-  page. If redirects is false, a json-encoded message will be sent to the
-  user.
+  message should be a map - e.g., %{"error" => message}
   """
-  def handle_error(conn, message, true) do
-    redirect_to(conn, "#{Config.redirect_pages["login"]}", %{"error" => message})
+  def put_message(conn, message, true) do
+    redirect_to(conn, "#{Config.redirect_pages["login"]}", message)
   end
-  def handle_error(conn, message, false) do
-    send_resp(conn, 401, Poison.encode!(%{"error" => message})) |> halt()
+  def put_message(conn, message, false) do
+    send_resp(conn, 401, Poison.encode!(message)) |> halt()
   end
 
   @doc """
-  Handle authorization errors.
-
-  These errors relate to the current user not being permitted to access the
-  requested page.
-
-  If redirects is set to true, the user will be redirected to the login
-  page. If redirects is false, a json-encoded message will be sent to the
-  user.
   """
-  def handle_error(conn, role, message, true) do
-    redirect_to(conn, "#{Config.redirect_pages[role]}", %{"error" => message})
+  def put_message(conn, role, message, true) do
+    redirect_to(conn, "#{Config.redirect_pages[role]}", message)
   end
-  def handle_error(conn, _role, message, false) do
-    send_resp(conn, 403, Poison.encode!(%{"error" => message})) |> halt()
+  def put_message(conn, _role, message, false) do
+    send_resp(conn, 403, Poison.encode!(message)) |> halt()
   end
-
-  @doc """
-  Redirect the connection to the `logout` page with an info message.
-  """
-  def handle_info(conn, message) do
-    redirect_to(conn, "#{Config.redirect_pages["logout"]}", %{"info" => message})
-  end
-
-  @doc """
-  Redirect the connection to the user's role's page with an info message.
-  """
-  def handle_info(conn, role, message) do
-    redirect_to(conn, "#{Config.redirect_pages[role]}", %{"info" => message})
-  end
-
 end

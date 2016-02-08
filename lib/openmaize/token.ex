@@ -40,7 +40,7 @@ defmodule Openmaize.Token do
     {:ok, token} = generate_token(user, uniq, token_opts)
     conn
     |> put_resp_cookie("access_token", token, [http_only: true])
-    |> handle_info(role, "You have been logged in")
+    |> put_message(role, %{"info" => "You have been logged in"}, true)
   end
   def add_token(conn, user, {false, storage, token_opts, uniq}) do
     generate_token(user, uniq, token_opts)
