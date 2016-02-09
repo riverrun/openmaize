@@ -47,7 +47,7 @@ defmodule Openmaize.ConfirmTest do
     opts = {1440, nil, true, :account, &QueryTools.find_user/2}
     conn = call(@invalid_link, opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "/login"}
+      {"location", "/"}
     assert conn.status == 302
   end
 
@@ -55,7 +55,7 @@ defmodule Openmaize.ConfirmTest do
     opts = {0, nil, true, :account, &QueryTools.find_user/2}
     conn = call(@valid_link, opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "/login"}
+      {"location", "/"}
     assert conn.status == 302
   end
 
@@ -63,7 +63,7 @@ defmodule Openmaize.ConfirmTest do
     opts = {1440, nil, true, :account, &QueryTools.find_user/2}
     conn = call(@incomplete_link, opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "/login"}
+      {"location", "/"}
     assert conn.status == 302
   end
 

@@ -12,7 +12,7 @@ defmodule Openmaize.Report do
   alias Openmaize.Config
 
   @doc """
-  message should be a map - e.g., %{"error" => message}
+  Send a message for a user with no role.
   """
   def put_message(conn, message, true) do
     redirect_to(conn, "#{Config.redirect_pages["login"]}", message)
@@ -22,6 +22,7 @@ defmodule Openmaize.Report do
   end
 
   @doc """
+  Send a message for a user with a specific role.
   """
   def put_message(conn, role, message, true) do
     redirect_to(conn, "#{Config.redirect_pages[role]}", message)
