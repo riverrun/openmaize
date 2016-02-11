@@ -63,7 +63,7 @@ access the requested page.
 
 In the Openmaize.Signup module:
 
-* create_user - take an Ecto changeset, check that the password is valid,
+* add_password_hash - take an Ecto changeset, check that the password is valid,
 and return an updated changeset.
 * add_confirm_token - add a confirmation token to the changeset.
 * gen_token_link - generate a confirmation token and a link to be used in

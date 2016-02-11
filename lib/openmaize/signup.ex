@@ -28,7 +28,7 @@ defmodule Openmaize.Signup do
   the `:password_hash` value.
 
   The `:role` is needed for authorization, and the `:password` and the
-  `:password_hash` fields are needed for the `create_user` function
+  `:password_hash` fields are needed for the `add_password_hash` function
   in this module (see the documentation for Openmaize.Config for information
   about changing :password_hash to some other value). Note the addition
   of `virtual: true` to the definition of the password field. This means
@@ -81,10 +81,10 @@ defmodule Openmaize.Signup do
   long before hashing it:
 
       changeset
-      |> Openmaize.Signup.create_user(params, [min_length: 12])
+      |> Openmaize.Signup.add_password_hash(params, [min_length: 12])
 
   """
-  def create_user(changeset, params, opts \\ []) do
+  def add_password_hash(changeset, params, opts \\ []) do
     {min_len, max_len} = {Keyword.get(opts, :min_length, 8), Keyword.get(opts, :max_length, 80)}
     changeset
     |> cast(params, ~w(password), [])

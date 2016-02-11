@@ -36,7 +36,7 @@ defmodule Openmaize.ConfirmTest do
   end
 
   test "Confirmation succeeds for valid token" do
-    opts = {1440, nil, true, :account, &QueryTools.find_user/2}
+    opts = {1440, nil, true, &QueryTools.find_user/2}
     conn = call(@valid_link, opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/login"}
@@ -44,7 +44,7 @@ defmodule Openmaize.ConfirmTest do
   end
 
   test "Confirmation fails for invalid token" do
-    opts = {1440, nil, true, :account, &QueryTools.find_user/2}
+    opts = {1440, nil, true, &QueryTools.find_user/2}
     conn = call(@invalid_link, opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
@@ -52,7 +52,7 @@ defmodule Openmaize.ConfirmTest do
   end
 
   test "Confirmation fails for expired token" do
-    opts = {0, nil, true, :account, &QueryTools.find_user/2}
+    opts = {0, nil, true, &QueryTools.find_user/2}
     conn = call(@valid_link, opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
@@ -60,7 +60,7 @@ defmodule Openmaize.ConfirmTest do
   end
 
   test "Invalid link error" do
-    opts = {1440, nil, true, :account, &QueryTools.find_user/2}
+    opts = {1440, nil, true, &QueryTools.find_user/2}
     conn = call(@incomplete_link, opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
