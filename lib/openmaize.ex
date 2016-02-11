@@ -23,7 +23,7 @@ defmodule Openmaize do
 
   In the Openmaize.Signup module:
 
-  * add_password_hash - take an Ecto changeset, check that the password is valid,
+  * create_user - take an Ecto changeset, check that the password is valid,
   and return an updated changeset.
   * add_confirm_token - add a confirmation token to the changeset.
   * gen_token_link - generate a confirmation token and a link to be used in
@@ -46,7 +46,24 @@ defmodule Openmaize do
 
   @doc false
   def start(_type, _args) do
-    Openmaize.Supervisor.start_link
+    import Supervisor.Spec
+
+    children = [
+      worker(Openmaize.Keymanager, [])
+    ]
+
+    opts = [strategy: :one_for_one, name: Openmaize.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 
+  @doc """
+  Stop the keymanager child process without keeping state.
+
+  This can be used to remove the old keys and generate new ones.
+  After being stopped, the keymanager will be restarted and new keys
+  will be created.
+  """
+  def force_stop_keymanager do
+    Process.whereis(Openmaize.Keymanager) |> Process.exit(:kill)
+  end
 end

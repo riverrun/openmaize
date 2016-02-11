@@ -6,7 +6,7 @@ defmodule Openmaize.Keymanager do
   @oneday 86_400_000
 
   def start_link() do
-    GenServer.start_link(__MODULE__, [], name: Keymanager)
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def init([]) do
@@ -14,11 +14,11 @@ defmodule Openmaize.Keymanager do
     {:ok, %{key_1: get_key, key_2: get_key, current_kid: "1"}}
   end
 
-  def get_key("1"), do: GenServer.call(Keymanager, :get_key_1)
-  def get_key("2"), do: GenServer.call(Keymanager, :get_key_2)
+  def get_key("1"), do: GenServer.call(__MODULE__, :get_key_1)
+  def get_key("2"), do: GenServer.call(__MODULE__, :get_key_2)
 
   def get_current_kid do
-    GenServer.call(Keymanager, :get_current_kid)
+    GenServer.call(__MODULE__, :get_current_kid)
   end
 
   def handle_call(:get_key_1, _from, %{key_1: key} = state) do

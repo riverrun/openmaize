@@ -72,7 +72,7 @@ defmodule Openmaize.User do
   def auth_changeset(model, params, key) do
     model
     |> changeset(params)
-    |> Openmaize.Signup.add_password_hash(params)
+    |> Openmaize.Signup.create_user(params)
     |> Openmaize.Signup.add_confirm_token(key)
   end
 end

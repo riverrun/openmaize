@@ -3,7 +3,7 @@ defmodule Openmaize.ConfirmTest do
   #use Openmaize.Case
   use Plug.Test
 
-  alias Openmaize.{Confirm, QueryTools, TestRepo, User}
+  alias Openmaize.{Confirm, TestRepo, User}
 
 
   @valid_link "email=fred%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
@@ -32,36 +32,32 @@ defmodule Openmaize.ConfirmTest do
   def call(link, opts) do
     conn(:get, "/confirm?" <> link)
     |> fetch_query_params
-    |> Confirm.call(opts)
+    |> Confirm.confirm_email(opts)
   end
 
   test "Confirmation succeeds for valid token" do
-    opts = {1440, nil, true, &QueryTools.find_user/2}
-    conn = call(@valid_link, opts)
+    conn = call(@valid_link, [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/login"}
     assert conn.status == 302
   end
 
   test "Confirmation fails for invalid token" do
-    opts = {1440, nil, true, &QueryTools.find_user/2}
-    conn = call(@invalid_link, opts)
+    conn = call(@invalid_link, [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
     assert conn.status == 302
   end
 
   test "Confirmation fails for expired token" do
-    opts = {0, nil, true, &QueryTools.find_user/2}
-    conn = call(@valid_link, opts)
+    conn = call(@valid_link, [key_expires_after: 0])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
     assert conn.status == 302
   end
 
   test "Invalid link error" do
-    opts = {1440, nil, true, &QueryTools.find_user/2}
-    conn = call(@incomplete_link, opts)
+    conn = call(@incomplete_link, [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
     assert conn.status == 302

@@ -14,47 +14,42 @@ defmodule Openmaize.Confirm do
   import Openmaize.Report
   alias Openmaize.{Config, QueryTools, Signup}
 
-  @behaviour Plug
+  @doc """
+  """
+  def confirm_email(%Plug.Conn{params: %{"key" => key} = user_params} = conn, opts)
+  when byte_size(key) == 32 do
+    check_user_key(conn, user_params, key, :nopassword, get_opts(opts))
+  end
+  def confirm_email(conn, opts), do: invalid_link_error(conn, opts)
 
-  def init(opts) do
+  @doc """
+  """
+  def reset_password(%Plug.Conn{params: %{"key" => key, "password" => password} = user_params} = conn, opts)
+  when byte_size(key) == 32 do
+    Signup.create_user(%{"password" => password}) # validate changeset first
+    check_user_key(conn, user_params, key, password, get_opts(opts))
+  end
+  def reset_password(conn, opts), do: invalid_link_error(conn, opts)
+
+  defp get_opts(opts) do
     {Keyword.get(opts, :key_expires_after, 1440),
+     Keyword.get(opts, :unique_id, :email),
      Keyword.get(opts, :mail_function),
      Keyword.get(opts, :redirects, true),
      Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
   end
 
-  @doc """
-  Validate a link which was sent to a user by email.
-
-  ## Options
-
-  There are four options:
-
-  * key_expires_after - the length of time, in minutes, that the token should be valid for
-  * mail_function - the mailing function
-  * redirects - if Openmaize should handle redirects
-  * query_function - function to query the database
-
-  """
-  def call(%Plug.Conn{params: %{"email" => email, "key" => key, "password" => password}} = conn, opts) do
-    check_user_key(conn, email, key, password, opts)
-  end
-  def call(%Plug.Conn{params: %{"email" => email, "key" => key}} = conn, opts) do
-    check_user_key(conn, email, key, :nopassword, opts)
-  end
-  def call(conn, {_, _, redirects, _}) do
-    put_message(conn, "logout", %{"error" => "Invalid link"}, redirects)
-  end
-
-  defp check_user_key(conn, email, key, password, {key_expiry, mail_func, redirects, query_func})
-  when byte_size(key) == 32 do
-    email
+  defp check_user_key(conn, user_params, key, password,
+                      {key_expiry, uniq, mail_func, redirects, query_func}) do
+    user_id = Map.get(user_params, to_string(uniq))
+    user_id
     |> URI.decode_www_form
-    |> query_func.(:email)
+    |> query_func.(uniq)
     |> check_key(key, key_expiry * 60, password)
-    |> finalize(conn, email, mail_func, redirects)
+    |> finalize(conn, user_id, mail_func, redirects)
   end
 
+  defp check_key({:error, message}, _, _, _), do: IO.inspect message
   defp check_key(user, key, valid_secs, :nopassword) do
     check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
@@ -63,7 +58,7 @@ defmodule Openmaize.Confirm do
   defp check_key(user, key, valid_secs, password) do
     check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and
-    Signup.add_password_hash(%{"password" => password})
+    Signup.create_user(user, %{"password" => password}) |> Config.repo.update
   end
 
   defp check_time(sent_at, valid_secs) do
@@ -72,11 +67,16 @@ defmodule Openmaize.Confirm do
     (:calendar.universal_time |> :calendar.datetime_to_gregorian_seconds)
   end
 
-  defp finalize({:ok, _user}, conn, email, mail_func, redirects) do
-    mail_func && mail_func.(email)
+  defp finalize({:ok, user}, conn, _, mail_func, redirects) do
+    mail_func && mail_func.(user.email)
     put_message(conn, %{"info" => "Account successfully confirmed"}, redirects)
   end
-  defp finalize(false, conn, email, _, redirects) do
-    put_message(conn, "logout", %{"error" => "Confirmation for #{email} failed"}, redirects)
+  defp finalize(false, conn, user_id, _, redirects) do
+    put_message(conn, "logout", %{"error" => "Confirmation for #{user_id} failed"}, redirects)
+  end
+
+  defp invalid_link_error(conn, opts) do
+    redirects = Keyword.get(opts, :redirects, true)
+    put_message(conn, "logout", %{"error" => "Invalid link"}, redirects)
   end
 end
