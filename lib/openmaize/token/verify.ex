@@ -3,7 +3,7 @@ defmodule Openmaize.Token.Verify do
   Module to verify JSON Web Tokens.
   """
 
-  use Openmaize.Token.ErrorPipe
+  use Openmaize.Pipe
   import Base
   import Openmaize.Token.Tools
 
@@ -20,12 +20,11 @@ defmodule Openmaize.Token.Verify do
   end
 
   defp check_valid([enc_header, enc_payload, sign]) do
-    error_pipe(
-      Enum.map([enc_header, enc_payload], &to_map/1)
-      |> check_header
-      |> check_sign(sign, enc_header, enc_payload)
-      |> check_nbf
-      |> check_exp)
+    error_pipe(Enum.map([enc_header, enc_payload], &to_map/1)
+               |> check_header
+               |> check_sign(sign, enc_header, enc_payload)
+               |> check_nbf
+               |> check_exp)
   end
 
   defp to_map(input) do

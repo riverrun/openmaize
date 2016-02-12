@@ -30,11 +30,14 @@ defmodule UsersMigration do
   def change do
     create table(:users) do
       add :email, :string
+      add :username, :string
       add :password_hash, :string
       add :role, :string
       add :confirmed_at, :datetime
       add :confirmation_token, :string
       add :confirmation_sent_at, :datetime
+      add :reset_token, :string
+      add :reset_sent_at, :datetime
     end
 
     create unique_index :users, [:email]
@@ -54,17 +57,20 @@ defmodule Openmaize.User do
 
   schema "users" do
     field :email, :string
+    field :username, :string
     field :role, :string
     field :password, :string, virtual: true
     field :password_hash, :string
     field :confirmed_at, Ecto.DateTime
     field :confirmation_token, :string
     field :confirmation_sent_at, Ecto.DateTime
+    field :reset_token, :string
+    field :reset_sent_at, Ecto.DateTime
   end
 
   def changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(email role), ~w())
+    |> cast(params, ~w(email role), ~w(username))
     |> validate_length(:email, min: 1, max: 100)
     |> unique_constraint(:email)
   end
@@ -74,5 +80,6 @@ defmodule Openmaize.User do
     |> changeset(params)
     |> Openmaize.Signup.create_user(params)
     |> Openmaize.Signup.add_confirm_token(key)
+    |> Openmaize.Signup.add_reset_token(key)
   end
 end

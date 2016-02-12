@@ -1,14 +1,10 @@
-defmodule Openmaize.Token.ErrorPipe do
+defmodule Openmaize.Pipe do
   @moduledoc """
-  Customized pipe.
-
-  This pipe behaves like the regular Elixir pipe, but it exits if
-  a tuple with {:error, message} is returned.
   """
 
   defmacro __using__(_) do
     quote do
-      import Openmaize.Token.ErrorPipe
+      import Openmaize.Pipe
     end
   end
 
@@ -21,6 +17,7 @@ defmodule Openmaize.Token.ErrorPipe do
     quote do
       case unquote(acc) do
         {:error, message} -> {:error, message}
+        nil -> nil
         acc -> unquote(Macro.pipe(acc, x, pos))
       end
     end

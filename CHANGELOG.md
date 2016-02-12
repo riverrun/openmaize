@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.14.0
+
+* Enhancements
+    * Added tools to handle resetting the password.
+* Changes
+    * Changed the way the email confirmation is called.
+    * Removed the optional password strength checker.
+
 ## v0.13.0
 
 * Enhancements

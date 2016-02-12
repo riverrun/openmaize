@@ -2,10 +2,6 @@ defmodule Openmaize.Signup do
   @moduledoc """
   Module to help create a user that can be authenticated using Openmaize.
 
-  There is also an option to check the strength of the password before
-  it is hashed. To enable this option, add the optional dependency
-  `{:not_qwerty123, "~> 1.0"}` to the `mix.exs` file.
-
   ## User model
 
   The example schema below is the most basic setup for Openmaize
@@ -39,19 +35,6 @@ defmodule Openmaize.Signup do
   import Ecto.Changeset
   alias Openmaize.Config
 
-  if Code.ensure_loaded?(NotQwerty123) do
-    defp add_pass_changeset(changeset, password, opts) do
-      case NotQwerty123.PasswordStrength.strong_password?(password, opts) do
-        true -> put_change(changeset, Config.hash_name, Config.get_crypto_mod.hashpwsalt(password))
-        message -> add_error(changeset, :password, message)
-      end
-    end
-  else
-    defp add_pass_changeset(changeset, password, _opts) do
-      put_change(changeset, Config.hash_name, Config.get_crypto_mod.hashpwsalt(password))
-    end
-  end
-
   @doc """
   Hash a password and add the hash to the database.
 
@@ -64,16 +47,6 @@ defmodule Openmaize.Signup do
 
   * min_length - the minimum length of the password (default is 8 characters)
   * max_length - the maximum length of the password (default is 80 characters)
-
-  There are additional options to check the strength of the password, using
-  the optional dependency NotQwerty123, before it is hashed (to enable this
-  option, add `{:not_qwerty123, "~> 1.0"}` to the `mix.exs` file):
-
-  * extra_chars - check for punctuation characters (including spaces) and digits
-  * common - check to see if the password is too common (easy to guess)
-
-  See the documentation for NotQwerty123.PasswordStrength for more details about
-  these options.
 
   ## Examples
 
@@ -89,7 +62,7 @@ defmodule Openmaize.Signup do
     changeset
     |> cast(params, ~w(password), [])
     |> validate_length(:password, min: min_len, max: max_len)
-    |> put_pass_hash(opts)
+    |> put_pass_hash
   end
 
   @doc """
@@ -150,8 +123,8 @@ defmodule Openmaize.Signup do
   end
 
   defp put_pass_hash(%Ecto.Changeset{valid?: true,
-                     changes: %{password: password}} = changeset, opts) do
-    add_pass_changeset(changeset, password, opts)
+                     changes: %{password: password}} = changeset) do
+    put_change(changeset, Config.hash_name, Config.get_crypto_mod.hashpwsalt(password))
   end
-  defp put_pass_hash(changeset, _opts), do: changeset
+  defp put_pass_hash(changeset), do: changeset
 end
