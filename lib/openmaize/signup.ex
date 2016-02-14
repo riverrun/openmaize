@@ -107,15 +107,32 @@ defmodule Openmaize.Signup do
   end
 
   @doc """
+  Add the password hash for the new password to the database.
+  
+  If the update is successful, the reset_token and reset_sent_at
+  values will be set to nil.
+  """
+  def reset_password(user, password) do
+    Config.repo.transaction(fn ->
+      {:ok, user} = change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+      |> Config.repo.update
+
+      change(user, %{reset_token: nil, reset_sent_at: nil})
+      |> Config.repo.update
+    end)
+  end
+
+  @doc """
   Generate a confirmation token and a link containing the email address
   and the token.
 
   The link is used to create the url that the user needs to follow to
   confirm the email address.
 
-  unique_id is ...
-  user_id is ...
-
+  The user_id is the actual name or email address of the user, and
+  unique_id refers to the type of identifier. For example, if you
+  want to use `username=fred` in your link, you need to set the
+  unique_id to :username. The default unique_id is :email.
   """
   def gen_token_link(user_id, unique_id \\ :email) do
     key = :crypto.strong_rand_bytes(24) |> Base.url_encode64

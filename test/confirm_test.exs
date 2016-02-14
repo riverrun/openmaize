@@ -34,7 +34,8 @@ defmodule Openmaize.ConfirmTest do
 
   setup do
     user = QueryTools.find_user("fred@mail.com", :email)
-    change(user, %{confirmed_at: nil}) |> Openmaize.Config.repo.update
+    change(user, %{reset_sent_at: Ecto.DateTime.utc, confirmed_at: nil})
+    |> Openmaize.Config.repo.update
     :ok
   end
 
@@ -114,6 +115,8 @@ defmodule Openmaize.ConfirmTest do
     assert conn.status == 302
     user = QueryTools.find_user("fred@mail.com", :email)
     assert Bcrypt.checkpw(password, user.password_hash)
+    refute user.reset_token
+    refute user.reset_sent_at
   end
 
   test "Reset password fails with expired token" do
@@ -124,6 +127,7 @@ defmodule Openmaize.ConfirmTest do
     assert conn.status == 302
     user = QueryTools.find_user("fred@mail.com", :email)
     refute Bcrypt.checkpw(password, user.password_hash)
+    assert user.reset_sent_at
   end
 
 end

@@ -35,10 +35,14 @@ defmodule Openmaize.Confirm do
 
   ## Examples
 
-  After importing Openmaize.Confirm, run the following command:
+  First, define a `get "/confirm"` route in the web/router.ex file.
+  Then, in the controller file, `import Openmaize.Confirm` and run the
+  following command:
 
-      plug :confirm_email, [mail_function: &Mailer.send_receipt/1] when action in [:confirm_email]
+      plug :confirm_email, [mail_function: &Mailer.send_receipt/1] when action in [:confirm]
 
+  This command will be run when the user accesses the `confirm` route.
+  There is no need to write a confirm function in your controller.
   """
   def confirm_email(%Plug.Conn{params: %{"key" => key} = user_params} = conn, opts)
   when byte_size(key) == 32 do
@@ -54,10 +58,16 @@ defmodule Openmaize.Confirm do
 
   ## Examples
 
-  After importing Openmaize.Confirm, run the following command:
+  First, define a `post "/reset", SomeController, :reset_password` route
+  in the web/router.ex file. Then, in the controller file, `import Openmaize.Confirm`
+  and run the following command:
 
       plug :reset_password, [mail_function: &Mailer.send_receipt/1] when action in [:reset_password]
 
+  This command will be run when the user sends the form with the data to
+  reset the password. There is no need to write a reset_password function
+  in your controller, but you will need to write a function to handle the
+  `get "/reset"` request, that is, to render the form to reset the password.
   """
   def reset_password(%Plug.Conn{params: %{"user" =>
                     %{"key" => key, "password" => password} = user_params}} = conn, opts)
@@ -93,7 +103,7 @@ defmodule Openmaize.Confirm do
   defp check_key(user, key, valid_secs, password) do
     check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and
-    Signup.create_user(user, %{"password" => password}) |> Config.repo.update
+    Signup.reset_password(user, password)
   end
 
   defp check_time(sent_at, valid_secs) do
