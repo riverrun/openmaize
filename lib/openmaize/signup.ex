@@ -108,17 +108,17 @@ defmodule Openmaize.Signup do
 
   @doc """
   Add the password hash for the new password to the database.
-  
+
   If the update is successful, the reset_token and reset_sent_at
   values will be set to nil.
   """
   def reset_password(user, password) do
     Config.repo.transaction(fn ->
-      {:ok, user} = change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
-      |> Config.repo.update
+      user = change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+      |> Config.repo.update!
 
       change(user, %{reset_token: nil, reset_sent_at: nil})
-      |> Config.repo.update
+      |> Config.repo.update!
     end)
   end
 
