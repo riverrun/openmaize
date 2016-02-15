@@ -1,11 +1,10 @@
 defmodule Openmaize.ConfirmTest do
   use ExUnit.Case
-  #use Openmaize.Case
   use Plug.Test
 
   import Ecto.Changeset
   alias Comeonin.Bcrypt
-  alias Openmaize.{Confirm, QueryTools, TestRepo, User}
+  alias Openmaize.{Confirm, TestRepo, User}
 
 
   @valid_link "email=fred%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
@@ -33,7 +32,7 @@ defmodule Openmaize.ConfirmTest do
   end
 
   setup do
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     change(user, %{reset_sent_at: Ecto.DateTime.utc, confirmed_at: nil})
     |> Openmaize.Config.repo.update
     :ok
@@ -58,7 +57,7 @@ defmodule Openmaize.ConfirmTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/login"}
     assert conn.status == 302
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     assert user.confirmed_at
   end
 
@@ -67,7 +66,7 @@ defmodule Openmaize.ConfirmTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
     assert conn.status == 302
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     refute user.confirmed_at
   end
 
@@ -76,7 +75,7 @@ defmodule Openmaize.ConfirmTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
     assert conn.status == 302
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     refute user.confirmed_at
   end
 
@@ -85,7 +84,7 @@ defmodule Openmaize.ConfirmTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
     assert conn.status == 302
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     refute user.confirmed_at
   end
 
@@ -94,7 +93,7 @@ defmodule Openmaize.ConfirmTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/login"}
     assert conn.status == 302
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     assert user.confirmed_at
   end
 
@@ -103,7 +102,7 @@ defmodule Openmaize.ConfirmTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
     assert conn.status == 302
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     refute user.confirmed_at
   end
 
@@ -113,7 +112,7 @@ defmodule Openmaize.ConfirmTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/login"}
     assert conn.status == 302
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     assert Bcrypt.checkpw(password, user.password_hash)
     refute user.reset_token
     refute user.reset_sent_at
@@ -125,9 +124,19 @@ defmodule Openmaize.ConfirmTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
     assert conn.status == 302
-    user = QueryTools.find_user("fred@mail.com", :email)
+    user = TestRepo.get_by(User, email: "fred@mail.com")
     refute Bcrypt.checkpw(password, user.password_hash)
     assert user.reset_sent_at
+  end
+
+  test "Reset password fails when reset_sent_at is nil" do
+    user = TestRepo.get_by(User, email: "fred@mail.com")
+    change(user, %{reset_sent_at: nil})
+    |> Openmaize.Config.repo.update
+    conn = call_reset("password", [])
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/"}
+    assert conn.status == 302
   end
 
 end

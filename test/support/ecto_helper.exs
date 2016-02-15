@@ -11,19 +11,6 @@ defmodule Openmaize.TestRepo do
   use Ecto.Repo, otp_app: :openmaize
 end
 
-defmodule Openmaize.Case do
-  use ExUnit.CaseTemplate
-  setup_all do
-    Ecto.Adapters.SQL.begin_test_transaction(TestRepo, [])
-    on_exit fn -> Ecto.Adapters.SQL.rollback_test_transaction(TestRepo, []) end
-    :ok
-  end
-  setup do
-    Ecto.Adapters.SQL.restart_test_transaction(TestRepo, [])
-    :ok
-  end
-end
-
 defmodule UsersMigration do
   use Ecto.Migration
 

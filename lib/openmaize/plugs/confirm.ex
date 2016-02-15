@@ -106,7 +106,7 @@ defmodule Openmaize.Confirm do
     Signup.reset_password(user, password)
   end
 
-  defp check_key(nil, _), do: false
+  defp check_time(nil, _), do: false
   defp check_time(sent_at, valid_secs) do
     (sent_at |> Ecto.DateTime.to_erl
      |> :calendar.datetime_to_gregorian_seconds) + valid_secs >
