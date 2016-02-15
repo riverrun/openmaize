@@ -71,7 +71,9 @@ the confirmation url that is sent to the user.
 
 In the Openmaize.Confirm module:
 
-* user_email - verify the token that was sent to the user by email.
+* confirm_email - verify the token that was sent to the user by email.
+* reset_password - like `confirm_email`, verify the token that was sent
+to the user by email, but this time so that the user's password can be reset.
 
 See the relevant module documentation for more details.
 

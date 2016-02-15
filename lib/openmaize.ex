@@ -31,7 +31,9 @@ defmodule Openmaize do
 
   In the Openmaize.Confirm module:
 
-  * user_email - verify the token that was sent to the user by email.
+  * confirm_email - verify the token that was sent to the user by email.
+  * reset_password - like `confirm_email`, verify the token that was sent
+  to the user by email, but this time so that the user's password can be reset.
 
   See the relevant module documentation for more details.
 
@@ -63,7 +65,7 @@ defmodule Openmaize do
   After being stopped, the keymanager will be restarted and new keys
   will be created.
   """
-  def force_stop_keymanager do
+  def stop_keymanager do
     Process.whereis(Openmaize.Keymanager) |> Process.exit(:kill)
   end
 end
