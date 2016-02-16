@@ -2,7 +2,18 @@ defmodule Openmaize.LoginTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.Login
+  alias Openmaize.{Login, QueryTools, TestRepo, User}
+
+  setup_all do
+    Application.put_env(:openmaize, :repo, TestRepo)
+    Application.put_env(:openmaize, :user_model, User)
+
+    user = %{email: "ray@mail.com", username: "ray", role: "user", password: "hard2guess",
+            confirmed_at: Ecto.DateTime.utc}
+    {:ok, _} = %User{} |> User.auth_changeset(user) |> TestRepo.insert
+
+    :ok
+  end
 
   def call(name, password, uniq, opts) do
     conn(:post, "/login",
@@ -10,25 +21,40 @@ defmodule Openmaize.LoginTest do
     |> Login.call(opts)
   end
 
-  def custom_query(user_id, :name) do
-    %{name: user_id, role: "user", password_hash: Comeonin.Bcrypt.hashpwsalt("hard2guess")}
-  end
-  def custom_query(user_id, :email) do
-    %{email: user_id, role: "user", password_hash: Comeonin.Bcrypt.hashpwsalt("hard2guess")}
+  test "login succeeds with username" do
+    opts = {true, :cookie, {0, 1440}, :username, &QueryTools.find_user/2}
+    conn = call("ray", "hard2guess", "username", opts)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/users"}
+    assert conn.status == 302
+    assert conn.resp_cookies["access_token"]
   end
 
-  test "get user params with name" do
-    opts = {true, :cookie, {0, 1440}, :name, &custom_query/2}
-    conn = call("fred", "hard2guess", "name", opts)
-    assert conn.params["user"] == %{"name" => "fred", "password" => "hard2guess"}
+  test "login succeeds with email" do
+    opts = {true, :cookie, {0, 1440}, :email, &QueryTools.find_user/2}
+    conn = call("ray@mail.com", "hard2guess", "email", opts)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/users"}
     assert conn.status == 302
+    assert conn.resp_cookies["access_token"]
   end
 
-  test "get user params with email" do
-    opts = {true, :cookie, {0, 1440}, :email, &custom_query/2}
-    conn = call("fred@mail.com", "hard2guess", "email", opts)
-    assert conn.params["user"] == %{"email" => "fred@mail.com", "password" => "hard2guess"}
+  test "login fails for incorrect password" do
+    opts = {true, :cookie, {0, 1440}, :email, &QueryTools.find_user/2}
+    conn = call("ray@mail.com", "had2guess", "email", opts)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/login"}
     assert conn.status == 302
+    refute conn.resp_cookies["access_token"]
+  end
+
+  test "login fails for invalid email" do
+    opts = {true, :cookie, {0, 1440}, :email, &QueryTools.find_user/2}
+    conn = call("dick@mail.com", "hard2guess", "email", opts)
+    assert List.keyfind(conn.resp_headers, "location", 0) ==
+      {"location", "/login"}
+    assert conn.status == 302
+    refute conn.resp_cookies["access_token"]
   end
 
 end

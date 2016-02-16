@@ -1,5 +1,7 @@
 defmodule Openmaize.Pipe do
   @moduledoc """
+  Customized pipe that exits if there is an error or if nil is
+  returned.
   """
 
   defmacro __using__(_) do

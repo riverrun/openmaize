@@ -57,15 +57,20 @@ defmodule Openmaize.User do
 
   def changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(email role), ~w(username))
+    |> cast(params, ~w(email role), ~w(username confirmed_at))
     |> validate_length(:email, min: 1, max: 100)
     |> unique_constraint(:email)
   end
 
-  def auth_changeset(model, params, key) do
+  def auth_changeset(model, params) do
     model
     |> changeset(params)
     |> Openmaize.Signup.create_user(params)
+  end
+
+  def confirm_changeset(model, params, key) do
+    model
+    |> auth_changeset(params)
     |> Openmaize.Signup.add_confirm_token(key)
     |> Openmaize.Signup.add_reset_token(key)
   end

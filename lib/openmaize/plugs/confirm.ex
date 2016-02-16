@@ -117,11 +117,8 @@ defmodule Openmaize.Confirm do
     mail_func && mail_func.(user.email)
     put_message(conn, %{"info" => "Account successfully confirmed"}, redirects)
   end
-  defp finalize(false, conn, user_id, _, redirects) do
+  defp finalize(_, conn, user_id, _, redirects) do
     put_message(conn, "logout", %{"error" => "Confirmation for #{user_id} failed"}, redirects)
-  end
-  defp finalize(nil, conn, _, _, redirects) do
-    put_message(conn, "logout", %{"error" => "Confirmation failed"}, redirects)
   end
 
   defp invalid_link_error(conn, opts) do

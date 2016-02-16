@@ -22,10 +22,10 @@ defmodule Openmaize.ConfirmTest do
       confirmed_at: nil, confirmation_sent_at: Ecto.DateTime.utc}
 
     {:ok, _} = %User{}
-                |> User.auth_changeset(user1, "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw")
+                |> User.confirm_changeset(user1, "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw")
                 |> TestRepo.insert
     {:ok, _} = %User{}
-                |> User.auth_changeset(user2, "LG9UXGNMpb5LUGEDm62PrwW8c20qZmIw")
+                |> User.confirm_changeset(user2, "LG9UXGNMpb5LUGEDm62PrwW8c20qZmIw")
                 |> TestRepo.insert
 
     :ok
@@ -52,7 +52,7 @@ defmodule Openmaize.ConfirmTest do
     |> Confirm.reset_password(opts)
   end
 
-  test "Confirmation succeeds for valid token" do
+  test "confirmation succeeds for valid token" do
     conn = call_confirm(@valid_link, [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/login"}
@@ -61,7 +61,7 @@ defmodule Openmaize.ConfirmTest do
     assert user.confirmed_at
   end
 
-  test "Confirmation fails for invalid token" do
+  test "confirmation fails for invalid token" do
     conn = call_confirm(@invalid_link, [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
@@ -70,7 +70,7 @@ defmodule Openmaize.ConfirmTest do
     refute user.confirmed_at
   end
 
-  test "Confirmation fails for expired token" do
+  test "confirmation fails for expired token" do
     conn = call_confirm(@valid_link, [key_expires_after: 0])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
@@ -79,7 +79,7 @@ defmodule Openmaize.ConfirmTest do
     refute user.confirmed_at
   end
 
-  test "Invalid link error" do
+  test "invalid link error" do
     conn = call_confirm(@incomplete_link, [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
@@ -88,7 +88,7 @@ defmodule Openmaize.ConfirmTest do
     refute user.confirmed_at
   end
 
-  test "Confirmation succeeds with different unique id" do
+  test "confirmation succeeds with different unique id" do
     conn = call_confirm(@name_link, [unique_id: :username])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/login"}
@@ -97,7 +97,7 @@ defmodule Openmaize.ConfirmTest do
     assert user.confirmed_at
   end
 
-  test "Confirmation fails when query fails" do
+  test "confirmation fails when query fails" do
     conn = call_confirm("key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw", [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/"}
@@ -106,7 +106,7 @@ defmodule Openmaize.ConfirmTest do
     refute user.confirmed_at
   end
 
-  test "Reset password succeeds" do
+  test "reset password succeeds" do
     password = "my Nipples explode with the light!"
     conn = call_reset(password, [])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
@@ -118,7 +118,7 @@ defmodule Openmaize.ConfirmTest do
     refute user.reset_sent_at
   end
 
-  test "Reset password fails with expired token" do
+  test "reset password fails with expired token" do
     password = "C'est bon, la vie"
     conn = call_reset(password, [key_expires_after: 0])
     assert List.keyfind(conn.resp_headers, "location", 0) ==
@@ -129,7 +129,7 @@ defmodule Openmaize.ConfirmTest do
     assert user.reset_sent_at
   end
 
-  test "Reset password fails when reset_sent_at is nil" do
+  test "reset password fails when reset_sent_at is nil" do
     user = TestRepo.get_by(User, email: "fred@mail.com")
     change(user, %{reset_sent_at: nil})
     |> Openmaize.Config.repo.update
