@@ -56,6 +56,16 @@ defmodule Openmaize.Confirm do
   See the documentation for `confirm_email` for details about the available
   options.
 
+  ## Reset password form
+
+  This function is to be used with the `reset` post request. For the
+  `reset` get request, you need to render a form with the name "user",
+  using `[as: :user]` if you are using Phoenix's `form_for` function,
+  which contains values for the password, email and key (the email and
+  key should be hidden inputs).
+
+  Any password validation needs to be done on the front-end.
+
   ## Examples
 
   First, define a `post "/reset", SomeController, :reset_password` route
