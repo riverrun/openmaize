@@ -11,7 +11,7 @@ defmodule Openmaize.TokenTest do
     conn = conn(:get, "/") |> add_token(user, {true, :cookie, @token_opts, :name})
     token = conn.resp_cookies["access_token"].value
     {:ok, data} = verify_token(token)
-    assert data.name
+    assert data.user.name
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "/users"}
     assert conn.status == 302
@@ -37,7 +37,7 @@ defmodule Openmaize.TokenTest do
     conn = conn(:get, "/") |> add_token(user, {true, :cookie, @token_opts, :email})
     token = conn.resp_cookies["access_token"].value
     {:ok, data} = verify_token(token)
-    assert data.email
+    assert data.user.email == data.sub
   end
 
 end

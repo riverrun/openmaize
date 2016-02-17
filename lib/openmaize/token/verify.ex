@@ -11,9 +11,9 @@ defmodule Openmaize.Token.Verify do
   Decode the JWT and check that it is valid.
 
   As well as checking that the token is a valid JWT, this function also
-  checks that it has a `kid` value in the header, `nbf` and `exp` values
-  in the body, and that it uses a supported algorithm, either HMAC-sha512
-  or HMAC-sha256.
+  checks that it has a `kid` value in the header, `id`, `role`, `sub`, and
+  valid `nbf` and `exp` values in the body, and that it uses a supported
+  algorithm, either HMAC-sha512 or HMAC-sha256.
   """
   def verify_token(token) do
     :binary.split(token, ".", [:global]) |> check_valid
@@ -23,8 +23,7 @@ defmodule Openmaize.Token.Verify do
     error_pipe(Enum.map([enc_header, enc_payload], &to_map/1)
                |> check_header
                |> check_sign(sign, enc_header, enc_payload)
-               |> check_nbf
-               |> check_exp)
+               |> check_payload)
   end
 
   defp to_map(input) do
@@ -55,14 +54,11 @@ defmodule Openmaize.Token.Verify do
     end
   end
 
-  defp check_nbf({:ok, %{nbf: nbf} = payload}) do
-    nbf < current_time && {:ok, Map.delete(payload, :nbf)} || {:error, "The token cannot be used yet."}
+  defp check_payload({:ok, %{id: _id, role: _role, sub: _sub, exp: exp, nbf: nbf} = payload}) do
+    case nbf < current_time do
+      true -> exp > current_time and {:ok, payload} || {:error, "The token has expired."}
+      _ -> {:error, "The token cannot be used yet."}
+    end
   end
-  defp check_nbf({:ok, _payload}), do: {:error, "There is no nbf value in the token."}
-
-  defp check_exp({:ok, %{exp: exp} = payload}) do
-    exp > current_time && {:ok, Map.delete(payload, :exp)} || {:error, "The token has expired."}
-  end
-  defp check_exp({:ok, _payload}), do: {:error, "There is no exp value in the token."}
-
+  defp check_payload(_), do: {:error, "Incomplete token."}
 end

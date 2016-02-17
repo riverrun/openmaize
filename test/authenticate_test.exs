@@ -49,7 +49,9 @@ defmodule Openmaize.AuthenticateTest do
 
   test "correct token stored in cookie", %{user_token: user_token} do
     conn = call("/", user_token, :cookie)
-    assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
+    assert conn.assigns == %{current_user:
+      %Openmaize.UserData{id: 1, role: "user", sub: "Raymond Luxury Yacht",
+        user: %{name: "Raymond Luxury Yacht"}}}
   end
 
   test "invalid token stored in cookie", %{user_token: user_token} do
@@ -59,7 +61,9 @@ defmodule Openmaize.AuthenticateTest do
 
   test "correct token stored in sessionStorage", %{user_token: user_token} do
     conn = call("/", user_token, nil)
-    assert conn.assigns ==  %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
+    assert conn.assigns == %{current_user:
+      %Openmaize.UserData{id: 1, role: "user", sub: "Raymond Luxury Yacht",
+        user: %{name: "Raymond Luxury Yacht"}}}
   end
 
   test "invalid token stored in sessionStorage", %{user_token: user_token} do
@@ -74,7 +78,9 @@ defmodule Openmaize.AuthenticateTest do
 
   test "correct token using sha256", %{user_256_token: user_256_token} do
     conn = call("/", user_256_token, :cookie)
-    assert conn.assigns == %{current_user: %{id: 1, name: "Raymond Luxury Yacht", role: "user"}}
+    assert conn.assigns == %{current_user:
+      %Openmaize.UserData{id: 1, role: "user", sub: "Raymond Luxury Yacht",
+        user: %{name: "Raymond Luxury Yacht"}}}
   end
 
   test "invalid token using sha256", %{user_256_token: user_256_token} do

@@ -50,7 +50,9 @@ defmodule Openmaize.Authenticate do
   defp check_token(token) when is_binary(token), do: verify_token(token)
   defp check_token(_), do: nil
 
-  defp set_current_user({:ok, data}, conn), do: assign(conn, :current_user, data)
+  defp set_current_user({:ok, data}, conn) do
+    assign(conn, :current_user, struct(Openmaize.UserData, data))
+  end
   defp set_current_user({:error, _}, conn), do: assign(conn, :current_user, nil)
   defp set_current_user(nil, conn), do: assign(conn, :current_user, nil)
 end

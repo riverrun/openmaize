@@ -24,14 +24,16 @@ defmodule Openmaize.Token.Create do
   Openmaize.Token module, but it can also be called directly.
 
   `user` is a map containing the user information, which needs to contain
-  values for `id`, `name`, `role`, `nbf_delay`, which is the number of minutes
-  in the future after which the token can be used, and `token_validity`, which
-  is the number of minutes that the token will be valid for.
+  values for `id`, a unique identifier, which is `name` by default, `role`,
+  `nbf_delay`, which is the number of minutes in the future after which
+  the token can be used, and `token_validity`, which is the number of
+  minutes that the token will be valid for.
   """
   def generate_token(user, uniq, {nbf_delay, token_validity}) do
     nbf = get_nbf(nbf_delay * 60_000)
-    Map.take(user, [:id, uniq, :role])
-    |> Map.merge(%{nbf: nbf, exp: get_expiry(nbf, token_validity * 60_000)})
+    %{:id => id, :role => role, ^uniq => unique} = user
+    %{id: id, role: role, sub: unique, nbf: nbf, user: %{uniq => unique},
+      exp: get_expiry(nbf, token_validity * 60_000)}
     |> encode(Config.get_token_alg)
   end
 
