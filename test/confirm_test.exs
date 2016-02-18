@@ -13,9 +13,6 @@ defmodule Openmaize.ConfirmTest do
   @incomplete_link "email=wrong%40mail.com"
 
   setup_all do
-    Application.put_env(:openmaize, :repo, TestRepo)
-    Application.put_env(:openmaize, :user_model, User)
-
     user1 = %{email: "fred@mail.com", username: "fred", role: "user", password: "mangoes&g0oseberries",
               confirmed_at: nil, confirmation_sent_at: Ecto.DateTime.utc, reset_sent_at: Ecto.DateTime.utc}
     user2 = %{email: "wrong@mail.com", role: "user", password: "mangoes&g0oseberries",

@@ -32,8 +32,8 @@ defmodule Openmaize.Token.Create do
   def generate_token(user, uniq, {nbf_delay, token_validity}) do
     nbf = get_nbf(nbf_delay * 60_000)
     %{:id => id, :role => role, ^uniq => unique} = user
-    %{id: id, role: role, sub: unique, nbf: nbf, user: %{uniq => unique},
-      exp: get_expiry(nbf, token_validity * 60_000)}
+    %{:id => id, :role => role, uniq => unique, :nbf => nbf,
+      :exp => get_expiry(nbf, token_validity * 60_000)}
     |> encode(Config.get_token_alg)
   end
 

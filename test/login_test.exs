@@ -5,9 +5,6 @@ defmodule Openmaize.LoginTest do
   alias Openmaize.{Login, QueryTools, TestRepo, User}
 
   setup_all do
-    Application.put_env(:openmaize, :repo, TestRepo)
-    Application.put_env(:openmaize, :user_model, User)
-
     user = %{email: "ray@mail.com", username: "ray", role: "user", password: "hard2guess",
             confirmed_at: Ecto.DateTime.utc}
     {:ok, _} = %User{} |> User.auth_changeset(user) |> TestRepo.insert

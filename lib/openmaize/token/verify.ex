@@ -11,8 +11,8 @@ defmodule Openmaize.Token.Verify do
   Decode the JWT and check that it is valid.
 
   As well as checking that the token is a valid JWT, this function also
-  checks that it has a `kid` value in the header, `id`, `role`, `sub`, and
-  valid `nbf` and `exp` values in the body, and that it uses a supported
+  checks that it has a `kid` value in the header, `id`, `role`, and valid
+  `nbf` and `exp` values in the body, and that it uses a supported
   algorithm, either HMAC-sha512 or HMAC-sha256.
   """
   def verify_token(token) do
@@ -54,7 +54,7 @@ defmodule Openmaize.Token.Verify do
     end
   end
 
-  defp check_payload({:ok, %{id: _id, role: _role, sub: _sub, exp: exp, nbf: nbf} = payload}) do
+  defp check_payload({:ok, %{id: _id, role: _role, exp: exp, nbf: nbf} = payload}) do
     case nbf < current_time do
       true -> exp > current_time and {:ok, payload} || {:error, "The token has expired."}
       _ -> {:error, "The token cannot be used yet."}
