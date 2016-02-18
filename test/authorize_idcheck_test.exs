@@ -11,7 +11,7 @@ defmodule Openmaize.Authorize.IdCheckTest do
     %{conn | params: %{"id" => id}} |> assign(:current_user, user)
   end
 
-  def custom_auth(%Plug.Conn{assigns: %{current_user: %{role: "admin"}}} = conn, _opts) do
+  def custom_auth(%Plug.Conn{assigns: %{current_user: %Openmaize.UserData{role: "admin"}}} = conn, _opts) do
     conn
   end
   def custom_auth(conn, opts), do: authorize_id(conn, opts)

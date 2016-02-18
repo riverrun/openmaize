@@ -4,8 +4,8 @@ defmodule Openmaize.AuthorizeTest do
 
   import Openmaize.AccessControl
 
-  @admin %{id: 2, name: "Big Boss", role: "admin"}
-  @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
+  @admin struct(%Openmaize.UserData{id: 2, sub: "Big Boss", role: "admin"})
+  @user struct(%Openmaize.UserData{id: 1, sub: "Raymond Luxury Yacht", role: "user"})
 
   def call(path, current_user, roles, redirects \\ true) do
     conn(:get, path)

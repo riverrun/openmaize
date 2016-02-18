@@ -16,6 +16,7 @@ defmodule Openmaize.RedirectTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/users"}
     assert conn.status == 302
+    assert conn.private.openmaize_info == "You have been logged in"
   end
 
   test "janitor gets redirected to correct id page" do
@@ -25,6 +26,7 @@ defmodule Openmaize.RedirectTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/users/5"}
     assert conn.status == 302
+    assert conn.private.openmaize_info == "You have been logged in"
   end
 
 end

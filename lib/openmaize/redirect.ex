@@ -9,7 +9,8 @@ defmodule Openmaize.Redirect do
   Redirect the connection and report errors / info.
 
   If you are using Phoenix, the error / info messages will be displayed
-  on the screen - using Phoenix flash.
+  on the screen - using Phoenix flash. If you are not using Phoenix, these
+  messages will be stored in `private.openmaize_info` in the conn struct.
   """
   def redirect_to(%Plug.Conn{resp_headers: resp_headers} = conn, address, message) do
     if String.contains?(address, "/:"), do: address = set_id(conn, address)
@@ -28,8 +29,7 @@ defmodule Openmaize.Redirect do
     if Map.get(conn.private, :phoenix_flash) do
       put_private(conn, :phoenix_flash, message)
     else
-      IO.inspect message
-      conn
+      put_private(conn, :openmaize_info, message)
     end
   end
 end

@@ -107,7 +107,7 @@ defmodule Openmaize.AccessControl do
     raise ArgumentError, "You need to set the `roles` option for :authorize"
   end
   defp full_check(conn, {_, redirects}, nil), do: nouser_error(conn, redirects)
-  defp full_check(conn, {roles, redirects}, %{role: role}) do
+  defp full_check(conn, {roles, redirects}, %Openmaize.UserData{role: role}) do
     if role in roles, do: conn, else: nopermit_error(conn, role, redirects)
   end
 
