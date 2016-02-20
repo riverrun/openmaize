@@ -4,14 +4,14 @@ defmodule Openmaize.Authorize.IdCheckTest do
 
   import Openmaize.AccessControl
 
-  @admin struct(%Openmaize.User{id: 2, username: "Big Boss", role: "admin"})
-  @user struct(%Openmaize.User{id: 1, username: "Raymond Luxury Yacht", role: "user"})
+  @admin %{id: 2, username: "Big Boss", role: "admin"}
+  @user %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
 
   def call(conn, id, user) do
     %{conn | params: %{"id" => id}} |> assign(:current_user, user)
   end
 
-  def custom_auth(%Plug.Conn{assigns: %{current_user: %Openmaize.User{role: "admin"}}} = conn, _opts) do
+  def custom_auth(%Plug.Conn{assigns: %{current_user: %{role: "admin"}}} = conn, _opts) do
     conn
   end
   def custom_auth(conn, opts), do: authorize_id(conn, opts)
