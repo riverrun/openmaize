@@ -18,6 +18,7 @@ defmodule UsersMigration do
     create table(:users) do
       add :email, :string
       add :username, :string
+      add :phone, :string
       add :password_hash, :string
       add :role, :string
       add :confirmed_at, :datetime
@@ -45,6 +46,7 @@ defmodule Openmaize.User do
   schema "users" do
     field :email, :string
     field :username, :string
+    field :phone, :string
     field :role, :string
     field :password, :string, virtual: true
     field :password_hash, :string
@@ -57,7 +59,7 @@ defmodule Openmaize.User do
 
   def changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(email role), ~w(username confirmed_at))
+    |> cast(params, ~w(email role), ~w(username phone confirmed_at))
     |> validate_length(:email, min: 1, max: 100)
     |> unique_constraint(:email)
   end

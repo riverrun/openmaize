@@ -4,9 +4,9 @@ defmodule Openmaize.RedirectTest do
 
   alias Openmaize.Redirect
 
-  @user %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
+  @user %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
   @user_redirect "/users"
-  @janitor %{id: 5, name: "Gladys Stoate", role: "janitor"}
+  @janitor %{id: 5, username: "Gladys Stoate", role: "janitor"}
   @janitor_redirect "/users/:id"
 
   test "user gets redirected to `/users` page" do

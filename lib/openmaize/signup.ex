@@ -5,10 +5,10 @@ defmodule Openmaize.Signup do
   ## User model
 
   The example schema below is the most basic setup for Openmaize
-  (:name and :password_hash are configurable):
+  (:username and :password_hash are configurable):
 
       schema "users" do
-        field :name, :string
+        field :username, :string
         field :role, :string
         field :password, :string, virtual: true
         field :password_hash, :string
@@ -16,7 +16,7 @@ defmodule Openmaize.Signup do
         timestamps
       end
 
-  In the example above, the `:name` is used to identify the user. This can
+  In the example above, the `:username` is used to identify the user. This can
   be set to any other value, such as `:email`. See the documentation for
   Openmaize.Login for details about logging in with a different value.
 

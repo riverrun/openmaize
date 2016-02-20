@@ -11,7 +11,7 @@ defmodule Openmaize.Login do
   * token_validity - length of validity of token (in minutes)
     * the default is 1440 minutes (one day)
   * unique_id - the name which is used to identify the user (in the database)
-    * the default is `:name`
+    * the default is `:username`
   * query_function - a custom function to query the database
     * if you are using Ecto, you will probably not need this
 
@@ -57,7 +57,7 @@ defmodule Openmaize.Login do
              nil -> {false, nil}
            end
     {redirects, storage, {0, Keyword.get(opts, :token_validity, 1440)},
-     Keyword.get(opts, :unique_id, :name),
+     Keyword.get(opts, :unique_id, :username),
      Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
   end
 
@@ -67,12 +67,20 @@ defmodule Openmaize.Login do
   If the login is successful, a JSON Web Token will be returned.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {redirects, storage, token_opts, uniq, query_func}) do
-    unique = to_string(uniq)
-    %{^unique => user_id, "password" => password} = user_params
+           {redirects, storage, token_opts, uniq_id, query_func}) do
+    {uniq, user_id, password} = get_params(user_params, uniq_id)
     query_func.(user_id, uniq)
     |> check_pass(password, Config.hash_name)
     |> handle_auth(conn, {redirects, storage, token_opts, uniq})
+  end
+
+  defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
+    {uniq, Map.get(user_params, to_string(uniq)), password}
+  end
+  defp get_params(user_params, uniq_func) do
+    {password, uniq_map} = Map.pop(user_params, "password")
+    [user_id] = Map.values(uniq_map)
+    {uniq_func.(user_id), user_id, password}
   end
 
   defp check_pass(nil, _, _), do: Config.get_crypto_mod.dummy_checkpw
