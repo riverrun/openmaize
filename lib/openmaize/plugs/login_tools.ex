@@ -8,16 +8,24 @@ defmodule Openmaize.LoginTools do
   """
 
   @doc """
-  Check that the data is a valid email.
+  Check to see if user input is an email or username, and return the user
+  data and password.
+
+  For this function to work, the login form needs to contain an "email" and
+  "password" in the `user` parameters.
   """
-  def email_username(data) do
-    Regex.match?(~r/^.+@.+\..+$/, data) and :email || :username
+  def email_username(%{"email" => email, "password" => password}) do
+    {Regex.match?(~r/^.+@.+\..+$/, email) and :email || :username, email, password}
   end
 
   @doc """
-  Check that the data is a valid phone number.
+  Check to see if user input is a phone number or username, and return the user
+  data and password.
+
+  For this function to work, the login form needs to contain a "phone" and
+  "password" in the `user` parameters.
   """
-  def phone_username(data) do
-    Regex.match?(~r/^[0-9]+$/, data) and :phone || :username
+  def phone_username(%{"phone" => phone, "password" => password}) do
+    {Regex.match?(~r/^[0-9]+$/, phone) and :phone || :username, phone, password}
   end
 end

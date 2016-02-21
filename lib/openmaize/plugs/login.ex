@@ -84,11 +84,7 @@ defmodule Openmaize.Login do
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
     {uniq, Map.get(user_params, to_string(uniq)), password}
   end
-  defp get_params(user_params, uniq_func) do
-    {password, uniq_map} = Map.pop(user_params, "password")
-    [user_id] = Map.values(uniq_map)
-    {uniq_func.(user_id), user_id, password}
-  end
+  defp get_params(user_params, uniq_func), do: uniq_func.(user_params)
 
   defp check_pass(nil, _, _), do: Config.get_crypto_mod.dummy_checkpw
   defp check_pass(%{confirmed_at: nil}, _, _),

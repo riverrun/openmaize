@@ -65,7 +65,7 @@ defmodule Openmaize.LoginTest do
 
   test "multiple possible unique ids - username for email_username func" do
     opts = {true, :cookie, {0, 1440}, &LoginTools.email_username/1, &QueryTools.find_user/2}
-    conn = call("ray", "hard2guess", "username", opts)
+    conn = call("ray", "hard2guess", "email", opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/users"}
     assert conn.status == 302
@@ -83,7 +83,7 @@ defmodule Openmaize.LoginTest do
 
   test "multiple possible unique ids - username for phone_username func" do
     opts = {true, :cookie, {0, 1440}, &LoginTools.phone_username/1, &QueryTools.find_user/2}
-    conn = call("ray", "hard2guess", "username", opts)
+    conn = call("ray", "hard2guess", "phone", opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/users"}
     assert conn.status == 302
@@ -101,7 +101,7 @@ defmodule Openmaize.LoginTest do
 
   test "fail login with multiple possible unique ids - username for phone_username func" do
     opts = {true, :cookie, {0, 1440}, &LoginTools.phone_username/1, &QueryTools.find_user/2}
-    conn = call("rav", "hard2guess", "username", opts)
+    conn = call("rav", "hard2guess", "phone", opts)
     assert List.keyfind(conn.resp_headers, "location", 0) ==
       {"location", "/login"}
     assert conn.status == 302
