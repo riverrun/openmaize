@@ -1,6 +1,10 @@
 defmodule Openmaize.LoginTools do
   @moduledoc """
   Tools that can be used with the Login module.
+
+  These functions can be used with the Openmaize.Login plug as the
+  unique_id. They can also just serve as examples of how to write
+  such a function.
   """
 
   @doc """

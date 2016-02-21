@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.15.0
+
+* Enhancements
+    * Added 'multiple unique ids' - the user can log in with username or email, or email or phone, etc.
+* Changes
+    * Changed default unique_id from :name to :username.
+
 ## v0.14.0
 
 * Enhancements

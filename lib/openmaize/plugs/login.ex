@@ -12,6 +12,8 @@ defmodule Openmaize.Login do
     * the default is 1440 minutes (one day)
   * unique_id - the name which is used to identify the user (in the database)
     * the default is `:username`
+    * this can also be a function which checks the user input and returns an atom
+      * see the Openmaize.LoginTools module for some example functions
   * query_function - a custom function to query the database
     * if you are using Ecto, you will probably not need this
 
@@ -35,6 +37,11 @@ defmodule Openmaize.Login do
   for just two hours:
 
       plug Openmaize.Login, [token_validity: 120, unique_id: :email] when action in [:login_user]
+
+  If you want to use `email` or `username` to identify the user (allowing the
+  end user a choice):
+
+      plug Openmaize.Login, [unique_id: &Openmaize.LoginTools.email_username/1] when action in [:login_user]
 
   ## Custom function to query the database
 
