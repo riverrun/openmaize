@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.0
+
+* Changes
+    * Changed the name of the Openmaize.Signup module to Openmaize.DB.
+    * In the Openmaize.DB module, replaced the `create_user` function with the `add_password_hash` function.
+        * the `add_password_hash` function performs no validation of the password (ideally, this should be done on the front-end)
+
 ## v0.15.0
 
 * Enhancements

@@ -6,15 +6,14 @@ defmodule Openmaize.Confirm do
   resetting a password.
 
   See the documentation for `add_confirm_token` and `add_reset_token` in
-  the Openmaize.Signup module for details about creating the token.
+  the Openmaize.DB module for details about creating the token.
   """
 
   use Openmaize.Pipe
 
   import Comeonin.Tools
-  import Ecto.Changeset
   import Openmaize.Report
-  alias Openmaize.{Config, QueryTools, Signup}
+  alias Openmaize.DB
 
   @doc """
   Function to confirm a user's email address.
@@ -91,7 +90,7 @@ defmodule Openmaize.Confirm do
      Keyword.get(opts, :unique_id, :email),
      Keyword.get(opts, :mail_function),
      Keyword.get(opts, :redirects, true),
-     Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
+     Keyword.get(opts, :query_function, &DB.find_user/2)}
   end
 
   defp check_user_key(conn, user_params, key, password,
@@ -108,12 +107,12 @@ defmodule Openmaize.Confirm do
   defp check_key(user, key, valid_secs, :nopassword) do
     check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
-    change(user, %{confirmed_at: Ecto.DateTime.utc}) |> Config.repo.update
+    DB.user_confirmed(user)
   end
   defp check_key(user, key, valid_secs, password) do
     check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and
-    Signup.reset_password(user, password)
+    DB.password_reset(user, password)
   end
 
   defp check_time(nil, _), do: false

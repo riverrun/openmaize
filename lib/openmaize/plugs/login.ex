@@ -50,11 +50,11 @@ defmodule Openmaize.Login do
       plug Openmaize.Login, [query_function: &custom_query/2] when action in [:login_user]
 
   In the above example, this module will use the custom_query function
-  instead of QueryTools.find_user.
+  instead of DB.find_user.
   """
 
   import Openmaize.{Report, Token}
-  alias Openmaize.{Config, QueryTools}
+  alias Openmaize.{Config, DB}
 
   @behaviour Plug
 
@@ -65,7 +65,7 @@ defmodule Openmaize.Login do
            end
     {redirects, storage, {0, Keyword.get(opts, :token_validity, 1440)},
      Keyword.get(opts, :unique_id, :username),
-     Keyword.get(opts, :query_function, &QueryTools.find_user/2)}
+     Keyword.get(opts, :query_function, &DB.find_user/2)}
   end
 
   @doc """

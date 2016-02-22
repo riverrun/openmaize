@@ -21,10 +21,10 @@ defmodule Openmaize do
 
   ## User creation helper functions
 
-  In the Openmaize.Signup module:
+  In the Openmaize.DB module:
 
-  * create_user - take an Ecto changeset, check that the password is valid,
-  and return an updated changeset.
+  * add_password_hash - take an Ecto changeset, hash the password and add the
+  password hash to the changeset.
   * add_confirm_token - add a confirmation token to the changeset.
   * gen_token_link - generate a confirmation token and a link to be used in
   the confirmation url that is sent to the user.

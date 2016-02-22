@@ -37,7 +37,7 @@ tested with the Phoenix Web Framework.
 ## Use
 
 Before you use Openmaize, you need to make sure that your user model is
-configured correctly. See the documentation for Openmaize.Signup for details.
+configured correctly. See the documentation for Openmaize.DB for details.
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
@@ -61,10 +61,10 @@ access the requested page.
 
 ### User creation helper functions
 
-In the Openmaize.Signup module:
+In the Openmaize.DB module:
 
-* create_user - take an Ecto changeset, check that the password is valid,
-and return an updated changeset.
+* add_password_hash - take an Ecto changeset, hash the password and add the
+password hash to the changeset.
 * add_confirm_token - add a confirmation token to the changeset.
 * gen_token_link - generate a confirmation token and a link to be used in
 the confirmation url that is sent to the user.
