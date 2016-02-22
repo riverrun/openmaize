@@ -13,14 +13,14 @@ defmodule Openmaize.Confirm do
 
   import Comeonin.Tools
   import Openmaize.Report
-  alias Openmaize.DB
+  alias Openmaize.Config
 
   @doc """
   Function to confirm a user's email address.
 
   ## Options
 
-  There are five options:
+  There are four options:
 
   * key_expires_after - the length, in minutes, that the token is valid for
     * the default is 1440 minutes, or one day
@@ -29,8 +29,6 @@ defmodule Openmaize.Confirm do
   * mail_function - the emailing function that you need to define
   * redirects - if Openmaize should handle the redirects or not
     * the default true
-  * query_function - the function to query the database
-    * if you are using Ecto, you will probably not need this
 
   ## Examples
 
@@ -89,16 +87,15 @@ defmodule Openmaize.Confirm do
     {Keyword.get(opts, :key_expires_after, 1440),
      Keyword.get(opts, :unique_id, :email),
      Keyword.get(opts, :mail_function),
-     Keyword.get(opts, :redirects, true),
-     Keyword.get(opts, :query_function, &DB.find_user/2)}
+     Keyword.get(opts, :redirects, true)}
   end
 
   defp check_user_key(conn, user_params, key, password,
-                      {key_expiry, uniq, mail_func, redirects, query_func}) do
+                      {key_expiry, uniq, mail_func, redirects}) do
     user_id = Map.get(user_params, to_string(uniq))
     error_pipe(user_id
                |> URI.decode_www_form
-               |> query_func.(uniq)
+               |> Config.db_module.find_user(uniq)
                |> check_key(key, key_expiry * 60, password))
     |> finalize(conn, user_id, mail_func, redirects)
   end
@@ -107,12 +104,12 @@ defmodule Openmaize.Confirm do
   defp check_key(user, key, valid_secs, :nopassword) do
     check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
-    DB.user_confirmed(user)
+    Config.db_module.user_confirmed(user)
   end
   defp check_key(user, key, valid_secs, password) do
     check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and
-    DB.password_reset(user, password)
+    Config.db_module.password_reset(user, password)
   end
 
   defp check_time(nil, _), do: false

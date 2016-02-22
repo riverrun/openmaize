@@ -8,6 +8,7 @@ defmodule Openmaize.Config do
   | :----------------- | :------ | -------: |
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
+  | db_module          | module  | N/A      |
   | hash_name          | atom    | :password_hash |
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
@@ -47,6 +48,17 @@ defmodule Openmaize.Config do
   """
   def repo do
     Application.get_env(:openmaize, :repo)
+  end
+
+  @doc """
+  The name of the database module.
+
+  You only need to set this value if you plan on overriding the
+  the functions in the Openmaize.DB module. If you are using Ecto,
+  you will probably not need to set this value.
+  """
+  def db_module do
+    Application.get_env(:openmaize, :db_module, Openmaize.DB)
   end
 
   @doc """

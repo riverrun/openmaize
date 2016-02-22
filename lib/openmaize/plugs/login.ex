@@ -2,7 +2,7 @@ defmodule Openmaize.Login do
   @moduledoc """
   Plug to handle login.
 
-  There are five options:
+  There are four options:
 
   * redirects - if true, which is the default, redirect on login
   * storage - storage method for the token
@@ -14,8 +14,6 @@ defmodule Openmaize.Login do
     * the default is `:username`
     * this can also be a function which checks the user input and returns an atom
       * see the Openmaize.LoginTools module for some example functions
-  * query_function - a custom function to query the database
-    * if you are using Ecto, you will probably not need this
 
   ## Examples with Phoenix
 
@@ -43,18 +41,10 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login, [unique_id: &Openmaize.LoginTools.email_username/1] when action in [:login_user]
 
-  ## Custom function to query the database
-
-  To call a custom query function:
-
-      plug Openmaize.Login, [query_function: &custom_query/2] when action in [:login_user]
-
-  In the above example, this module will use the custom_query function
-  instead of DB.find_user.
   """
 
   import Openmaize.{Report, Token}
-  alias Openmaize.{Config, DB}
+  alias Openmaize.Config
 
   @behaviour Plug
 
@@ -64,8 +54,7 @@ defmodule Openmaize.Login do
              nil -> {false, nil}
            end
     {redirects, storage, {0, Keyword.get(opts, :token_validity, 1440)},
-     Keyword.get(opts, :unique_id, :username),
-     Keyword.get(opts, :query_function, &DB.find_user/2)}
+     Keyword.get(opts, :unique_id, :username)}
   end
 
   @doc """
@@ -74,9 +63,9 @@ defmodule Openmaize.Login do
   If the login is successful, a JSON Web Token will be returned.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {redirects, storage, token_opts, uniq_id, query_func}) do
+           {redirects, storage, token_opts, uniq_id}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
-    query_func.(user_id, uniq)
+    Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
     |> handle_auth(conn, {redirects, storage, token_opts, uniq})
   end
