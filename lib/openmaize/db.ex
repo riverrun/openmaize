@@ -53,10 +53,13 @@ if Code.ensure_loaded?(Ecto) do
     Comeonin.Bcrypt is the default hashing function, but this can be changed to
     Comeonin.Pbkdf2 by setting the Config.get_crypto_mod value to :pbkdf2.
     """
-    def add_password_hash(changeset, params) do
-      changeset
-      |> cast(params, ~w(password), [])
-      |> put_pass_hash
+    def add_password_hash(user, %{password: password}) do
+      IO.puts "atom!"
+      change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+    end
+    def add_password_hash(user, %{"password" => password}) do
+      IO.puts "string!"
+      change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
     end
 
     @doc """
@@ -77,14 +80,12 @@ if Code.ensure_loaded?(Ecto) do
         |> Openmaize.DB.add_confirm_token(key)
 
     """
-    def add_confirm_token(changeset, key) do
-      changeset
-      |> put_change(:confirmation_token, key)
-      |> put_change(:confirmation_sent_at, Ecto.DateTime.utc)
+    def add_confirm_token(user, key) do
+      change(user, %{confirmation_token: key, confirmation_sent_at: Ecto.DateTime.utc})
     end
 
     @doc """
-    Add a reset token to the user changeset.
+    Add a reset token to the user model.
 
     Add the following two entries to your user schema:
 
@@ -94,10 +95,9 @@ if Code.ensure_loaded?(Ecto) do
     As with `add_confirm_token`, the function `gen_token_link` can be used
     to generate the token and link.
     """
-    def add_reset_token(changeset, key) do
-      changeset
-      |> put_change(:reset_token, key)
-      |> put_change(:reset_sent_at, Ecto.DateTime.utc)
+    def add_reset_token(user, key) do
+      change(user, %{reset_token: key, reset_sent_at: Ecto.DateTime.utc})
+      |> Config.repo.update
     end
 
     @doc """
@@ -151,11 +151,5 @@ if Code.ensure_loaded?(Ecto) do
       key = :crypto.strong_rand_bytes(24) |> Base.url_encode64
       {key, "#{unique_id}=#{URI.encode_www_form(user_id)}&key=#{key}"}
     end
-
-    defp put_pass_hash(%Ecto.Changeset{valid?: true,
-                      changes: %{password: password}} = changeset) do
-      put_change(changeset, Config.hash_name, Config.get_crypto_mod.hashpwsalt(password))
-    end
-    defp put_pass_hash(changeset), do: changeset
   end
 end

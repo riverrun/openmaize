@@ -74,6 +74,5 @@ defmodule Openmaize.User do
     model
     |> auth_changeset(params)
     |> Openmaize.DB.add_confirm_token(key)
-    |> Openmaize.DB.add_reset_token(key)
   end
 end
