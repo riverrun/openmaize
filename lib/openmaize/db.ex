@@ -4,6 +4,19 @@ if Code.ensure_loaded?(Ecto) do
     @moduledoc """
     Functions to help with interacting with Ecto when using Openmaize.
 
+    ## Creating a custom database module
+
+    This is the default database module, but you can use a custom module
+    by changing the `db_module` value in the config file.
+
+    If you are going to create a custom module, note that the following
+    functions are called by other modules in Openmaize:
+
+    * `find_user` - used in Openmaize.Login and Openmaize.Confirm
+    * `user_confirmed` - used in Openmaize.Confirm
+    * `password_reset` - used in Openmaize.Confirm
+    * `check_time` - used in Openmaize.Confirm
+
     ## User model
 
     The example schema below is the most basic setup for Openmaize
@@ -48,22 +61,25 @@ if Code.ensure_loaded?(Ecto) do
     end
 
     @doc """
-    Hash a password and add the hash to the database.
+    Hash the password and add it to the user model or changeset.
+
+    A basic check is performed on the password to make sure that it is a
+    string and that it is above the minimum length, which is 8 by default.
 
     Comeonin.Bcrypt is the default hashing function, but this can be changed to
     Comeonin.Pbkdf2 by setting the Config.get_crypto_mod value to :pbkdf2.
     """
-    def add_password_hash(user, %{password: password}) do
-      IO.puts "atom!"
-      change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
-    end
-    def add_password_hash(user, %{"password" => password}) do
-      IO.puts "string!"
-      change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+    def add_password_hash(user, params, min_length \\ 8) do
+      password = params[:password] || params["password"]
+      if is_binary(password) and String.length(password) >= min_length do
+        change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+      else
+        {:error, "Invalid password"}
+      end
     end
 
     @doc """
-    Add a confirmation token to the user changeset.
+    Add a confirmation token to the user model or changeset.
 
     Add the following three entries to your user schema:
 
@@ -85,7 +101,7 @@ if Code.ensure_loaded?(Ecto) do
     end
 
     @doc """
-    Add a reset token to the user model.
+    Add a reset token to the user model and update the database.
 
     Add the following two entries to your user schema:
 
@@ -112,6 +128,8 @@ if Code.ensure_loaded?(Ecto) do
 
     If the update is successful, the reset_token and reset_sent_at
     values will be set to nil.
+
+    This function is used by the Openmaize.Confirm module.
     """
     def password_reset(user, password) do
       Config.repo.transaction(fn ->

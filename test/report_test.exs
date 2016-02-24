@@ -10,6 +10,7 @@ defmodule Openmaize.ReportTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "/login"}
     assert conn.status == 302
+    assert conn.private.openmaize_info
   end
 
   test "put_message for unauthorized access with redirects" do
@@ -18,6 +19,7 @@ defmodule Openmaize.ReportTest do
     assert List.keyfind(conn.resp_headers, "location", 0) ==
            {"location", "/users"}
     assert conn.status == 302
+    assert conn.private.openmaize_info
   end
 
   test "put_message for no user with no redirects" do
@@ -25,6 +27,7 @@ defmodule Openmaize.ReportTest do
     |> Report.put_message(%{"error" => "Get out of here!"}, false)
     assert conn.status == 401
     assert conn.halted == true
+    assert conn.resp_body =~ "Get out of here"
   end
 
   test "put_message for unauthorized access with no redirects" do
@@ -32,6 +35,7 @@ defmodule Openmaize.ReportTest do
     |> Report.put_message("user", %{"error" => "Get out of here!"}, false)
     assert conn.status == 403
     assert conn.halted == true
+    assert conn.resp_body =~ "Get out of here"
   end
 
 end
