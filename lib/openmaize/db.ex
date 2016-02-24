@@ -48,7 +48,7 @@ if Code.ensure_loaded?(Ecto) do
     """
 
     import Ecto.{Changeset, Query}
-    alias Openmaize.Config
+    alias Openmaize.{Config, Password}
 
     @doc """
     Find the user in the database.
@@ -63,19 +63,37 @@ if Code.ensure_loaded?(Ecto) do
     @doc """
     Hash the password and add it to the user model or changeset.
 
-    A basic check is performed on the password to make sure that it is a
-    string and that it is above the minimum length, which is 8 by default.
+    This function will return a changeset. If there are any errors, they
+    will be added to the changeset.
 
     Comeonin.Bcrypt is the default hashing function, but this can be changed to
     Comeonin.Pbkdf2 by setting the Config.get_crypto_mod value to :pbkdf2.
+
+    ## Options
+
+    If you do not have NotQwerty123 installed, there is one option:
+
+    * min_length - the minimum length of the password
+
+    If you have NotQwerty123 installed, there are three options:
+
+    * min_length - the minimum length of the password
+    * extra_chars - check for punctuation characters (including spaces) and digits
+    * common - check to see if the password is too common (too easy to guess)
+
+    See the documentation for Openmaize.Password for more information.
+
+    ## Examples
+
+        Openmaize.DB.add_password_hash(user, params, [min_length: 12])
+
+    This command will check that the password is at least 12 characters long
+    before hashing it and adding the hash to the user changeset.
     """
-    def add_password_hash(user, params, min_length \\ 8) do
-      password = params[:password] || params["password"]
-      if is_binary(password) and String.length(password) >= min_length do
-        change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
-      else
-        {:error, "Invalid password"}
-      end
+    def add_password_hash(user, params, opts \\ []) do
+      (params[:password] || params["password"])
+      |> Password.valid_password?(opts)
+      |> add_hash_changeset(user)
     end
 
     @doc """
@@ -169,5 +187,13 @@ if Code.ensure_loaded?(Ecto) do
       key = :crypto.strong_rand_bytes(24) |> Base.url_encode64
       {key, "#{unique_id}=#{URI.encode_www_form(user_id)}&key=#{key}"}
     end
+
+    defp add_hash_changeset({:ok, password}, user) do
+      change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+    end
+    defp add_hash_changeset({:error, message}, user) do
+      change(user, %{password: ""}) |> add_error(:password, message)
+    end
   end
+
 end
