@@ -3,6 +3,7 @@
 ## v0.16.0
 
 * Changes
+    * Reduced JWT expiry and confirmation token validity / expiry time to 2 hours.
     * Made Ecto an optional dependency.
     * Changed the name of the Openmaize.Signup module to Openmaize.DB.
     * In the Openmaize.DB module, replaced the `create_user` function with the `add_password_hash` function.
