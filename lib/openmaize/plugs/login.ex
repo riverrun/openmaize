@@ -8,8 +8,8 @@ defmodule Openmaize.Login do
   * storage - storage method for the token
     * the default is :cookie
     * if storage is set to nil, redirects is automatically set to false
-  * token_validity - length of validity of token (in minutes)
-    * the default is 1440 minutes (one day)
+  * token_validity - length the token is valid for (in minutes)
+    * the default is 120 minutes (2 hours)
   * unique_id - the name which is used to identify the user (in the database)
     * the default is `:username`
     * this can also be a function which checks the user input and returns an atom
@@ -53,7 +53,7 @@ defmodule Openmaize.Login do
              :cookie -> {Keyword.get(opts, :redirects, true), :cookie}
              nil -> {false, nil}
            end
-    {redirects, storage, {0, Keyword.get(opts, :token_validity, 1440)},
+    {redirects, storage, {0, Keyword.get(opts, :token_validity, 120)},
      Keyword.get(opts, :unique_id, :username)}
   end
 

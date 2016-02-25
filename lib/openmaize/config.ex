@@ -8,7 +8,7 @@ defmodule Openmaize.Config do
   | :----------------- | :------ | -------: |
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
-  | db_module          | module  | N/A      |
+  | db_module          | module  | Openmaize.DB   |
   | hash_name          | atom    | :password_hash |
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
@@ -28,6 +28,7 @@ defmodule Openmaize.Config do
       config :openmaize,
         user_model: Coolapp.User,
         repo: Coolapp.Repo,
+        db_module: Coolapp.DB,
         hash_name: :encrypted_password,
         crypto_mod: :pbkdf2,
         token_alg: :sha256,

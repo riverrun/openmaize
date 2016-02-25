@@ -23,7 +23,7 @@ defmodule Openmaize.Confirm do
   There are four options:
 
   * key_expires_after - the length, in minutes, that the token is valid for
-    * the default is 1440 minutes, or one day
+    * the default is 120 minutes (2 hours)
   * unique_id - the identifier in the query string, or the parameters
     * the default is :email
   * mail_function - the emailing function that you need to define
@@ -84,7 +84,7 @@ defmodule Openmaize.Confirm do
   def reset_password(conn, opts), do: invalid_link_error(conn, opts)
 
   defp get_opts(opts) do
-    {Keyword.get(opts, :key_expires_after, 1440),
+    {Keyword.get(opts, :key_expires_after, 120),
      Keyword.get(opts, :unique_id, :email),
      Keyword.get(opts, :mail_function),
      Keyword.get(opts, :redirects, true)}
