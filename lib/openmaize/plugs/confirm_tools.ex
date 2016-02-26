@@ -4,16 +4,6 @@ defmodule Openmaize.ConfirmTools do
   """
 
   @doc """
-  Function used to check if a token has expired.
-  """
-  def check_time(nil, _), do: false
-  def check_time(sent_at, valid_secs) do
-    (sent_at |> Ecto.DateTime.to_erl
-      |> :calendar.datetime_to_gregorian_seconds) + valid_secs >
-    (:calendar.universal_time |> :calendar.datetime_to_gregorian_seconds)
-  end
-
-  @doc """
   Generate a confirmation token and a link containing the email address
   and the token.
 

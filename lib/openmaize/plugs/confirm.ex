@@ -12,7 +12,7 @@ defmodule Openmaize.Confirm do
   use Openmaize.Pipe
 
   import Comeonin.Tools
-  import Openmaize.{ConfirmTools, Report}
+  import Openmaize.Report
   alias Openmaize.Config
 
   @doc """
@@ -102,12 +102,12 @@ defmodule Openmaize.Confirm do
 
   defp check_key(nil, _, _, _), do: false
   defp check_key(user, key, valid_secs, :nopassword) do
-    check_time(user.confirmation_sent_at, valid_secs) and
+    Config.db_module.check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
     Config.db_module.user_confirmed(user)
   end
   defp check_key(user, key, valid_secs, password) do
-    check_time(user.reset_sent_at, valid_secs) and
+    Config.db_module.check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and
     Config.db_module.password_reset(user, password)
   end
