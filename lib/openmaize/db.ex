@@ -68,31 +68,10 @@ if Code.ensure_loaded?(Ecto) do
 
     Comeonin.Bcrypt is the default hashing function, but this can be changed to
     Comeonin.Pbkdf2 by setting the Config.get_crypto_mod value to :pbkdf2.
-
-    ## Options
-
-    If you do not have NotQwerty123 installed, there is one option:
-
-    * min_length - the minimum length of the password
-
-    If you have NotQwerty123 installed, there are three options:
-
-    * min_length - the minimum length of the password
-    * extra_chars - check for punctuation characters (including spaces) and digits
-    * common - check to see if the password is too common (too easy to guess)
-
-    See the documentation for Openmaize.Password for more information.
-
-    ## Examples
-
-        Openmaize.DB.add_password_hash(user, params, [min_length: 12])
-
-    This command will check that the password is at least 12 characters long
-    before hashing it and adding the hash to the user changeset.
     """
-    def add_password_hash(user, params, opts \\ []) do
+    def add_password_hash(user, params) do
       (params[:password] || params["password"])
-      |> Password.valid_password?(opts)
+      |> Password.valid_password?(Config.password_strength)
       |> add_hash_changeset(user)
     end
 
@@ -150,13 +129,8 @@ if Code.ensure_loaded?(Ecto) do
     This function is used by the Openmaize.Confirm module.
     """
     def password_reset(user, password) do
-      Config.repo.transaction(fn ->
-        user = change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
-        |> Config.repo.update!
-
-        change(user, %{reset_token: nil, reset_sent_at: nil})
-        |> Config.repo.update!
-      end)
+      Password.valid_password?(password, Config.password_strength)
+      |> reset_update_repo(user)
     end
 
     @doc """
@@ -174,6 +148,19 @@ if Code.ensure_loaded?(Ecto) do
     end
     defp add_hash_changeset({:error, message}, user) do
       change(user, %{password: ""}) |> add_error(:password, message)
+    end
+
+    defp reset_update_repo({:ok, password}, user) do
+      Config.repo.transaction(fn ->
+        user = change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+        |> Config.repo.update!
+
+        change(user, %{reset_token: nil, reset_sent_at: nil})
+        |> Config.repo.update!
+      end)
+    end
+    defp reset_update_repo({:error, message}, _user) do
+      {:error, message}
     end
   end
 

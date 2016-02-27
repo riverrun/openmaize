@@ -14,6 +14,7 @@ defmodule Openmaize.Config do
   | token_alg          | atom    | :sha512  |
   | keyrotate_days     | int     | 28       |
   | redirect_pages     | map     | %{"admin" => "/admin", "login" => "/login", "logout" => "/"} |
+  | password_strength  | keyword list | []  |
 
   The values for user_model and repo should be module names.
   If, for example, your app is called Coolapp and your user
@@ -33,7 +34,8 @@ defmodule Openmaize.Config do
         crypto_mod: :pbkdf2,
         token_alg: :sha256,
         keyrotate_days: 7,
-        redirect_pages: %{"admin" => "/admin", "login" => "/admin/login", "logout" => "/admin/login"}
+        redirect_pages: %{"admin" => "/admin", "login" => "/admin/login", "logout" => "/admin/login"},
+        password_strength: [min_length: 12]
 
   """
 
@@ -128,4 +130,33 @@ defmodule Openmaize.Config do
     Application.get_env(:openmaize, :redirect_pages, %{"admin" => "/admin"}))
   end
 
+  @doc """
+  Options for the password strength check.
+
+  The basic check will just check the minimum length, which is 8 characters
+  by default. For a more advanced check, you need to have the optional
+  dependency NotQwerty123 installed.
+
+  ## Advanced password strength check
+
+  If you have NotQwerty123 installed, there are three options:
+
+  * min_length - the minimum length of the password
+  * extra_chars - check for punctuation characters (including spaces) and digits
+  * common - check to see if the password is too common (too easy to guess)
+
+  See the documentation for Openmaize.Password for more information about
+  these options.
+
+  ## Examples
+
+  In the following example, the password strength check will set the minimum
+  length to 16 characters and will skip the `extra_chars` check:
+
+      password_strength: [min_length: 16, extra_chars: false]
+
+  """
+  def password_strength do
+    Application.get_env(:openmaize, :password_strength, [])
+  end
 end

@@ -6,8 +6,11 @@
     * Reduced JWT expiry and confirmation token validity / expiry time to 2 hours.
     * Made Ecto an optional dependency.
     * Changed the name of the Openmaize.Signup module to Openmaize.DB.
+        * All of the database-related functions are now in the Openmaize.DB module.
+        * You can use a different module by changing the `db_module` in the config.
     * In the Openmaize.DB module, replaced the `create_user` function with the `add_password_hash` function.
-        * the `add_password_hash` function performs no validation of the password (ideally, this should be done on the front-end)
+    * Brought back NotQwerty123 optional dependency.
+    * Moved the `gen_token_link` function to the Openmaize.ConfirmTools module.
 
 ## v0.15.0
 

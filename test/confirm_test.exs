@@ -108,7 +108,7 @@ defmodule Openmaize.ConfirmTest do
   end
 
   test "reset password succeeds" do
-    password = "my Nipples explode with the light!"
+    password = "my N1pples expl0de with the light!"
     conn = call_reset(password, [])
     redirect_login(conn)
     assert password_changed(password)
