@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.17.0-dev
+
+* Changes
+    * Added `password_strength` value to the config - to be used when setting or resetting the password.
+
 ## v0.16.0
 
 * Changes
