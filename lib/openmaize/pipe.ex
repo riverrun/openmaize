@@ -4,12 +4,6 @@ defmodule Openmaize.Pipe do
   returned.
   """
 
-  defmacro __using__(_) do
-    quote do
-      import Openmaize.Pipe
-    end
-  end
-
   defmacro error_pipe(pipes) do
     [{h,_}|t] = Macro.unpipe(pipes)
     Enum.reduce t, h, &check_error/2

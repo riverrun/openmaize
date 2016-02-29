@@ -9,10 +9,8 @@ defmodule Openmaize.Confirm do
   the Openmaize.DB module for details about creating the token.
   """
 
-  use Openmaize.Pipe
-
   import Comeonin.Tools
-  import Openmaize.Report
+  import Openmaize.{Pipe, Report}
   alias Openmaize.Config
 
   @doc """
@@ -27,8 +25,8 @@ defmodule Openmaize.Confirm do
   * unique_id - the identifier in the query string, or the parameters
     * the default is :email
   * mail_function - the emailing function that you need to define
-  * redirects - if Openmaize should handle the redirects or not
-    * the default true
+  * redirects - if Openmaize should handle the redirects
+    * the default is true
 
   ## Examples
 
