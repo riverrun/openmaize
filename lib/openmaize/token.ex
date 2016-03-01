@@ -38,14 +38,14 @@ defmodule Openmaize.Token do
   response.
   """
   def add_token(conn, %{role: role} = user, {true, :cookie, uniq}) do
-    {:ok, token} = generate_token(user, uniq, Config.token_opts)
+    {:ok, token} = generate_token(user, uniq, {0, Config.token_validity})
     conn
     |> put_resp_cookie("access_token", token, [http_only: true])
     |> redirect_to("#{Config.redirect_pages[role]}",
                    %{"info" => "You have been logged in"})
   end
   def add_token(conn, user, {false, nil, uniq}) do
-    {:ok, token} = generate_token(user, uniq, Config.token_opts)
+    {:ok, token} = generate_token(user, uniq, {0, Config.token_validity})
     send_resp(conn, 200, ~s({"access_token": "#{token}"}))
     |> halt()
   end

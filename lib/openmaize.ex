@@ -46,14 +46,7 @@ defmodule Openmaize do
 
   @doc false
   def start(_type, _args) do
-    import Supervisor.Spec
-
-    children = [
-      worker(Openmaize.Keymanager, [])
-    ]
-
-    opts = [strategy: :one_for_one, name: Openmaize.Supervisor]
-    Supervisor.start_link(children, opts)
+    Openmaize.Supervisor.start_link
   end
 
   @doc """

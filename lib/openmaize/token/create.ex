@@ -24,7 +24,7 @@ defmodule Openmaize.Token.Create do
   Openmaize.Token module, but it can also be called directly.
 
   `user` is a map containing the user information, which needs to contain
-  values for `id`, a unique identifier, which is `name` by default, `role`,
+  values for `id`, a unique identifier, which is `username` by default, `role`,
   `nbf_delay`, which is the number of minutes in the future after which
   the token can be used, and `token_validity`, which is the number of
   minutes that the token will be valid for.

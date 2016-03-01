@@ -12,6 +12,7 @@ defmodule Openmaize.Config do
   | hash_name          | atom    | :password_hash |
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
+  | token_validity     | int     | 120 (minutes)  |
   | keyrotate_days     | int     | 28       |
   | redirect_pages     | map     | %{"admin" => "/admin", "login" => "/login", "logout" => "/"} |
   | password_strength  | keyword list | []  |
@@ -33,6 +34,7 @@ defmodule Openmaize.Config do
         hash_name: :encrypted_password,
         crypto_mod: :pbkdf2,
         token_alg: :sha256,
+        token_validity: 60,
         keyrotate_days: 7,
         redirect_pages: %{"admin" => "/admin", "login" => "/admin/login", "logout" => "/admin/login"},
         password_strength: [min_length: 12]
@@ -104,6 +106,15 @@ defmodule Openmaize.Config do
   end
 
   @doc """
+  The length of time after which a JSON Web Token expires.
+
+  The default length of time is 120 minutes (2 hours).
+  """
+  def token_validity do
+    Application.get_env(:openmaize, :token_validity, 120)
+  end
+
+  @doc """
   The number of days after which the JWT signing keys will be rotated.
   """
   def keyrotate_days do
@@ -158,11 +169,5 @@ defmodule Openmaize.Config do
   """
   def password_strength do
     Application.get_env(:openmaize, :password_strength, [])
-  end
-
-  @doc """
-  """
-  def token_opts do
-    Application.get_env(:openmaize, :token_opts, {0, 120})
   end
 end

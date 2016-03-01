@@ -42,7 +42,7 @@ defmodule Openmaize.Login do
 
   @behaviour Plug
 
-  def init(opts) do # move token_validity to config
+  def init(opts) do
     {redirects, storage} = case Keyword.get(opts, :api, false) do
                              true -> {false, nil}
                              false -> {true, :cookie}
