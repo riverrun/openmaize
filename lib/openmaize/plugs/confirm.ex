@@ -9,8 +9,9 @@ defmodule Openmaize.Confirm do
   the Openmaize.DB module for details about creating the token.
   """
 
+  import Plug.Conn
   import Comeonin.Tools
-  import Openmaize.{Pipe, Report}
+  import Openmaize.{Pipe, Redirect}
   alias Openmaize.Config
 
   @doc """
@@ -25,8 +26,7 @@ defmodule Openmaize.Confirm do
   * unique_id - the identifier in the query string, or the parameters
     * the default is :email
   * mail_function - the emailing function that you need to define
-  * redirects - if Openmaize should handle the redirects
-    * the default is true
+  * api - if false, which is the default, Openmaize will handle the redirects
 
   ## Examples
 
@@ -43,7 +43,7 @@ defmodule Openmaize.Confirm do
   when byte_size(key) == 32 do
     check_user_key(conn, user_params, key, :nopassword, get_opts(opts))
   end
-  def confirm_email(conn, opts), do: invalid_link_error(conn, opts)
+  def confirm_email(conn, opts), do: invalid_link_error(conn, !Keyword.get(opts, :api))
 
   @doc """
   Function to authenticate a user when resetting the password.
@@ -79,13 +79,13 @@ defmodule Openmaize.Confirm do
   when byte_size(key) == 32 do
     check_user_key(conn, user_params, key, password, get_opts(opts))
   end
-  def reset_password(conn, opts), do: invalid_link_error(conn, opts)
+  def reset_password(conn, opts), do: invalid_link_error(conn, !Keyword.get(opts, :api))
 
   defp get_opts(opts) do
     {Keyword.get(opts, :key_expires_after, 120),
      Keyword.get(opts, :unique_id, :email),
      Keyword.get(opts, :mail_function),
-     Keyword.get(opts, :redirects, true)}
+     !Keyword.get(opts, :api, false)}
   end
 
   defp check_user_key(conn, user_params, key, password,
@@ -110,16 +110,25 @@ defmodule Openmaize.Confirm do
     Config.db_module.password_reset(user, password)
   end
 
-  defp finalize({:ok, user}, conn, _, mail_func, redirects) do
+  defp finalize({:ok, user}, conn, _, mail_func, true) do
     mail_func && mail_func.(user.email)
-    put_message(conn, %{"info" => "Account successfully confirmed"}, redirects)
+    redirect_to(conn, "#{Config.redirect_pages["login"]}", %{"info" => "Account successfully confirmed"})
   end
-  defp finalize(_, conn, user_id, _, redirects) do
-    put_message(conn, "logout", %{"error" => "Confirmation for #{user_id} failed"}, redirects)
+  defp finalize({:ok, user}, conn, _, mail_func, false) do
+    mail_func && mail_func.(user.email)
+    send_resp(conn, 200, Poison.encode!(%{"info" => "Account successfully confirmed"})) |> halt()
+  end
+  defp finalize(_, conn, user_id, _, true) do
+    redirect_to(conn, "#{Config.redirect_pages["logout"]}", %{"error" => "Confirmation for #{user_id} failed"})
+  end
+  defp finalize(_, conn, user_id, _, false) do
+    send_resp(conn, 401, %{"error" => "Confirmation for #{user_id} failed"}) |> halt()
   end
 
-  defp invalid_link_error(conn, opts) do
-    redirects = Keyword.get(opts, :redirects, true)
-    put_message(conn, "logout", %{"error" => "Invalid link"}, redirects)
+  defp invalid_link_error(conn, true) do
+    redirect_to(conn, "#{Config.redirect_pages["logout"]}", %{"error" => "Invalid link"})
+  end
+  defp invalid_link_error(conn, false) do
+    send_resp(conn, 401, %{"error" => "Invalid link"}) |> halt()
   end
 end

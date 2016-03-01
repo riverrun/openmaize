@@ -46,13 +46,6 @@ defmodule Openmaize.LogoutTest do
                         %{"admin" => "/admin", "user" => "/users"})
   end
 
-  test "logout with cookie and without redirect", %{user_token: user_token} do
-    conn = call(user_token, :cookie, false)
-    assert conn.resp_cookies["access_token"] ==
-      %{max_age: 0, universal_time: {{1970, 1, 1}, {0, 0, 0}}}
-    assert conn.halted == true
-  end
-
   test "logout with storage nil and without redirect", %{user_token: user_token} do
     conn = call(user_token, nil)
     refute conn.resp_cookies["access_token"]

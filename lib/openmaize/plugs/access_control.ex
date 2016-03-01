@@ -15,7 +15,8 @@ defmodule Openmaize.AccessControl do
   If there is a current user, but the role is not in the list of allowed roles,
   the user will be redirected to that user's role's redirect page, or the user
   will be sent a 403 error message, depending on whether the `api` option
-  is true or false.
+  is true or false. If `api` is set to false, the user will be redirected, and
+  if `api` is set to true, there will be no redirects.
 
   If the current user is nil, the user will be redirected to the login page,
   or just sent a 401 error message.

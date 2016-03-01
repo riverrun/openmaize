@@ -2,14 +2,9 @@ defmodule Openmaize.Login do
   @moduledoc """
   Plug to handle login.
 
-  There are four options:
+  There are two options:
 
-  * redirects - if true, which is the default, redirect on login
-  * storage - storage method for the token
-    * the default is :cookie
-    * if storage is set to nil, redirects is automatically set to false
-  * token_validity - length the token is valid for (in minutes)
-    * the default is 120 minutes (2 hours)
+  * api - if false, which is the default, redirect on login and store the token in a cookie
   * unique_id - the name which is used to identify the user (in the database)
     * the default is `:username`
     * this can also be a function which checks the user input and returns an atom
@@ -26,15 +21,13 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login when action in [:login_user]
 
-  If you want to use sessionStorage to store the token (this will also set
-  redirects to false):
+  If you are developing an api:
 
-      plug Openmaize.Login, [storage: nil] when action in [:login_user]
+      plug Openmaize.Login, [api: true] when action in [:login_user]
 
-  If you want to use `email` to identify the user and have the token valid
-  for just two hours:
+  If you want to use `email` to identify the user:
 
-      plug Openmaize.Login, [token_validity: 120, unique_id: :email] when action in [:login_user]
+      plug Openmaize.Login, [unique_id: :email] when action in [:login_user]
 
   If you want to use `email` or `username` to identify the user (allowing the
   end user a choice):
@@ -43,7 +36,8 @@ defmodule Openmaize.Login do
 
   """
 
-  import Openmaize.{Report, Token}
+  import Plug.Conn
+  import Openmaize.{Redirect, Token}
   alias Openmaize.Config
 
   @behaviour Plug
@@ -59,7 +53,11 @@ defmodule Openmaize.Login do
   @doc """
   Handle the login POST request.
 
-  If the login is successful, a JSON Web Token will be returned. # should have more info here
+  If the login is successful, a JSON Web Token will be returned.
+  If the option `api` is set to false, the JWT will be stored in
+  a cookie, and the user will be redirected to the page for that
+  user's role. If `api` is set to true, the JWT will be returned
+  in the body of the response.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
            {redirects, storage, uniq_id}) do
@@ -79,16 +77,16 @@ defmodule Openmaize.Login do
     do: {:error, "You have to confirm your email address before continuing."}
   defp check_pass(user, password, hash_name) do
     %{^hash_name => hash} = user
-    Config.get_crypto_mod.checkpw(password, hash) and user
+    Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
-  defp handle_auth(false, conn, {redirects, _, _}) do
-    put_message(conn, %{"error" => "Invalid credentials"}, redirects)
-  end
-  defp handle_auth({:error, message}, conn, {redirects, _, _}) do
-    put_message(conn, %{"error" => message}, redirects)
-  end
-  defp handle_auth(user, conn, opts) do
+  defp handle_auth({:ok, user}, conn, opts) do
     add_token(conn, user, opts)
+  end
+  defp handle_auth(_, conn, {true, _, _}) do
+    redirect_to(conn, "#{Config.redirect_pages["login"]}", %{"error" => "Invalid credentials"})
+  end
+  defp handle_auth(_, conn, {false, _, _}) do
+    send_resp(conn, 401, Poison.encode!(%{"error" => "Invalid credentials"})) |> halt()
   end
 end

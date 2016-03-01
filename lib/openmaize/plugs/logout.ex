@@ -4,10 +4,10 @@ defmodule Openmaize.Logout do
 
   There is one option:
 
-  * redirects - if true, which is the default, redirect on login
+  * api - if false, which is the default, redirect on login
 
-  If the token was stored in sessionStorage, then redirects is automatically
-  set to false. You will also need to use the front end framework to delete
+  If the token was stored in sessionStorage, then there are no redirects
+  on logout. You will also need to use the front end framework to delete
   the token.
 
   ## Examples with Phoenix
@@ -21,19 +21,16 @@ defmodule Openmaize.Logout do
 
       plug Openmaize.Logout when action in [:logout]
 
-  If you stored the token in a cookie, but you want redirects set to false:
-
-      plug Openmaize.Logout, [redirects: false] when action in [:logout]
-
   """
 
   import Plug.Conn
-  import Openmaize.Report
+  import Openmaize.Redirect
+  alias Openmaize.Config
 
   @behaviour Plug
 
   def init(opts) do
-    Keyword.get(opts, :redirects, true)
+    !Keyword.get(opts, :api, false)
   end
 
   @doc """
@@ -50,7 +47,7 @@ defmodule Openmaize.Logout do
 
   def logout_user(conn, true) do
     delete_resp_cookie(conn, "access_token")
-    |> put_message("logout", %{"info" => "You have been logged out"}, true)
+    |> redirect_to("#{Config.redirect_pages["logout"]}", %{"info" => "You have been logged out"})
   end
   def logout_user(conn, false), do: delete_resp_cookie(conn, "access_token") |> halt
 
