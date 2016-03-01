@@ -28,7 +28,8 @@ defmodule Openmaize.Token do
   """
 
   import Plug.Conn
-  import Openmaize.{Report, Token.Create}
+  import Openmaize.{Redirect, Token.Create}
+  alias Openmaize.Config
 
   @doc """
   Generate token based on the user information.
@@ -36,25 +37,16 @@ defmodule Openmaize.Token do
   The token is then either stored in a cookie or sent in the body of the
   response.
   """
-  def add_token(conn, %{role: role} = user, {true, _storage, token_opts, uniq}) do
-    {:ok, token} = generate_token(user, uniq, token_opts)
+  def add_token(conn, %{role: role} = user, {true, :cookie, uniq}) do
+    {:ok, token} = generate_token(user, uniq, Config.token_opts)
     conn
     |> put_resp_cookie("access_token", token, [http_only: true])
-    |> put_message(role, %{"info" => "You have been logged in"}, true)
+    |> redirect_to("#{Config.redirect_pages[role]}",
+                   %{"info" => "You have been logged in"})
   end
-  def add_token(conn, user, {false, storage, token_opts, uniq}) do
-    generate_token(user, uniq, token_opts)
-    |> add_to_conn(conn, storage)
-    |> send_resp()
+  def add_token(conn, user, {false, nil, uniq}) do
+    {:ok, token} = generate_token(user, uniq, Config.token_opts)
+    send_resp(conn, 200, ~s({"access_token": "#{token}"}))
     |> halt()
-  end
-
-  defp add_to_conn({:ok, token}, conn, :cookie) do
-    conn
-    |> put_resp_cookie("access_token", token, [http_only: true])
-    |> resp(200, "")
-  end
-  defp add_to_conn({:ok, token}, conn, nil) do
-    resp(conn, 200, ~s({"access_token": "#{token}"}))
   end
 end

@@ -14,7 +14,7 @@ defmodule Openmaize.AccessControl do
 
   If there is a current user, but the role is not in the list of allowed roles,
   the user will be redirected to that user's role's redirect page, or the user
-  will be sent a 403 error message, depending on whether the `redirects` option
+  will be sent a 403 error message, depending on whether the `api` option
   is true or false.
 
   If the current user is nil, the user will be redirected to the login page,
@@ -39,7 +39,9 @@ defmodule Openmaize.AccessControl do
 
   """
 
-  import Openmaize.Report
+  import Plug.Conn
+  import Openmaize.Redirect
+  alias Openmaize.Config
 
   @doc """
   Verify that the user is authorized to access the requested page / resource.
@@ -49,7 +51,7 @@ defmodule Openmaize.AccessControl do
   This function has two options:
 
   * roles - a list of permitted roles
-  * redirects - if true, which is the default, redirect if there is an error
+  * api - if false, which is the default, redirect if there is an error
 
   ## Examples with Phoenix
 
@@ -70,9 +72,9 @@ defmodule Openmaize.AccessControl do
       plug :authorize, [roles: ["admin"]] when action in [:create, :update]
 
   To allow users with the role "admin" or "user" to access pages, and set
-  redirects to false (this example protects every page except the index page):
+  api to true (this example protects every page except the index page):
 
-      plug :authorize, [roles: ["admin", "user"], redirects: false] when not action in [:index]
+      plug :authorize, [roles: ["admin", "user"], api: true] when not action in [:index]
 
   To allow users with the role "admin" or "user" to access the index, but
   only allow those users with the role "admin" to access the other pages.
@@ -82,7 +84,7 @@ defmodule Openmaize.AccessControl do
 
   """
   def authorize(%Plug.Conn{assigns: %{current_user: current_user}} = conn, opts) do
-    opts = {Keyword.get(opts, :roles, []), Keyword.get(opts, :redirects, true)}
+    opts = {Keyword.get(opts, :roles, []), !Keyword.get(opts, :api, false)}
     full_check(conn, opts, current_user)
   end
 
@@ -95,11 +97,11 @@ defmodule Openmaize.AccessControl do
 
   This function has one option:
 
-  * redirects - if true, which is the default, redirect if there is an error
+  * api - if false, which is the default, redirect if there is an error
   """
   def authorize_id(%Plug.Conn{params: %{"id" => id},
                               assigns: %{current_user: current_user}} = conn, opts) do
-    redirects = Keyword.get(opts, :redirects, true)
+    redirects = !Keyword.get(opts, :api, false)
     id_check(conn, redirects, id, current_user)
   end
 
@@ -120,13 +122,21 @@ defmodule Openmaize.AccessControl do
     end
   end
 
-  defp nouser_error(%Plug.Conn{request_path: path} = conn, redirects) do
+  defp nouser_error(%Plug.Conn{request_path: path} = conn, true) do
+    message = %{"error" => "You have to be logged in to view #{path}"}
+    redirect_to(conn, "#{Config.redirect_pages["login"]}", message)
+  end
+  defp nouser_error(%Plug.Conn{request_path: path} = conn, false) do
     message = "You have to be logged in to view #{path}"
-    put_message(conn, %{"error" => message}, redirects)
+    send_resp(conn, 401, Poison.encode!(message)) |> halt()
   end
 
-  defp nopermit_error(%Plug.Conn{request_path: path} = conn, role, redirects) do
-    message = "You do not have permission to view #{path}"
-    put_message(conn, role, %{"error" => message}, redirects)
+  defp nopermit_error(%Plug.Conn{request_path: path} = conn, role, true) do
+    message = %{"error" => "You do not have permission to view #{path}"}
+    redirect_to(conn, "#{Config.redirect_pages[role]}", message)
+  end
+  defp nopermit_error(%Plug.Conn{request_path: path} = conn, _role, false) do
+    message = %{"error" => "You do not have permission to view #{path}"}
+    send_resp(conn, 403, Poison.encode!(message)) |> halt()
   end
 end

@@ -159,4 +159,10 @@ defmodule Openmaize.Config do
   def password_strength do
     Application.get_env(:openmaize, :password_strength, [])
   end
+
+  @doc """
+  """
+  def token_opts do
+    Application.get_env(:openmaize, :token_opts, {0, 120})
+  end
 end

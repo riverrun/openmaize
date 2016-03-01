@@ -48,26 +48,25 @@ defmodule Openmaize.Login do
 
   @behaviour Plug
 
-  def init(opts) do
-    {redirects, storage} = case Keyword.get(opts, :storage, :cookie) do
-             :cookie -> {Keyword.get(opts, :redirects, true), :cookie}
-             nil -> {false, nil}
-           end
-    {redirects, storage, {0, Keyword.get(opts, :token_validity, 120)},
-     Keyword.get(opts, :unique_id, :username)}
+  def init(opts) do # move token_validity to config
+    {redirects, storage} = case Keyword.get(opts, :api, false) do
+                             true -> {false, nil}
+                             false -> {true, :cookie}
+                           end
+    {redirects, storage, Keyword.get(opts, :unique_id, :username)}
   end
 
   @doc """
   Handle the login POST request.
 
-  If the login is successful, a JSON Web Token will be returned.
+  If the login is successful, a JSON Web Token will be returned. # should have more info here
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {redirects, storage, token_opts, uniq_id}) do
+           {redirects, storage, uniq_id}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
-    |> handle_auth(conn, {redirects, storage, token_opts, uniq})
+    |> handle_auth(conn, {redirects, storage, uniq})
   end
 
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
@@ -83,10 +82,10 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, hash) and user
   end
 
-  defp handle_auth(false, conn, {redirects, _, _, _}) do
+  defp handle_auth(false, conn, {redirects, _, _}) do
     put_message(conn, %{"error" => "Invalid credentials"}, redirects)
   end
-  defp handle_auth({:error, message}, conn, {redirects, _, _, _}) do
+  defp handle_auth({:error, message}, conn, {redirects, _, _}) do
     put_message(conn, %{"error" => message}, redirects)
   end
   defp handle_auth(user, conn, opts) do

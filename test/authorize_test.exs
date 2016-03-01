@@ -10,7 +10,7 @@ defmodule Openmaize.AuthorizeTest do
   def call(path, current_user, roles, redirects \\ true) do
     conn(:get, path)
     |> assign(:current_user, current_user)
-    |> authorize([roles: roles, redirects: redirects])
+    |> authorize([roles: roles, api: !redirects])
   end
 
   test "correct token with role admin" do
