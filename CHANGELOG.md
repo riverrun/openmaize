@@ -4,6 +4,8 @@
 
 * Changes
     * Added `password_strength` value to the config - to be used when setting or resetting the password.
+    * Changed `token_opts` option in the Login module to a global `token_validity` option in the config.
+    * Removed `storage` option in the Login module. The storage is automatically set based on the value of `redirects`.
 
 ## v0.16.0
 

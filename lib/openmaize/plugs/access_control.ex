@@ -14,9 +14,8 @@ defmodule Openmaize.AccessControl do
 
   If there is a current user, but the role is not in the list of allowed roles,
   the user will be redirected to that user's role's redirect page, or the user
-  will be sent a 403 error message, depending on whether the `api` option
-  is true or false. If `api` is set to false, the user will be redirected, and
-  if `api` is set to true, there will be no redirects.
+  will be sent a 403 error message, depending on whether the `redirects` option
+  is true or false.
 
   If the current user is nil, the user will be redirected to the login page,
   or just sent a 401 error message.
@@ -52,7 +51,7 @@ defmodule Openmaize.AccessControl do
   This function has two options:
 
   * roles - a list of permitted roles
-  * api - if false, which is the default, redirect if there is an error
+  * redirects - if true, which is the default, redirect if there is an error
 
   ## Examples with Phoenix
 
@@ -73,9 +72,9 @@ defmodule Openmaize.AccessControl do
       plug :authorize, [roles: ["admin"]] when action in [:create, :update]
 
   To allow users with the role "admin" or "user" to access pages, and set
-  api to true (this example protects every page except the index page):
+  redirects to false (this example protects every page except the index page):
 
-      plug :authorize, [roles: ["admin", "user"], api: true] when not action in [:index]
+      plug :authorize, [roles: ["admin", "user"], redirects: false] when not action in [:index]
 
   To allow users with the role "admin" or "user" to access the index, but
   only allow those users with the role "admin" to access the other pages.
@@ -85,7 +84,7 @@ defmodule Openmaize.AccessControl do
 
   """
   def authorize(%Plug.Conn{assigns: %{current_user: current_user}} = conn, opts) do
-    opts = {Keyword.get(opts, :roles, []), !Keyword.get(opts, :api, false)}
+    opts = {Keyword.get(opts, :roles, []), Keyword.get(opts, :redirects, true)}
     full_check(conn, opts, current_user)
   end
 
@@ -98,11 +97,11 @@ defmodule Openmaize.AccessControl do
 
   This function has one option:
 
-  * api - if false, which is the default, redirect if there is an error
+  * redirects - if true, which is the default, redirect if there is an error
   """
   def authorize_id(%Plug.Conn{params: %{"id" => id},
                               assigns: %{current_user: current_user}} = conn, opts) do
-    redirects = !Keyword.get(opts, :api, false)
+    redirects = Keyword.get(opts, :redirects, true)
     id_check(conn, redirects, id, current_user)
   end
 

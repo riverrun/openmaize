@@ -26,7 +26,10 @@ defmodule Openmaize.Confirm do
   * unique_id - the identifier in the query string, or the parameters
     * the default is :email
   * mail_function - the emailing function that you need to define
-  * api - if false, which is the default, Openmaize will handle the redirects
+  * redirects - if Openmaize will handle redirects or not
+    * this should be a map containing a `success` key with path and a `failure`
+    key with path, for example, %{success: "/login", failure: "/"}, or false
+    * the default is %{success: "/login", failure: "/"}
 
   ## Examples
 
@@ -43,7 +46,9 @@ defmodule Openmaize.Confirm do
   when byte_size(key) == 32 do
     check_user_key(conn, user_params, key, :nopassword, get_opts(opts))
   end
-  def confirm_email(conn, opts), do: invalid_link_error(conn, !Keyword.get(opts, :api))
+  def confirm_email(conn, opts) do
+    invalid_link_error(conn, Keyword.get(opts, :redirects, %{success: "/login", failure: "/"}))
+  end
 
   @doc """
   Function to authenticate a user when resetting the password.
@@ -79,13 +84,15 @@ defmodule Openmaize.Confirm do
   when byte_size(key) == 32 do
     check_user_key(conn, user_params, key, password, get_opts(opts))
   end
-  def reset_password(conn, opts), do: invalid_link_error(conn, !Keyword.get(opts, :api))
+  def reset_password(conn, opts) do
+    invalid_link_error(conn, Keyword.get(opts, :redirects, %{success: "/login", failure: "/"}))
+  end
 
   defp get_opts(opts) do
     {Keyword.get(opts, :key_expires_after, 120),
      Keyword.get(opts, :unique_id, :email),
      Keyword.get(opts, :mail_function),
-     !Keyword.get(opts, :api, false)}
+     Keyword.get(opts, :redirects, %{success: "/login", failure: "/"})}
   end
 
   defp check_user_key(conn, user_params, key, password,
@@ -110,25 +117,26 @@ defmodule Openmaize.Confirm do
     Config.db_module.password_reset(user, password)
   end
 
-  defp finalize({:ok, user}, conn, _, mail_func, true) do
-    mail_func && mail_func.(user.email)
-    redirect_to(conn, "#{Config.redirect_pages["login"]}", %{"info" => "Account successfully confirmed"})
-  end
   defp finalize({:ok, user}, conn, _, mail_func, false) do
     mail_func && mail_func.(user.email)
     send_resp(conn, 200, Poison.encode!(%{"info" => "Account successfully confirmed"})) |> halt()
   end
-  defp finalize(_, conn, user_id, _, true) do
-    redirect_to(conn, "#{Config.redirect_pages["logout"]}", %{"error" => "Confirmation for #{user_id} failed"})
+  defp finalize({:ok, user}, conn, _, mail_func, %{success: success_path}) do
+    mail_func && mail_func.(user.email)
+    redirect_to(conn, success_path, %{"info" => "Account successfully confirmed"})
   end
   defp finalize(_, conn, user_id, _, false) do
-    send_resp(conn, 401, %{"error" => "Confirmation for #{user_id} failed"}) |> halt()
+    send_resp(conn, 401, Poison.encode!(%{"error" => "Confirmation for #{user_id} failed"}))
+    |> halt()
+  end
+  defp finalize(_, conn, user_id, _, %{failure: fail_path}) do
+    redirect_to(conn, fail_path, %{"error" => "Confirmation for #{user_id} failed"})
   end
 
-  defp invalid_link_error(conn, true) do
-    redirect_to(conn, "#{Config.redirect_pages["logout"]}", %{"error" => "Invalid link"})
+  defp invalid_link_error(conn, %{failure: fail_path}) do
+    redirect_to(conn, fail_path, %{"error" => "Invalid link"})
   end
-  defp invalid_link_error(conn, false) do
+  defp invalid_link_error(conn, _) do
     send_resp(conn, 401, %{"error" => "Invalid link"}) |> halt()
   end
 end

@@ -40,7 +40,7 @@ defmodule Openmaize.Authorize.IdCheckTest do
 
   test "user with wrong id cannot access resource" do
     path = "/users/10/edit"
-    conn = conn(:get, path) |> call("10", @user) |> authorize_id([api: true])
+    conn = conn(:get, path) |> call("10", @user) |> authorize_id([redirects: false])
     assert conn.status == 403
   end
 

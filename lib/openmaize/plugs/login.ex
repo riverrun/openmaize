@@ -4,7 +4,7 @@ defmodule Openmaize.Login do
 
   There are two options:
 
-  * api - if false, which is the default, redirect on login and store the token in a cookie
+  * redirects - if true, which is the default, redirect on login and store the token in a cookie
   * unique_id - the name which is used to identify the user (in the database)
     * the default is `:username`
     * this can also be a function which checks the user input and returns an atom
@@ -21,9 +21,9 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login when action in [:login_user]
 
-  If you are developing an api:
+  If you do not want Openmaize to handle redirects:
 
-      plug Openmaize.Login, [api: true] when action in [:login_user]
+      plug Openmaize.Login, [redirects: false] when action in [:login_user]
 
   If you want to use `email` to identify the user:
 
@@ -43,7 +43,7 @@ defmodule Openmaize.Login do
   @behaviour Plug
 
   def init(opts) do
-    {redirects, storage} = case Keyword.get(opts, :api, false) do
+    {redirects, storage} = case Keyword.get(opts, :redirects, true) do
                              true -> {false, nil}
                              false -> {true, :cookie}
                            end
@@ -54,9 +54,9 @@ defmodule Openmaize.Login do
   Handle the login POST request.
 
   If the login is successful, a JSON Web Token will be returned.
-  If the option `api` is set to false, the JWT will be stored in
+  If the option `redirects` is set to true, the JWT will be stored in
   a cookie, and the user will be redirected to the page for that
-  user's role. If `api` is set to true, the JWT will be returned
+  user's role. If `redirects` is set to false, the JWT will be returned
   in the body of the response.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,

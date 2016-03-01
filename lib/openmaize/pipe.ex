@@ -1,7 +1,7 @@
 defmodule Openmaize.Pipe do
   @moduledoc """
-  Customized pipe that exits if there is an error or if nil is
-  returned.
+  Customized pipe that exits, breaks early, if there is an error
+  or if nil is returned.
   """
 
   defmacro error_pipe(pipes) do
@@ -18,5 +18,4 @@ defmodule Openmaize.Pipe do
       end
     end
   end
-
 end

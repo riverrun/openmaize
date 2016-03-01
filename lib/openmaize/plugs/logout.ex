@@ -2,11 +2,9 @@ defmodule Openmaize.Logout do
   @moduledoc """
   Plug to handle logout requests.
 
-  There is one option:
-
-  * api - if false, which is the default, redirect on login
-
-  If the token was stored in sessionStorage, then there are no redirects
+  If the token was stored in a cookie, then the user will be redirected
+  to the path set for "logout" in `redirect_pages` in the config. If
+  the token was stored in sessionStorage, then there are no redirects
   on logout. You will also need to use the front end framework to delete
   the token.
 
@@ -29,9 +27,7 @@ defmodule Openmaize.Logout do
 
   @behaviour Plug
 
-  def init(opts) do
-    !Keyword.get(opts, :api, false)
-  end
+  def init(opts), do: opts
 
   @doc """
   Handle logout.
@@ -40,15 +36,13 @@ defmodule Openmaize.Logout do
   If the token was not stored in a cookie, then you will need to use
   your front end framework to delete the token.
   """
-  def call(%Plug.Conn{req_cookies: %{"access_token" => _token}} = conn, redirects) do
-    assign(conn, :current_user, nil) |> logout_user(redirects)
+  def call(%Plug.Conn{req_cookies: %{"access_token" => _token}} = conn, _opts) do
+    assign(conn, :current_user, nil) |> logout_user()
   end
   def call(conn, _opts), do: assign(conn, :current_user, nil) |> halt
 
-  def logout_user(conn, true) do
+  def logout_user(conn) do
     delete_resp_cookie(conn, "access_token")
     |> redirect_to("#{Config.redirect_pages["logout"]}", %{"info" => "You have been logged out"})
   end
-  def logout_user(conn, false), do: delete_resp_cookie(conn, "access_token") |> halt
-
 end
