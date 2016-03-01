@@ -9,7 +9,7 @@ process.
 ## Features
 
 * checks for login / logout pages and handles these calls
-* authenticates users using Json Web Tokens
+* authenticates users using JSON Web Tokens
 * checks to see if the user is allowed (authorized) to access the page / resource
 * provides excellent documentation
 * is framework-agnostic
@@ -51,7 +51,7 @@ provide technical / practical details about why this feature is needed.
 Documentation is a very important part of the whole Openmaize package. The
 documentation is not limited to how a module or function works, but also
 provides, succintly and clearly, more general information related to the
-aims of this project, such as authentication, authorization, Json
+aims of this project, such as authentication, authorization, JSON
 Web Tokens, etc.
 
 If you are contributing documentation that makes any claims, for example,

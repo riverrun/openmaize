@@ -46,7 +46,7 @@ It provides the following functionality:
 
 ### Authentication
 
-* Openmaize.Authenticate - plug to authenticate users, using Json Web Tokens.
+* Openmaize.Authenticate - plug to authenticate users, using JSON Web Tokens.
 * Openmaize.Login - plug to handle login POST requests.
 * Openmaize.Logout - plug to handle logout requests.
 

@@ -1,4 +1,4 @@
-defmodule Openmaize.Token.Create do
+defmodule Openmaize.JWT.Create do
   @moduledoc """
   Module to create JSON Web Tokens.
 
@@ -14,14 +14,14 @@ defmodule Openmaize.Token.Create do
   """
 
   import Base
-  import Openmaize.Token.Tools
+  import Openmaize.JWT.Tools
   alias Openmaize.Config
 
   @doc """
   Generate a JSON Web Token.
 
   This function is usually called by the `add_token` function in the
-  Openmaize.Token module, but it can also be called directly.
+  Openmaize.JWT module, but it can also be called directly.
 
   `user` is a map containing the user information, which needs to contain
   values for `id`, a unique identifier, which is `username` by default, `role`,

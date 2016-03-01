@@ -1,4 +1,4 @@
-defmodule Openmaize.Tokenmanager do
+defmodule Openmaize.JWTmanager do
   use GenServer
 
   def start_link() do

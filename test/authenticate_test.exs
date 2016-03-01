@@ -2,7 +2,7 @@ defmodule Openmaize.AuthenticateTest do
   use ExUnit.Case
   use Plug.Test
 
-  import Openmaize.Token.Create
+  import Openmaize.JWT.Create
   alias Openmaize.Authenticate
 
   setup_all do

@@ -1,8 +1,8 @@
-defmodule Openmaize.TokenTest do
+defmodule Openmaize.JWTTest do
   use ExUnit.Case
   use Plug.Test
 
-  import Openmaize.{Token, Token.Verify}
+  import Openmaize.{JWT, JWT.Verify}
 
   test "token stored in cookie with redirects" do
     user = %{id: 1, username: "Raymond Luxury Yacht", role: "user"}

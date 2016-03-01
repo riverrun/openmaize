@@ -1,4 +1,4 @@
-defmodule Openmaize.Token.Tools do
+defmodule Openmaize.JWT.Tools do
   @moduledoc """
   Various tools that are used with the management of JSON Web Tokens.
   """

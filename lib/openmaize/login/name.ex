@@ -1,9 +1,10 @@
-defmodule Openmaize.LoginTools do
+defmodule Openmaize.Login.Name do
   @moduledoc """
-  Tools that can be used with the Login module.
+  Functions used with the Login module to calculate the identifier
+  of the user based on user input.
 
   These functions can be used with the Openmaize.Login plug as the
-  unique_id. They can also just serve as examples of how to write
+  `unique_id`. They can also just serve as examples of how to write
   such a function.
   """
 

@@ -1,12 +1,12 @@
-defmodule Openmaize.Token do
+defmodule Openmaize.JWT do
   @moduledoc """
-  Module to generate Json Web Tokens and send them to the user, either
+  Module to generate JSON Web Tokens and send them to the user, either
   by storing the token in a cookie or by sending the token in the body of
   the response.
 
-  ## Json Web Tokens
+  ## JSON Web Tokens
 
-  Json Web Tokens (JWTs) are an alternative to using cookies to identify,
+  JSON Web Tokens (JWTs) are an alternative to using cookies to identify,
   and provide information about, users after they have logged in.
 
   One main advantage of using JWTs is that there is no need to keep a
@@ -28,7 +28,7 @@ defmodule Openmaize.Token do
   """
 
   import Plug.Conn
-  import Openmaize.{Redirect, Token.Create}
+  import Openmaize.{JWT.Create, Redirect}
   alias Openmaize.Config
 
   @doc """

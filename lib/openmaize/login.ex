@@ -8,7 +8,7 @@ defmodule Openmaize.Login do
   * unique_id - the name which is used to identify the user (in the database)
     * the default is `:username`
     * this can also be a function which checks the user input and returns an atom
-      * see the Openmaize.LoginTools module for some example functions
+      * see the Openmaize.Login.Name module for some example functions
 
   ## Examples with Phoenix
 
@@ -32,17 +32,21 @@ defmodule Openmaize.Login do
   If you want to use `email` or `username` to identify the user (allowing the
   end user a choice):
 
-      plug Openmaize.Login, [unique_id: &Openmaize.LoginTools.email_username/1] when action in [:login_user]
+      plug Openmaize.Login, [unique_id: &Openmaize.Login.Name.email_username/1] when action in [:login_user]
 
   """
 
   import Plug.Conn
-  import Openmaize.{Redirect, Token}
+  import Openmaize.{JWT, Redirect}
   alias Openmaize.Config
 
   @behaviour Plug
 
   def init(opts) do
+    if Keyword.has_key?(opts, :storage) do
+      IO.write :stderr, "warning: calling Openmaize.Login with the 'storage: nil' " <>
+      "argument is deprecated, please use 'redirects: false' instead.\n"
+    end
     {redirects, storage} = case Keyword.get(opts, :redirects, true) do
                              true -> {false, nil}
                              false -> {true, :cookie}

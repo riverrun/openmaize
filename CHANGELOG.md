@@ -123,5 +123,5 @@
     * Protect pages based on role.
     * Redirects to login / home / role's page.
     * Support for sending messages to phoenix flash.
-    * Support for signup, password hash checking and distribution of Json Web Tokens.
-    * Support for storage and checking of Json Web Tokens.
+    * Support for signup, password hash checking and distribution of JSON Web Tokens.
+    * Support for storage and checking of JSON Web Tokens.

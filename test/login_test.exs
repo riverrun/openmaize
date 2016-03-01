@@ -2,7 +2,7 @@ defmodule Openmaize.LoginTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.{Login, LoginTools, TestRepo, User}
+  alias Openmaize.{Login, Login.Name, TestRepo, User}
 
   setup_all do
     user = %{email: "ray@mail.com", username: "ray", role: "user", password: "h4rd2gU3$$",
@@ -53,42 +53,42 @@ defmodule Openmaize.LoginTest do
   end
 
   test "multiple possible unique ids - email for email_username func" do
-    opts = {true, :cookie, &LoginTools.email_username/1}
+    opts = {true, :cookie, &Name.email_username/1}
     conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
     redirected(conn, "/users")
     assert conn.resp_cookies["access_token"]
   end
 
   test "multiple possible unique ids - username for email_username func" do
-    opts = {true, :cookie, &LoginTools.email_username/1}
+    opts = {true, :cookie, &Name.email_username/1}
     conn = call("ray", "h4rd2gU3$$", "email", opts)
     redirected(conn, "/users")
     assert conn.resp_cookies["access_token"]
   end
 
   test "multiple possible unique ids - phone for phone_username func" do
-    opts = {true, :cookie, &LoginTools.phone_username/1}
+    opts = {true, :cookie, &Name.phone_username/1}
     conn = call("081555555", "h4rd2gU3$$", "phone", opts)
     redirected(conn, "/users")
     assert conn.resp_cookies["access_token"]
   end
 
   test "multiple possible unique ids - username for phone_username func" do
-    opts = {true, :cookie, &LoginTools.phone_username/1}
+    opts = {true, :cookie, &Name.phone_username/1}
     conn = call("ray", "h4rd2gU3$$", "phone", opts)
     redirected(conn, "/users")
     assert conn.resp_cookies["access_token"]
   end
 
   test "fail login with multiple possible unique ids - phone for phone_username func" do
-    opts = {true, :cookie, &LoginTools.phone_username/1}
+    opts = {true, :cookie, &Name.phone_username/1}
     conn = call("081555555", "oohwhatwasitagain", "phone", opts)
     redirected(conn, "/login")
     refute conn.resp_cookies["access_token"]
   end
 
   test "fail login with multiple possible unique ids - username for phone_username func" do
-    opts = {true, :cookie, &LoginTools.phone_username/1}
+    opts = {true, :cookie, &Name.phone_username/1}
     conn = call("rav", "h4rd2gU3$$", "phone", opts)
     redirected(conn, "/login")
     refute conn.resp_cookies["access_token"]

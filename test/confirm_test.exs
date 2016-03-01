@@ -4,7 +4,7 @@ defmodule Openmaize.ConfirmTest do
 
   import Ecto.Changeset
   alias Comeonin.Bcrypt
-  alias Openmaize.{Confirm, ConfirmTools, TestRepo, User}
+  alias Openmaize.{Confirm, TestRepo, User}
 
   @valid_link "email=fred%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
   @name_link "username=fred&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
@@ -130,13 +130,13 @@ defmodule Openmaize.ConfirmTest do
   end
 
   test "gen_token_link" do
-    {key, link} = ConfirmTools.gen_token_link("fred@mail.com")
+    {key, link} = Confirm.gen_token_link("fred@mail.com")
     assert link =~ "email=fred%40mail.com&key="
     assert :binary.match(link, [key]) == {26, 32}
   end
 
   test "gen_token_link with custom unique_id" do
-    {key, link} = ConfirmTools.gen_token_link("fred", :username)
+    {key, link} = Confirm.gen_token_link("fred", :username)
     assert link =~ "username=fred&key="
     assert :binary.match(link, [key]) == {18, 32}
   end

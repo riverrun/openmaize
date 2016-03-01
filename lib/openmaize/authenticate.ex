@@ -1,9 +1,9 @@
 defmodule Openmaize.Authenticate do
   @moduledoc """
-  Plug to authenticate users, using Json Web Tokens.
+  Plug to authenticate users, using JSON Web Tokens.
 
-  For more information about Json Web Tokens, see the documentation for
-  the Openmaize.Token module.
+  For more information about JSON Web Tokens, see the documentation for
+  the Openmaize.JWT module.
 
   It is important to note that this module only checks the identity of
   the user. For authorization / access control, you need to perform
@@ -19,7 +19,7 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
-  import Openmaize.Token.Verify
+  import Openmaize.JWT.Verify
 
   @behaviour Plug
 

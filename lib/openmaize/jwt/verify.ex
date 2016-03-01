@@ -1,10 +1,10 @@
-defmodule Openmaize.Token.Verify do
+defmodule Openmaize.JWT.Verify do
   @moduledoc """
   Module to verify JSON Web Tokens.
   """
 
   import Base
-  import Openmaize.{Pipe, Token.Tools}
+  import Openmaize.{Pipe, JWT.Tools}
 
   @doc """
   Decode the JWT and check that it is valid.
