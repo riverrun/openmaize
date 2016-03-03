@@ -2,15 +2,7 @@ defmodule Openmaize.LoginTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.{Login, Login.Name, TestRepo, User}
-
-  setup_all do
-    user = %{email: "ray@mail.com", username: "ray", role: "user", password: "h4rd2gU3$$",
-            phone: "081555555", confirmed_at: Ecto.DateTime.utc}
-    {:ok, _} = %User{} |> User.auth_changeset(user) |> TestRepo.insert
-
-    :ok
-  end
+  alias Openmaize.{Login, Login.Name}
 
   def call(name, password, uniq, opts) do
     conn(:post, "/login",

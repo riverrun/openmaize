@@ -67,7 +67,7 @@ In the Openmaize.DB module:
 password hash to the changeset.
 * add_confirm_token - add a confirmation token to the changeset.
 
-In the Openmaize.Confirm module:
+In the Openmaize.ConfirmEmail module:
 
 * confirm_email - verify the token that was sent to the user by email.
 * reset_password - like `confirm_email`, verify the token that was sent
