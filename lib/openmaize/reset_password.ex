@@ -40,7 +40,6 @@ defmodule Openmaize.ResetPassword do
   `get "/reset"` request, that is, to render the form to reset the password.
   """
 
-  #use Openmaize.ConfirmEmail
   use Openmaize.Confirm.Base
 
   def call(%Plug.Conn{params: %{"user" =>

@@ -11,7 +11,7 @@ defmodule Openmaize.Confirm.Base do
     quote do
       @behaviour Plug
 
-      import Openmaize.Confirm.Base
+      import unquote(__MODULE__)
 
       @doc false
       def init(opts) do

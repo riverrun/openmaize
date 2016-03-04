@@ -2,7 +2,7 @@ defmodule Openmaize.AuthorizeTest do
   use ExUnit.Case
   use Plug.Test
 
-  import Openmaize.AccessControl
+  alias Openmaize.Authorize
 
   @admin %{id: 2, username: "Big Boss", role: "admin"}
   @user %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
@@ -10,7 +10,7 @@ defmodule Openmaize.AuthorizeTest do
   def call(path, current_user, roles, redirects \\ true) do
     conn(:get, path)
     |> assign(:current_user, current_user)
-    |> authorize([roles: roles, redirects: redirects])
+    |> Authorize.call({roles, redirects})
   end
 
   test "correct token with role admin" do
