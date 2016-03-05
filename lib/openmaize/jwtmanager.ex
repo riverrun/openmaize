@@ -40,6 +40,10 @@ defmodule Openmaize.JWTmanager do
     {:noreply, state}
   end
 
+  def code_change(_old, state, _extra) do
+    {:ok, state}
+  end
+
   defp update_store(store) do
     [MapSet.new | List.delete_at(store, -1)]
   end

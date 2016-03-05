@@ -34,7 +34,7 @@ defmodule Openmaize.AuthenticateTest do
   def call(url, token, _) do
     conn(:get, url)
     |> put_req_header("authorization", "Bearer #{token}")
-    |> Authenticate.call([storage: nil])
+    |> Authenticate.call([])
   end
 
   test "expired token", %{exp_token: exp_token} do
