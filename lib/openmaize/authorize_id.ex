@@ -4,7 +4,7 @@ defmodule Openmaize.AuthorizeId do
   requested page / resource.
 
   This check only performs a check to see if the user id is correct. You will
-  need to use the `authorize` plug to verify the user's role.
+  need to use the `Openmaize.Authorize` plug to verify the user's role.
 
   This function has one option:
 

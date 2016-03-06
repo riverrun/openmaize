@@ -14,8 +14,8 @@ if Code.ensure_loaded?(Ecto) do
 
     * `find_user` - used in Openmaize.Login and Openmaize.ConfirmEmail
     * `user_confirmed` - used in Openmaize.ConfirmEmail
-    * `password_reset` - used in Openmaize.ConfirmEmail
-    * `check_time` - used in Openmaize.ConfirmEmail
+    * `password_reset` - used in Openmaize.ResetPassword
+    * `check_time` - used in Openmaize.ConfirmEmail and Openmaize.ResetPassword
 
     ## User model
 
@@ -40,11 +40,8 @@ if Code.ensure_loaded?(Ecto) do
 
     The `:role` is needed for authorization, and the `:password` and the
     `:password_hash` fields are needed for the `add_password_hash` function
-    in this module (see the documentation for Openmaize.Config for information
-    about changing :password_hash to some other value). Note the addition
-    of `virtual: true` to the definition of the password field. This means
-    that it will not be stored in the database.
-
+    in this module. Note the addition of `virtual: true` to the definition
+    of the password field. This means that it will not be stored in the database.
     """
 
     import Ecto.{Changeset, Query}
@@ -62,6 +59,10 @@ if Code.ensure_loaded?(Ecto) do
 
     @doc """
     Hash the password and add it to the user model or changeset.
+
+    Before the password is hashed, it is checked to make sure that
+    it is not too weak. See the documentation for the Openmaize.Password
+    module for more information about the options available.
 
     This function will return a changeset. If there are any errors, they
     will be added to the changeset.
@@ -162,5 +163,4 @@ if Code.ensure_loaded?(Ecto) do
       {:error, message}
     end
   end
-
 end

@@ -34,6 +34,8 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login, [unique_id: &Openmaize.Login.Name.email_username/1] when action in [:login_user]
 
+  In the examples above, there is no need to write a function for `login_user`
+  in your controller file.
   """
 
   import Plug.Conn
@@ -58,6 +60,7 @@ defmodule Openmaize.Login do
   Handle the login POST request.
 
   If the login is successful, a JSON Web Token will be returned.
+
   If the option `redirects` is set to true, the JWT will be stored in
   a cookie, and the user will be redirected to the page for that
   user's role. If `redirects` is set to false, the JWT will be returned

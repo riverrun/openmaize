@@ -59,5 +59,4 @@ defmodule Openmaize.JWT.Create do
   defp urlenc64(input) do
     input |> url_encode64 |> String.rstrip(?=)
   end
-
 end

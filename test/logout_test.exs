@@ -48,7 +48,7 @@ defmodule Openmaize.LogoutTest do
                         %{"admin" => "/admin", "user" => "/users"})
   end
 
-  test "logout with storage nil and without redirect", %{user_token: user_token} do
+  test "logout with the token stored in the header and without redirect", %{user_token: user_token} do
     conn = call(user_token, nil) |> Logout.call([])
     refute conn.resp_cookies["access_token"]
     assert conn.halted == true

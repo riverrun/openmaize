@@ -34,7 +34,7 @@ defmodule Openmaize.Password do
 
       Openmaize.Password.valid_password?("verylongpassword", [min_length: 16, extra_chars: false])
 
-  The above comman will check that the password is at least 16 characters long and
+  The above command will check that the password is at least 16 characters long and
   will skip the check for punctuation characters or digits.
   """
 

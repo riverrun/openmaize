@@ -3,6 +3,7 @@ defmodule Openmaize.JWTmanager do
 
   @thirty_mins 60_000
   #@thirty_mins 1_800_000
+  #@sixty_mins 3_600_000
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)

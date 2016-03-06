@@ -4,6 +4,8 @@ defmodule Openmaize.Authorize.Base do
 
   This is used by both the Openmaize.Authorize and Openmaize.AuthorizeId
   modules.
+
+  You can also use it to create your own custom module / plug.
   """
 
   @doc false

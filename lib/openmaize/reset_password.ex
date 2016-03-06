@@ -24,13 +24,15 @@ defmodule Openmaize.ResetPassword do
   which contains values for the password, email and key (the email and
   key should be hidden inputs).
 
-  Any password validation needs to be done on the front-end.
+  Before hashing the user's password and adding the hash to the database,
+  it is checked to make sure that it is long enough and, if you have
+  NotQwerty123 installed, not too weak.
 
   ## Examples
 
   First, define a `post "/reset", SomeController, :reset_password` route
-  in the web/router.ex file. Then, in the controller file, `import Openmaize.Confirm`
-  and run the following command:
+  in the web/router.ex file. Then, add the following command to the
+  relevant controller file:
 
       plug Openmaize.ResetPassword, [mail_function: &Mailer.send_receipt/1] when action in [:reset_password]
 

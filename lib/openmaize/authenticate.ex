@@ -1,14 +1,14 @@
 defmodule Openmaize.Authenticate do
   @moduledoc """
-  Plug to authenticate users, using JSON Web Tokens.
+  Authenticate the current user, using JSON Web Tokens.
 
   For more information about JSON Web Tokens, see the documentation for
   the Openmaize.JWT module.
 
   It is important to note that this module only checks the identity of
   the user. For authorization / access control, you need to perform
-  further checks - see the Openmaize.AccessControl module for more
-  information.
+  further checks - see the documentation for the Openmaize.Authorize
+  and Openmaize.AuthorizeId modules for more information.
 
   ## Examples using Phoenix
 
@@ -27,7 +27,7 @@ defmodule Openmaize.Authenticate do
   def init(opts), do: opts
 
   @doc """
-  Authenticate the user using JSON Web Tokens.
+  Authenticate the current user using JSON Web Tokens.
 
   This function checks the token, which is either in a cookie or the
   request headers, and authenticates the user based on the information in

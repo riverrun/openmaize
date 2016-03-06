@@ -22,8 +22,7 @@ defmodule Openmaize.ConfirmEmail do
   ## Examples
 
   First, define a `get "/confirm"` route in the web/router.ex file.
-  Then, in the controller file, `import Openmaize.Confirm` and run the
-  following command:
+  Then, add the following command to the relevant controller file:
 
       plug Openmaize.ConfirmEmail, [mail_function: &Mailer.send_receipt/1] when action in [:confirm]
 

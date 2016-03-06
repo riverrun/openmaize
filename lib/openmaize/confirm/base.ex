@@ -4,6 +4,8 @@ defmodule Openmaize.Confirm.Base do
 
   This is used by both the Openmaize.Confirm and Openmaize.ResetPassword
   modules.
+
+  You can also use it to create your own custom module / plug.
   """
 
   @doc false
@@ -40,9 +42,10 @@ defmodule Openmaize.Confirm.Base do
   @doc """
   Check the user key and, if necessary, the user password.
 
-  If this function is successful, the database will be updated. If there
-  is an error, the user will either be redirected to the `failure` page
-  or be sent a json-encoded error message.
+  If this function is successful, the database will be updated, and the
+  user will be redirected to the `success` page or sent a json-encoded
+  message. If there is an error, the user will be redirected to the `failure`
+  page or be sent a json-encoded error message.
   """
   def check_user_key(conn, user_params, key, password,
                       {key_expiry, uniq, mail_func, redirects}) do
