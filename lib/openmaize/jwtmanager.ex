@@ -1,6 +1,8 @@
 defmodule Openmaize.JWTmanager do
   use GenServer
 
+  alias Openmaize.Config
+
   @thirty_mins 60_000
   #@thirty_mins 1_800_000
   #@sixty_mins 3_600_000
@@ -50,7 +52,12 @@ defmodule Openmaize.JWTmanager do
   end
 
   defp create_subsets do
-    num = div(Openmaize.Config.token_validity, 30) + 1
+    num = get_numsets(Config.token_validity, 30)
     for _ <- 1..num, do: MapSet.new
+  end
+
+  defp get_numsets(exp, setexp) do
+    floor = div(exp, setexp)
+    floor + (rem(exp, setexp) - floor > 0 and 2 || 1)
   end
 end

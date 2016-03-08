@@ -36,7 +36,7 @@ defmodule Openmaize.Confirm.Base do
 
   import Plug.Conn
   import Comeonin.Tools
-  import Openmaize.{Pipe, Redirect}
+  import Openmaize.Redirect
   alias Openmaize.Config
 
   @doc """
@@ -48,13 +48,15 @@ defmodule Openmaize.Confirm.Base do
   page or be sent a json-encoded error message.
   """
   def check_user_key(conn, user_params, key, password,
-                      {key_expiry, uniq, mail_func, redirects}) do
-    user_id = Map.get(user_params, to_string(uniq))
-    error_pipe(user_id
-                |> URI.decode_www_form
-                |> Config.db_module.find_user(uniq)
-                |> check_key(key, key_expiry * 60, password))
-    |> finalize(conn, user_id, mail_func, redirects)
+                     {key_expiry, uniq, mail_func, redirects}) do
+    case Map.get(user_params, to_string(uniq)) do
+      nil -> finalize(nil, conn, nil, mail_func, redirects)
+      user_id ->
+        URI.decode_www_form(user_id)
+        |> Config.db_module.find_user(uniq)
+        |> check_key(key, key_expiry * 60, password)
+        |> finalize(conn, user_id, mail_func, redirects)
+    end
   end
 
   @doc """
