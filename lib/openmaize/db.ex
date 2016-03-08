@@ -98,7 +98,7 @@ if Code.ensure_loaded?(Ecto) do
     end
 
     @doc """
-    Add a reset token to the user model and update the database.
+    Add a reset token to the user model or changeset.
 
     Add the following two entries to your user schema:
 
@@ -110,7 +110,6 @@ if Code.ensure_loaded?(Ecto) do
     """
     def add_reset_token(user, key) do
       change(user, %{reset_token: key, reset_sent_at: Ecto.DateTime.utc})
-      |> Config.repo.update
     end
 
     @doc """
