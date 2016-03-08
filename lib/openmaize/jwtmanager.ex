@@ -3,16 +3,15 @@ defmodule Openmaize.JWTmanager do
 
   alias Openmaize.Config
 
-  @thirty_mins 60_000
   #@thirty_mins 1_800_000
-  #@sixty_mins 3_600_000
+  @sixty_mins 3_600_000
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def init([]) do
-    Process.send_after(self, :clean, @thirty_mins)
+    Process.send_after(self, :clean, @sixty_mins)
     {:ok, %{jwtstore: create_subsets}}
   end
 
@@ -35,7 +34,7 @@ defmodule Openmaize.JWTmanager do
 
   def handle_info(:clean, %{jwtstore: store}) do
     store = update_store(store)
-    Process.send_after(self, :clean, @thirty_mins)
+    Process.send_after(self, :clean, @sixty_mins)
     {:noreply, %{jwtstore: store}}
   end
 
@@ -52,7 +51,7 @@ defmodule Openmaize.JWTmanager do
   end
 
   defp create_subsets do
-    num = get_numsets(Config.token_validity, 30)
+    num = get_numsets(Config.token_validity, 60)
     for _ <- 1..num, do: MapSet.new
   end
 
