@@ -40,10 +40,9 @@ defmodule Openmaize.Confirm.Base do
   @doc """
   Check the user key and, if necessary, the user password.
 
-  If this function is successful, the database will be updated, and the
-  user will be redirected to the `success` page or sent a json-encoded
-  message. If there is an error, the user will be redirected to the `failure`
-  page or be sent a json-encoded error message.
+  If this function is successful, the database will be updated, and an
+  `openmaize_info` message will be added to the conn. If there is an error,
+  an `openmaize_error` message will be added to the conn.
   """
   def check_user_key(conn, user_params, key, password,
                      {key_expiry, uniq, mail_func}) do
@@ -61,8 +60,7 @@ defmodule Openmaize.Confirm.Base do
   Error message in the case of an invalid link.
   """
   def invalid_link_error(conn) do
-    #resp(conn, 401, %{"error" => "Invalid link"}) |> halt()
-    put_private(conn, :openmaize_info, %{"error" => "Invalid link"})
+    put_private(conn, :openmaize_info, "Invalid link")
   end
 
   defp check_key(nil, _, _, _), do: false
@@ -79,12 +77,9 @@ defmodule Openmaize.Confirm.Base do
 
   defp finalize({:ok, user}, conn, _, mail_func) do
     mail_func && mail_func.(user.email)
-    put_private(conn, :openmaize_info, %{"info" => "Account successfully confirmed"})
-    #resp(conn, 200, Poison.encode!(%{"info" => "Account successfully confirmed"})) |> halt()
+    put_private(conn, :openmaize_info, "Account successfully confirmed")
   end
   defp finalize(_, conn, user_id, _) do
-    put_private(conn, :openmaize_info, %{"error" => "Confirmation for #{user_id} failed"})
-    #resp(conn, 401, Poison.encode!(%{"error" => "Confirmation for #{user_id} failed"}))
-    #|> halt()
+    put_private(conn, :openmaize_error, "Confirmation for #{user_id} failed")
   end
 end

@@ -77,7 +77,6 @@ defmodule Openmaize.Login do
     add_token(conn, user, opts)
   end
   defp handle_auth(_, conn, {_, _}) do
-    #resp(conn, 401, Poison.encode!(%{"error" => "Invalid credentials"})) |> halt()
-    put_private(conn, :openmaize_info, %{"error" => "Invalid credentials"})
+    put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

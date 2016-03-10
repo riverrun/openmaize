@@ -22,18 +22,6 @@ defmodule Openmaize.ResetPasswordTest do
     |> ResetPassword.call(opts)
   end
 
-  def redirect_home(conn) do
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "/"}
-    assert conn.status == 302
-  end
-
-  def redirect_login(conn) do
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "/login"}
-    assert conn.status == 302
-  end
-
   def password_changed(password) do
     user = TestRepo.get_by(User, email: "dim@mail.com")
     Bcrypt.checkpw(password, user.password_hash)
@@ -41,15 +29,13 @@ defmodule Openmaize.ResetPasswordTest do
 
   test "reset password succeeds" do
     password = "my N1pples expl0de with the light!"
-    conn = call_reset(password, {120, :email, nil, %{success: "/login", failure: "/"}})
-    redirect_login(conn)
+    conn = call_reset(password, {120, :email, nil})
     assert password_changed(password)
   end
 
   test "reset password fails with expired token" do
     password = "C'est bon, la vie"
-    conn = call_reset(password, {0, :email, nil, %{success: "/login", failure: "/"}})
-    redirect_home(conn)
+    conn = call_reset(password, {0, :email, nil})
     refute password_changed(password)
   end
 
@@ -57,8 +43,7 @@ defmodule Openmaize.ResetPasswordTest do
     user = TestRepo.get_by(User, email: "dim@mail.com")
     change(user, %{reset_sent_at: nil})
     |> Openmaize.Config.repo.update
-    conn = call_reset("password", {120, :email, nil, %{success: "/login", failure: "/"}})
-    redirect_home(conn)
+    conn = call_reset("password", {120, :email, nil})
   end
 
 end

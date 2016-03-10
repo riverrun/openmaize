@@ -23,56 +23,38 @@ defmodule Openmaize.ConfirmEmailTest do
     |> ConfirmEmail.call(opts)
   end
 
-  def redirect_home(conn) do
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "/"}
-    assert conn.status == 302
-  end
-
-  def redirect_login(conn) do
-    assert List.keyfind(conn.resp_headers, "location", 0) ==
-      {"location", "/login"}
-    assert conn.status == 302
-  end
-
   def user_confirmed do
     user = TestRepo.get_by(User, email: "fred@mail.com")
     user.confirmed_at
   end
 
   test "confirmation succeeds for valid token" do
-    conn = call_confirm(@valid_link, {120, :email, nil, %{success: "/login", failure: "/"}})
-    redirect_login(conn)
+    conn = call_confirm(@valid_link, {120, :email, nil})
     assert user_confirmed
   end
 
   test "confirmation fails for invalid token" do
-    conn = call_confirm(@invalid_link, {120, :email, nil, %{success: "/login", failure: "/"}})
-    redirect_home(conn)
+    conn = call_confirm(@invalid_link, {120, :email, nil})
     refute user_confirmed
   end
 
   test "confirmation fails for expired token" do
-    conn = call_confirm(@valid_link, {0, :email, nil, %{success: "/login", failure: "/"}})
-    redirect_home(conn)
+    conn = call_confirm(@valid_link, {0, :email, nil})
     refute user_confirmed
   end
 
   test "invalid link error" do
-    conn = call_confirm(@incomplete_link, {120, :email, nil, %{success: "/login", failure: "/"}})
-    redirect_home(conn)
+    conn = call_confirm(@incomplete_link, {120, :email, nil})
     refute user_confirmed
   end
 
   test "confirmation succeeds with different unique id" do
-    conn = call_confirm(@name_link, {120, :username, nil, %{success: "/login", failure: "/"}})
-    redirect_login(conn)
+    conn = call_confirm(@name_link, {120, :username, nil})
     assert user_confirmed
   end
 
   test "confirmation fails when query fails" do
-    conn = call_confirm("key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw", {120, :email, nil, %{success: "/login", failure: "/"}})
-    redirect_home(conn)
+    conn = call_confirm("key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw", {120, :email, nil})
     refute user_confirmed
   end
 

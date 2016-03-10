@@ -45,6 +45,5 @@ defmodule Openmaize.JWT do
   def add_token(conn, user, {nil, uniq}) do
     {:ok, token} = generate_token(user, uniq, {0, Config.token_validity})
     resp(conn, 200, ~s({"access_token": "#{token}"}))
-    #|> halt()
   end
 end

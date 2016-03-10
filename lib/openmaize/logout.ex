@@ -36,8 +36,8 @@ defmodule Openmaize.Logout do
   def call(%Plug.Conn{req_cookies: %{"access_token" => token}} = conn, _opts) do
     JWTmanager.add_jwt(token)
     assign(conn, :current_user, nil)
-    |> delete_resp_cookie(conn, "access_token")
-    |> put_private(:openmaize_info, %{"info" => "You have been logged out"})
+    |> delete_resp_cookie("access_token")
+    |> put_private(:openmaize_info, "You have been logged out")
   end
   def call(%Plug.Conn{req_headers: headers} = conn, _opts) do
     case List.keyfind(headers, "authorization", 0) do
@@ -45,6 +45,6 @@ defmodule Openmaize.Logout do
       nil -> nil
     end
     assign(conn, :current_user, nil)
-    |> put_private(:openmaize_info, %{"info" => "You have been logged out"})
+    |> put_private(:openmaize_info, "You have been logged out")
   end
 end
