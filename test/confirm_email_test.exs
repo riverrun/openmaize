@@ -31,31 +31,37 @@ defmodule Openmaize.ConfirmEmailTest do
   test "confirmation succeeds for valid token" do
     conn = call_confirm(@valid_link, {120, :email, nil})
     assert user_confirmed
+    assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "confirmation fails for invalid token" do
     conn = call_confirm(@invalid_link, {120, :email, nil})
     refute user_confirmed
+    assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "confirmation fails for expired token" do
     conn = call_confirm(@valid_link, {0, :email, nil})
     refute user_confirmed
+    assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "invalid link error" do
     conn = call_confirm(@incomplete_link, {120, :email, nil})
     refute user_confirmed
+    assert conn.private.openmaize_error =~ "Invalid link"
   end
 
   test "confirmation succeeds with different unique id" do
     conn = call_confirm(@name_link, {120, :username, nil})
     assert user_confirmed
+    assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "confirmation fails when query fails" do
     conn = call_confirm("key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw", {120, :email, nil})
     refute user_confirmed
+    assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "gen_token_link" do

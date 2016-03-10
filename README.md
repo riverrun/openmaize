@@ -54,24 +54,25 @@ It provides the following functionality:
 
 In the Openmaize.AccessControl module:
 
-* authorize - verify that the user, based on user role, is authorized to
+* :authorize - verify that the user, based on user role, is authorized to
 access the requested page.
-* authorize_id - verify that the user, based on the user id, is authorized to
+* :authorize_id - verify that the user, based on the user id, is authorized to
 access the requested page.
 
-### User creation helper functions
+## Email confirmation and password resetting
+
+* Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
+* Openmaize.ResetPassword - verify the token that was sent to the user by email,
+but this time so that the user's password can be reset.
+
+## Various helper functions
 
 In the Openmaize.DB module:
 
 * add_password_hash - take an Ecto changeset, hash the password and add the
 password hash to the changeset.
 * add_confirm_token - add a confirmation token to the changeset.
-
-In the Openmaize.ConfirmEmail module:
-
-* confirm_email - verify the token that was sent to the user by email.
-* reset_password - like `confirm_email`, verify the token that was sent
-to the user by email, but this time so that the user's password can be reset.
+* add_reset_token - add a reset token to the changeset.
 
 See the relevant module documentation for more details.
 

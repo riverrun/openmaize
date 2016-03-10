@@ -60,7 +60,7 @@ defmodule Openmaize.Confirm.Base do
   Error message in the case of an invalid link.
   """
   def invalid_link_error(conn) do
-    put_private(conn, :openmaize_info, "Invalid link")
+    put_private(conn, :openmaize_error, "Invalid link")
   end
 
   defp check_key(nil, _, _, _), do: false

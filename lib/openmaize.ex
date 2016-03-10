@@ -12,9 +12,11 @@ defmodule Openmaize do
 
   ## Authorization
 
-  * Openmaize.Authorize - verify that the user, based on user role, is authorized to
+  In the Openmaize.AccessControl module:
+
+  * :authorize - verify that the user, based on user role, is authorized to
   access the requested page.
-  * Openmaize.AuthorizeId - verify that the user, based on the user id, is authorized to
+  * :authorize_id - verify that the user, based on the user id, is authorized to
   access the requested page.
 
   ## Email confirmation and password resetting

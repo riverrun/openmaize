@@ -40,10 +40,13 @@ defmodule Openmaize.JWT do
   def add_token(conn, user, {:cookie, uniq}) do
     {:ok, token} = generate_token(user, uniq, {0, Config.token_validity})
     conn
+    |> put_private(:openmaize_info, "You have been logged in")
     |> put_resp_cookie("access_token", token, [http_only: true])
   end
   def add_token(conn, user, {nil, uniq}) do
     {:ok, token} = generate_token(user, uniq, {0, Config.token_validity})
-    resp(conn, 200, ~s({"access_token": "#{token}"}))
+    conn
+    |> put_private(:openmaize_info, "You have been logged in")
+    |> resp(200, ~s({"access_token": "#{token}"}))
   end
 end

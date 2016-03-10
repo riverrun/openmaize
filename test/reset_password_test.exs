@@ -31,12 +31,14 @@ defmodule Openmaize.ResetPasswordTest do
     password = "my N1pples expl0de with the light!"
     conn = call_reset(password, {120, :email, nil})
     assert password_changed(password)
+    assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "reset password fails with expired token" do
     password = "C'est bon, la vie"
     conn = call_reset(password, {0, :email, nil})
     refute password_changed(password)
+    assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "reset password fails when reset_sent_at is nil" do
@@ -44,6 +46,7 @@ defmodule Openmaize.ResetPasswordTest do
     change(user, %{reset_sent_at: nil})
     |> Openmaize.Config.repo.update
     conn = call_reset("password", {120, :email, nil})
+    assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
 end

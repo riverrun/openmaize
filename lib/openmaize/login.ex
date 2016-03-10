@@ -31,7 +31,19 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login, [unique_id: &Openmaize.Login.Name.email_username/1] when action in [:login_user]
 
-  # add example `login_user` function - pattern match on cookie or body (where token is)
+  and the `login_user` function could be written like this:
+
+      def login_user(%Plug.Conn{private: %{openmaize_error: message}} = conn, _opts) do
+        conn
+        |> put_flash(:error, message)
+        |> redirect(to: page_path(:index)
+      end
+      def login_user(%Plug.Conn{private: %{openmaize_info: message}} = conn, _opts) do
+        conn
+        |> put_flash(:info, message)
+        |> redirect(to: user_path(:index)
+      end
+
   """
 
   import Plug.Conn
