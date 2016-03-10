@@ -22,8 +22,8 @@ defmodule Openmaize.DBTest do
 
   test "add_reset_token" do
     user = Map.merge(%User{},
-    %{email: "reg@mail.com", username: "reg", role: "user", password: "h4rd2gU3$$",
-      phone: "081755555", confirmed_at: Ecto.DateTime.utc})
+                     %{email: "reg@mail.com", username: "reg", role: "user", password: "h4rd2gU3$$",
+                       phone: "081755555", confirmed_at: Ecto.DateTime.utc})
     changeset = DB.add_reset_token(user, "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw")
     assert changeset.changes.reset_token
     assert changeset.changes.reset_sent_at

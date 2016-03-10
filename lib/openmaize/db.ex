@@ -125,8 +125,6 @@ if Code.ensure_loaded?(Ecto) do
 
     If the update is successful, the reset_token and reset_sent_at
     values will be set to nil.
-
-    This function is used by the Openmaize.ConfirmEmail module.
     """
     def password_reset(user, password) do
       Password.valid_password?(password, Config.password_strength)
