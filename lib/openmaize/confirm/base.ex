@@ -19,8 +19,7 @@ defmodule Openmaize.Confirm.Base do
       def init(opts) do
         {Keyword.get(opts, :key_expires_after, 120),
          Keyword.get(opts, :unique_id, :email),
-         Keyword.get(opts, :mail_function),
-         Keyword.get(opts, :redirects, %{success: "/login", failure: "/"})}
+         Keyword.get(opts, :mail_function)}
       end
 
       @doc false
@@ -28,7 +27,7 @@ defmodule Openmaize.Confirm.Base do
       when byte_size(key) == 32 do
         check_user_key(conn, user_params, key, :nopassword, opts)
       end
-      def call(conn, {_, _, _, redirects}), do: invalid_link_error(conn, redirects)
+      def call(conn, {_, _, _}), do: invalid_link_error(conn)
 
       defoverridable [init: 1, call: 2]
     end
@@ -36,7 +35,6 @@ defmodule Openmaize.Confirm.Base do
 
   import Plug.Conn
   import Comeonin.Tools
-  import Openmaize.Redirect
   alias Openmaize.Config
 
   @doc """
@@ -48,25 +46,23 @@ defmodule Openmaize.Confirm.Base do
   page or be sent a json-encoded error message.
   """
   def check_user_key(conn, user_params, key, password,
-                     {key_expiry, uniq, mail_func, redirects}) do
+                     {key_expiry, uniq, mail_func}) do
     case Map.get(user_params, to_string(uniq)) do
-      nil -> finalize(nil, conn, nil, mail_func, redirects)
+      nil -> finalize(nil, conn, nil, mail_func)
       user_id ->
         URI.decode_www_form(user_id)
         |> Config.db_module.find_user(uniq)
         |> check_key(key, key_expiry * 60, password)
-        |> finalize(conn, user_id, mail_func, redirects)
+        |> finalize(conn, user_id, mail_func)
     end
   end
 
   @doc """
   Error message in the case of an invalid link.
   """
-  def invalid_link_error(conn, %{failure: fail_path}) do
-    redirect_to(conn, fail_path, %{"error" => "Invalid link"})
-  end
-  def invalid_link_error(conn, _) do
-    send_resp(conn, 401, %{"error" => "Invalid link"}) |> halt()
+  def invalid_link_error(conn) do
+    #resp(conn, 401, %{"error" => "Invalid link"}) |> halt()
+    put_private(conn, :openmaize_info, %{"error" => "Invalid link"})
   end
 
   defp check_key(nil, _, _, _), do: false
@@ -81,19 +77,14 @@ defmodule Openmaize.Confirm.Base do
     Config.db_module.password_reset(user, password)
   end
 
-  defp finalize({:ok, user}, conn, _, mail_func, false) do
+  defp finalize({:ok, user}, conn, _, mail_func) do
     mail_func && mail_func.(user.email)
-    send_resp(conn, 200, Poison.encode!(%{"info" => "Account successfully confirmed"})) |> halt()
+    put_private(conn, :openmaize_info, %{"info" => "Account successfully confirmed"})
+    #resp(conn, 200, Poison.encode!(%{"info" => "Account successfully confirmed"})) |> halt()
   end
-  defp finalize({:ok, user}, conn, _, mail_func, %{success: success_path}) do
-    mail_func && mail_func.(user.email)
-    redirect_to(conn, success_path, %{"info" => "Account successfully confirmed"})
-  end
-  defp finalize(_, conn, user_id, _, false) do
-    send_resp(conn, 401, Poison.encode!(%{"error" => "Confirmation for #{user_id} failed"}))
-    |> halt()
-  end
-  defp finalize(_, conn, user_id, _, %{failure: fail_path}) do
-    redirect_to(conn, fail_path, %{"error" => "Confirmation for #{user_id} failed"})
+  defp finalize(_, conn, user_id, _) do
+    put_private(conn, :openmaize_info, %{"error" => "Confirmation for #{user_id} failed"})
+    #resp(conn, 401, Poison.encode!(%{"error" => "Confirmation for #{user_id} failed"}))
+    #|> halt()
   end
 end

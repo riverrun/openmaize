@@ -4,7 +4,8 @@ defmodule Openmaize.Login do
 
   There are two options:
 
-  * redirects - if true, which is the default, redirect on login and store the token in a cookie
+  * storage - store the token in a cookie, which is the default, or not have Openmaize handle the storage
+    * if you are developing an api or want to store the token in sessionStorage, set storage to nil
   * unique_id - the name which is used to identify the user (in the database)
     * the default is `:username`
     * this can also be a function which checks the user input and returns an atom
@@ -21,10 +22,6 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login when action in [:login_user]
 
-  If you do not want Openmaize to handle redirects:
-
-      plug Openmaize.Login, [redirects: false] when action in [:login_user]
-
   If you want to use `email` to identify the user:
 
       plug Openmaize.Login, [unique_id: :email] when action in [:login_user]
@@ -34,26 +31,17 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login, [unique_id: &Openmaize.Login.Name.email_username/1] when action in [:login_user]
 
-  In the examples above, there is no need to write a function for `login_user`
-  in your controller file.
+  # add example `login_user` function - pattern match on cookie or body (where token is)
   """
 
   import Plug.Conn
-  import Openmaize.{JWT, Redirect}
+  import Openmaize.JWT
   alias Openmaize.Config
 
   @behaviour Plug
 
   def init(opts) do
-    if Keyword.has_key?(opts, :storage) do
-      IO.write :stderr, "warning: calling Openmaize.Login with the 'storage: nil' " <>
-      "argument is deprecated, please use 'redirects: false' instead.\n"
-    end
-    {redirects, storage} = case Keyword.get(opts, :redirects, true) do
-                             true -> {false, nil}
-                             false -> {true, :cookie}
-                           end
-    {redirects, storage, Keyword.get(opts, :unique_id, :username)}
+    {Keyword.get(opts, :storage, :cookie), Keyword.get(opts, :unique_id, :username)}
   end
 
   @doc """
@@ -61,17 +49,15 @@ defmodule Openmaize.Login do
 
   If the login is successful, a JSON Web Token will be returned.
 
-  If the option `redirects` is set to true, the JWT will be stored in
-  a cookie, and the user will be redirected to the page for that
-  user's role. If `redirects` is set to false, the JWT will be returned
+  The JWT will be either stored in a cookie, or it will be returned
   in the body of the response.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {redirects, storage, uniq_id}) do
+           {storage, uniq_id}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
-    |> handle_auth(conn, {redirects, storage, uniq})
+    |> handle_auth(conn, {storage, uniq})
   end
 
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
@@ -90,10 +76,8 @@ defmodule Openmaize.Login do
   defp handle_auth({:ok, user}, conn, opts) do
     add_token(conn, user, opts)
   end
-  defp handle_auth(_, conn, {true, _, _}) do
-    redirect_to(conn, "#{Config.redirect_pages["login"]}", %{"error" => "Invalid credentials"})
-  end
-  defp handle_auth(_, conn, {false, _, _}) do
-    send_resp(conn, 401, Poison.encode!(%{"error" => "Invalid credentials"})) |> halt()
+  defp handle_auth(_, conn, {_, _}) do
+    #resp(conn, 401, Poison.encode!(%{"error" => "Invalid credentials"})) |> halt()
+    put_private(conn, :openmaize_info, %{"error" => "Invalid credentials"})
   end
 end

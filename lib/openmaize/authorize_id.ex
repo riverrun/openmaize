@@ -6,10 +6,6 @@ defmodule Openmaize.AuthorizeId do
   This check only performs a check to see if the user id is correct. You will
   need to use the `Openmaize.Authorize` plug to verify the user's role.
 
-  This function has one option:
-
-  * redirects - if true, which is the default, redirect if there is an error
-
   ## Examples with Phoenix
 
   In each of the following examples, the `plug` command needs to be added
@@ -19,10 +15,6 @@ defmodule Openmaize.AuthorizeId do
 
       plug Openmaize.AuthorizeId, when action in [:show, :edit]
 
-  The same command, but with `redirects` set to false:
-
-      plug Openmaize.AuthorizeId, [redirects: false] when action in [:show, :edit]
-
   """
 
   use Openmaize.Authorize.Base
@@ -30,8 +22,8 @@ defmodule Openmaize.AuthorizeId do
   @doc false
   def call(%Plug.Conn{params: %{"id" => id},
                       assigns: %{current_user: current_user}} = conn,
-           {_roles, redirects}) do
-    id_check(conn, redirects, id, current_user)
+           {_roles}) do
+    id_check(conn, id, current_user)
   end
 
 end

@@ -6,6 +6,9 @@ defmodule Openmaize.Authorize.Base do
   modules.
 
   You can also use it to create your own custom module / plug.
+
+  # MAYBE move this back to the access_control module
+  # or maybe remove authorization completely - just give examples
   """
 
   @doc false
@@ -17,7 +20,7 @@ defmodule Openmaize.Authorize.Base do
 
       @doc false
       def init(opts) do
-        {Keyword.get(opts, :roles, []), Keyword.get(opts, :redirects, true)}
+        Keyword.get(opts, :roles, [])
       end
 
       @doc false
@@ -30,47 +33,39 @@ defmodule Openmaize.Authorize.Base do
   end
 
   import Plug.Conn
-  import Openmaize.Redirect
-  alias Openmaize.Config
 
   @doc """
   Check the current user's role is in the list of allowed roles.
   """
-  def full_check(_conn, {[], _}, _) do
+  def full_check(_conn, [], _) do
     raise ArgumentError, "You need to set the `roles` option for :authorize"
   end
-  def full_check(conn, {_, redirects}, nil), do: nouser_error(conn, redirects)
-  def full_check(conn, {roles, redirects}, %{role: role}) do
-    if role in roles, do: conn, else: nopermit_error(conn, role, redirects)
+  def full_check(conn, _, nil), do: nouser_error(conn)
+  def full_check(conn, roles, %{role: role}) do
+    if role in roles, do: conn, else: nopermit_error(conn, role)
   end
 
   @doc """
   Check that the id matches the current user's id.
   """
-  def id_check(conn, redirects, _id, nil), do: nouser_error(conn, redirects)
-  def id_check(conn, redirects, id, current_user) do
+  def id_check(conn, _id, nil), do: nouser_error(conn)
+  def id_check(conn, id, current_user) do
     if id == to_string(current_user.id) do
       conn
     else
-      nopermit_error(conn, current_user.role, redirects)
+      nopermit_error(conn, current_user.role)
     end
   end
 
-  defp nouser_error(%Plug.Conn{request_path: path} = conn, true) do
-    message = %{"error" => "You have to be logged in to view #{path}"}
-    redirect_to(conn, "#{Config.redirect_pages["login"]}", message)
-  end
-  defp nouser_error(%Plug.Conn{request_path: path} = conn, false) do
+  defp nouser_error(%Plug.Conn{request_path: path} = conn) do
     message = "You have to be logged in to view #{path}"
-    send_resp(conn, 401, Poison.encode!(message)) |> halt()
+    put_private(conn, :openmaize_info, message)
+    #resp(conn, 401, Poison.encode!(message)) |> halt()
   end
 
-  defp nopermit_error(%Plug.Conn{request_path: path} = conn, role, true) do
+  defp nopermit_error(%Plug.Conn{request_path: path} = conn, _role) do
     message = %{"error" => "You do not have permission to view #{path}"}
-    redirect_to(conn, "#{Config.redirect_pages[role]}", message)
-  end
-  defp nopermit_error(%Plug.Conn{request_path: path} = conn, _role, false) do
-    message = %{"error" => "You do not have permission to view #{path}"}
-    send_resp(conn, 403, Poison.encode!(message)) |> halt()
+    put_private(conn, :openmaize_info, message)
+    #resp(conn, 403, Poison.encode!(message)) |> halt()
   end
 end

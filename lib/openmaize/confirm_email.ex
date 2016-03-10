@@ -14,10 +14,6 @@ defmodule Openmaize.ConfirmEmail do
   * unique_id - the identifier in the query string, or the parameters
     * the default is :email
   * mail_function - the emailing function that you need to define
-  * redirects - if Openmaize will handle redirects or not
-    * this should be a map containing a `success` key with path and a `failure`
-    key with path, for example, %{success: "/login", failure: "/"}, or false
-    * the default is %{success: "/login", failure: "/"}
 
   ## Examples
 
@@ -27,7 +23,8 @@ defmodule Openmaize.ConfirmEmail do
       plug Openmaize.ConfirmEmail, [mail_function: &Mailer.send_receipt/1] when action in [:confirm]
 
   This command will be run when the user accesses the `confirm` route.
-  There is no need to write a confirm function in your controller.
+
+  # add example `confirm` function
   """
 
   use Openmaize.Confirm.Base

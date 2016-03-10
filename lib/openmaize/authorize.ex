@@ -7,7 +7,6 @@ defmodule Openmaize.Authorize do
   This function has two options:
 
   * roles - a list of permitted roles
-  * redirects - if true, which is the default, redirect if there is an error
 
   ## Examples with Phoenix
 
@@ -22,11 +21,6 @@ defmodule Openmaize.Authorize do
   (this means that the other pages are unprotected):
 
       plug Openmaize.Authorize, [roles: ["admin"]] when action in [:create, :update]
-
-  To allow users with the role "admin" or "user" to access pages, and set
-  redirects to false (this example protects every page except the index page):
-
-      plug Openmaize.Authorize, [roles: ["admin", "user"], redirects: false] when not action in [:index]
 
   To allow users with the role "admin" or "user" to access the index, but
   only allow those users with the role "admin" to access the other pages.

@@ -11,10 +11,6 @@ defmodule Openmaize.ResetPassword do
   * unique_id - the identifier in the query string, or the parameters
     * the default is :email
   * mail_function - the emailing function that you need to define
-  * redirects - if Openmaize will handle redirects or not
-    * this should be a map containing a `success` key with path and a `failure`
-    key with path, for example, %{success: "/login", failure: "/"}, or false
-    * the default is %{success: "/login", failure: "/"}
 
   ## Reset password form
 
@@ -37,9 +33,10 @@ defmodule Openmaize.ResetPassword do
       plug Openmaize.ResetPassword, [mail_function: &Mailer.send_receipt/1] when action in [:reset_password]
 
   This command will be run when the user sends the form with the data to
-  reset the password. There is no need to write a reset_password function
-  in your controller, but you will need to write a function to handle the
+  reset the password. You will need to write a function to handle the
   `get "/reset"` request, that is, to render the form to reset the password.
+
+  # add example `reset_password` function
   """
 
   use Openmaize.Confirm.Base
@@ -49,5 +46,5 @@ defmodule Openmaize.ResetPassword do
   when byte_size(key) == 32 do
     check_user_key(conn, user_params, key, password, opts)
   end
-  def call(conn, {_, _, _, redirects}), do: invalid_link_error(conn, redirects)
+  def call(conn, {_, _, _}), do: invalid_link_error(conn)
 end

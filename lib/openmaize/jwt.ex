@@ -28,7 +28,7 @@ defmodule Openmaize.JWT do
   """
 
   import Plug.Conn
-  import Openmaize.{JWT.Create, Redirect}
+  import Openmaize.JWT.Create
   alias Openmaize.Config
 
   @doc """
@@ -37,16 +37,14 @@ defmodule Openmaize.JWT do
   The token is then either stored in a cookie or sent in the body of the
   response.
   """
-  def add_token(conn, %{role: role} = user, {true, :cookie, uniq}) do
+  def add_token(conn, user, {:cookie, uniq}) do
     {:ok, token} = generate_token(user, uniq, {0, Config.token_validity})
     conn
     |> put_resp_cookie("access_token", token, [http_only: true])
-    |> redirect_to("#{Config.redirect_pages[role]}",
-                   %{"info" => "You have been logged in"})
   end
-  def add_token(conn, user, {false, nil, uniq}) do
+  def add_token(conn, user, {nil, uniq}) do
     {:ok, token} = generate_token(user, uniq, {0, Config.token_validity})
-    send_resp(conn, 200, ~s({"access_token": "#{token}"}))
-    |> halt()
+    resp(conn, 200, ~s({"access_token": "#{token}"}))
+    #|> halt()
   end
 end
