@@ -8,9 +8,8 @@ process.
 
 ## Features
 
-* checks for login / logout pages and handles these calls
+* handles login / logout
 * authenticates users using JSON Web Tokens
-* checks to see if the user is allowed (authorized) to access the page / resource
 * provides excellent documentation
 * is framework-agnostic
 * is lightweight

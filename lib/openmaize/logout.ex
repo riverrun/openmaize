@@ -20,14 +20,6 @@ defmodule Openmaize.Logout do
 
       plug Openmaize.Logout when action in [:logout]
 
-  and the `logout` function could be written like this:
-
-      def logout(%Plug.Conn{private: %{openmaize_info: message}} = conn, _opts) do
-        conn
-        |> put_flash(:info, message)
-        |> redirect(to: page_path(:index)
-      end
-
   """
 
   import Plug.Conn

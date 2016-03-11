@@ -1,6 +1,6 @@
 defmodule Openmaize do
   @moduledoc """
-  Openmaize is an authentication / authorization library for Elixir.
+  Openmaize is an authentication library for Elixir.
 
   It provides the following functionality:
 
@@ -9,15 +9,6 @@ defmodule Openmaize do
   * Openmaize.Authenticate - authenticate the user, using JSON Web Tokens.
   * Openmaize.Login - handle login POST requests.
   * Openmaize.Logout - handle logout requests.
-
-  ## Authorization
-
-  In the Openmaize.AccessControl module:
-
-  * :authorize - verify that the user, based on user role, is authorized to
-  access the requested page.
-  * :authorize_id - verify that the user, based on the user id, is authorized to
-  access the requested page.
 
   ## Email confirmation and password resetting
 

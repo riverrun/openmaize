@@ -7,8 +7,7 @@ defmodule Openmaize.Authenticate do
 
   It is important to note that this module only checks the identity of
   the user. For authorization / access control, you need to perform
-  further checks - see the documentation for the Openmaize.Authorize
-  and Openmaize.AuthorizeId modules for more information.
+  further checks.
 
   ## Examples using Phoenix
 

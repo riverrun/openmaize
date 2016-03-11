@@ -36,12 +36,12 @@ defmodule Openmaize.Login do
       def login_user(%Plug.Conn{private: %{openmaize_error: message}} = conn, _opts) do
         conn
         |> put_flash(:error, message)
-        |> redirect(to: page_path(:index)
+        |> redirect(to: page_path(conn, :index)
       end
       def login_user(%Plug.Conn{private: %{openmaize_info: message}} = conn, _opts) do
         conn
         |> put_flash(:info, message)
-        |> redirect(to: user_path(:index)
+        |> redirect(to: user_path(conn, :index)
       end
 
   """
