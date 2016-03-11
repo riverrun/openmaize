@@ -29,11 +29,10 @@ defmodule Openmaize.JWT.Create do
   the token can be used, and `token_validity`, which is the number of
   minutes that the token will be valid for.
   """
-  def generate_token(user, uniq, {nbf_delay, token_validity}) do
+  def generate_token(user, {nbf_delay, token_validity}) do
     nbf = get_nbf(nbf_delay * 60_000)
-    %{:id => id, :role => role, ^uniq => unique} = user
-    %{:id => id, :role => role, uniq => unique, :nbf => nbf,
-      :exp => get_expiry(nbf, token_validity * 60_000)}
+    #%{:nbf => nbf, :exp => get_expiry(nbf, token_validity * 60_000)}
+    Map.merge(user, %{nbf: nbf, exp: get_expiry(nbf, token_validity * 60_000)})
     |> encode(Config.get_token_alg)
   end
 

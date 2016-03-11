@@ -7,17 +7,17 @@ defmodule Openmaize.AuthenticateTest do
 
   setup_all do
     {:ok, user_token} = %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
-    |> generate_token(:username, {0, 7200})
+    |> generate_token({0, 7200})
 
     {:ok, exp_token} = %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
-    |> generate_token(:username, {0, 0})
+    |> generate_token({0, 0})
 
     {:ok, nbf_token} = %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
-    |> generate_token(:username, {10, 10})
+    |> generate_token({10, 10})
 
     Application.put_env(:openmaize, :token_alg, :sha256)
     {:ok, user_256_token} = %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
-    |> generate_token(:username, {0, 7200})
+    |> generate_token({0, 7200})
     Application.delete_env(:openmaize, :token_alg)
 
     {:ok, %{user_token: user_token, exp_token: exp_token,

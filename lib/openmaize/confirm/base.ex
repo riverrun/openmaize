@@ -79,6 +79,9 @@ defmodule Openmaize.Confirm.Base do
     mail_func && mail_func.(user.email)
     put_private(conn, :openmaize_info, "Account successfully confirmed")
   end
+  defp finalize({:error, message}, conn, _user_id, _) do
+    put_private(conn, :openmaize_error, message)
+  end
   defp finalize(_, conn, user_id, _) do
     put_private(conn, :openmaize_error, "Confirmation for #{user_id} failed")
   end
