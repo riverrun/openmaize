@@ -39,10 +39,9 @@ defmodule Openmaize.Password do
   """
 
   if Code.ensure_loaded?(NotQwerty123) do
-    import NotQwerty123.PasswordStrength
 
     def valid_password?(password, opts) when is_binary(password) do
-      case strong_password?(password, opts) do
+      case NotQwerty123.PasswordStrength.strong_password?(password, opts) do
         true -> {:ok, password}
         message -> {:error, message}
       end

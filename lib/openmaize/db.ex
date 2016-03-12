@@ -44,16 +44,16 @@ if Code.ensure_loaded?(Ecto) do
     of the password field. This means that it will not be stored in the database.
     """
 
-    import Ecto.{Changeset, Query}
+    require Ecto.Query
     alias Openmaize.{Config, Password}
 
     @doc """
     Find the user in the database.
     """
     def find_user(user_id, uniq) do
-      from(u in Config.user_model,
-          where: field(u, ^uniq) == ^user_id,
-          select: u)
+      Ecto.Query.from(u in Config.user_model,
+                      where: field(u, ^uniq) == ^user_id,
+                      select: u)
       |> Config.repo.one
     end
 
@@ -95,7 +95,8 @@ if Code.ensure_loaded?(Ecto) do
 
     """
     def add_confirm_token(user, key) do
-      change(user, %{confirmation_token: key, confirmation_sent_at: Ecto.DateTime.utc})
+      Ecto.Changeset.change(user, %{confirmation_token: key,
+                                    confirmation_sent_at: Ecto.DateTime.utc})
     end
 
     @doc """
@@ -110,14 +111,15 @@ if Code.ensure_loaded?(Ecto) do
     can be used to generate the token and link.
     """
     def add_reset_token(user, key) do
-      change(user, %{reset_token: key, reset_sent_at: Ecto.DateTime.utc})
+      Ecto.Changeset.change(user, %{reset_token: key, reset_sent_at: Ecto.DateTime.utc})
     end
 
     @doc """
     Change the `confirmed_at` value in the database to the current time.
     """
     def user_confirmed(user) do
-      change(user, %{confirmed_at: Ecto.DateTime.utc}) |> Config.repo.update
+      Ecto.Changeset.change(user, %{confirmed_at: Ecto.DateTime.utc})
+      |> Config.repo.update
     end
 
     @doc """
@@ -142,18 +144,20 @@ if Code.ensure_loaded?(Ecto) do
     end
 
     defp add_hash_changeset({:ok, password}, user) do
-      change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+      Ecto.Changeset.change(user, %{Config.hash_name =>
+                                     Config.get_crypto_mod.hashpwsalt(password)})
     end
     defp add_hash_changeset({:error, message}, user) do
-      change(user, %{password: ""}) |> add_error(:password, message)
+      Ecto.Changeset.change(user, %{password: ""})
+      |> Ecto.Changeset.add_error(:password, message)
     end
 
     defp reset_update_repo({:ok, password}, user) do
       Config.repo.transaction(fn ->
-        user = change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+        user = Ecto.Changeset.change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
         |> Config.repo.update!
 
-        change(user, %{reset_token: nil, reset_sent_at: nil})
+        Ecto.Changeset.change(user, %{reset_token: nil, reset_sent_at: nil})
         |> Config.repo.update!
       end)
     end
