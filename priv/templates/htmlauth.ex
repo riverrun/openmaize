@@ -5,8 +5,6 @@ defmodule <%= base %>.Auth do
 
   @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}
 
-  @doc """
-  """
   def authorize_action(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do
     unauthenticated conn
   end
@@ -19,20 +17,14 @@ defmodule <%= base %>.Auth do
     end
   end
 
-  @doc """
-  """
   def unauthenticated(conn, message \\ "You need to log in to view this page") do
     conn |> put_flash(:error, message) |> redirect(to: login_path(conn, :login)) |> halt
   end
 
-  @doc """
-  """
   def unauthorized(conn, current_user, message \\ "You are not authorized to view this page") do
     conn |> put_flash(:error, message) |> redirect(to: @redirects[current_user.role]) |> halt
   end
 
-  @doc """
-  """
   def id_check(%Plug.Conn{assigns: %{current_user: nil}} = conn, _opts) do
     unauthenticated conn
   end
@@ -41,8 +33,6 @@ defmodule <%= base %>.Auth do
     id == to_string(current_id) and conn || unauthorized conn, current_user
   end
 
-  @doc """
-  """
   def handle_login(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
     unauthenticated conn, message
   end
@@ -51,8 +41,10 @@ defmodule <%= base %>.Auth do
     conn |> put_flash(:info, "You have been logged in") |> redirect(to: @redirects[role])
   end
 
-  @doc """
-  """
+  def handle_logout(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
+    conn |> put_flash(:info, message) |> redirect(to: "/")
+  end
+
   def handle_confirm(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
     unauthenticated conn, message
   end
@@ -60,11 +52,12 @@ defmodule <%= base %>.Auth do
     conn |> put_flash(:info, message) |> redirect(to: login_path(conn, :login))
   end
 
-  @doc """
-  """
   def handle_reset(%Plug.Conn{private: %{openmaize_error: message}} = conn,
                   %{"user" => %{"email" => email, "key" => key}}) do
-    render conn, "reset_form.html", email: email, key: key
+    #render conn, "reset_form.html", email: email, key: key
+    conn
+    |> put_flash(:error, message)
+    |> render("reset_form.html", email: email, key: key)
   end
   def handle_reset(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
     conn |> put_flash(:info, message) |> redirect(to: login_path(conn, :login))
