@@ -5,11 +5,15 @@ defmodule Mix.Openmaize do
   """
   def copy_files(files, mod_name) do
     srcdir = Path.join Application.app_dir(:openmaize, "priv"), "templates"
-    targetdir = ""
+    errors = []
     for {source, target} <- files do
       contents = EEx.eval_file Path.join(srcdir, source), base: mod_name
-      Mix.Generator.create_file Path.join(targetdir, target), contents # add a check for :ok | nil
+      case Mix.Generator.create_file target, contents do
+        :ok -> :ok
+        nil -> [target|errors]
+      end
     end
+    errors
   end
 
   @doc """

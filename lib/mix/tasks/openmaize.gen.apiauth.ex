@@ -6,8 +6,12 @@ defmodule Mix.Tasks.Openmaize.Gen.Apiauth do
     Mix.Openmaize.copy_files(
       [{"apiauth.ex", "web/controllers/auth.ex"}],
       mod_name)
+      |> instructions(mod_name)
+      |> Mix.shell.info
+  end
 
-    instructions = """
+  defp instructions([], mod_name) do
+    """
 
     The module #{mod_name}.Auth has been installed to web/controllers/auth.ex
     This module contains a custom `authorize_action` and an `id_check` function,
@@ -24,7 +28,13 @@ defmodule Mix.Tasks.Openmaize.Gen.Apiauth do
     You will also need to configure Openmaize. See the documentation for
     Openmaize.Config for details.
     """
-    Mix.shell.info instructions
   end
+  defp instructions(errors, _) do
+    files = Enum.join errors, "\n* "
+    """
 
+    The following files could not be installed:
+    #{files}
+   """
+  end
 end
