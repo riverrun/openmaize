@@ -2,10 +2,10 @@ defmodule Mix.Tasks.Openmaize.Gen.Apiauth do
   use Mix.Task
 
   def run(_args) do
-    {app_name, mod_name} = Mix.Openmaize.base_name
+    mod_name = Mix.Openmaize.base_name
     Mix.Openmaize.copy_files(
       [{"apiauth.ex", "web/controllers/auth.ex"}],
-      app_name, mod_name)
+      mod_name)
 
     instructions = """
 
@@ -24,7 +24,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Apiauth do
     You will also need to configure Openmaize. See the documentation for
     Openmaize.Config for details.
     """
-    Mix.Shell.info instructions
+    Mix.shell.info instructions
   end
 
 end
