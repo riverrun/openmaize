@@ -1,5 +1,6 @@
 defmodule Mix.Openmaize do
   @moduledoc """
+  Helper functions for the mix generators.
   """
 
   @doc """
@@ -26,7 +27,7 @@ defmodule Mix.Openmaize do
   end
   def gen_contents(source, confirm_path, binding) do
     File.read!(source)
-    |> String.replace_suffix("\nend\n", File.read!(confirm_path))
+    |> String.replace_suffix("end\n", File.read!(confirm_path))
     |> EEx.eval_string(binding)
   end
 
