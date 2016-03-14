@@ -1,3 +1,7 @@
+defmodule <%= base %>.Confirm do
+  import Plug.Conn
+  import Phoenix.Controller
+  import <%= base %>.Authorize
 
   def handle_confirm(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
     render(conn, <%= base %>.ErrorView, "error.json", %{error: message})

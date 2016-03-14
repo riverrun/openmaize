@@ -6,11 +6,9 @@ defmodule Mix.Openmaize do
   @doc """
   Copy templates to the main app.
   """
-  def copy_files(files, mod_name, confirm) do
-    srcdir = Path.join Application.app_dir(:openmaize, "priv"), "templates"
-    confirm_path = confirm && Path.join(srcdir, "confirm.ex") || :noconfirm
+  def copy_files(srcdir, files, mod_name) do
     for {source, target} <- files do
-      contents = gen_contents Path.join(srcdir, source), confirm_path, base: mod_name
+      contents = EEx.eval_file Path.join(srcdir, source), base: mod_name
       Mix.Generator.create_file target, contents
     end
   end
@@ -20,15 +18,6 @@ defmodule Mix.Openmaize do
   """
   def base_name do
     Mix.Project.config |> Keyword.fetch!(:app) |> to_string |> Mix.Utils.camelize
-  end
-
-  def gen_contents(source, :noconfirm, binding) do
-    EEx.eval_file source, binding
-  end
-  def gen_contents(source, confirm_path, binding) do
-    File.read!(source)
-    |> String.replace_suffix("end\n", File.read!(confirm_path))
-    |> EEx.eval_string(binding)
   end
 
   def instructions([], mod_name) do
