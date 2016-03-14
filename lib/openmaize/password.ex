@@ -34,15 +34,14 @@ defmodule Openmaize.Password do
 
       Openmaize.Password.valid_password?("verylongpassword", [min_length: 16, extra_chars: false])
 
-  The above comman will check that the password is at least 16 characters long and
+  The above command will check that the password is at least 16 characters long and
   will skip the check for punctuation characters or digits.
   """
 
   if Code.ensure_loaded?(NotQwerty123) do
-    import NotQwerty123.PasswordStrength
 
     def valid_password?(password, opts) when is_binary(password) do
-      case strong_password?(password, opts) do
+      case NotQwerty123.PasswordStrength.strong_password?(password, opts) do
         true -> {:ok, password}
         message -> {:error, message}
       end

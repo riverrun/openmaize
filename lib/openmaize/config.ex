@@ -12,8 +12,8 @@ defmodule Openmaize.Config do
   | hash_name          | atom    | :password_hash |
   | crypto_mod         | atom    | :bcrypt  |
   | token_alg          | atom    | :sha512  |
+  | token_validity     | int     | 120 (minutes)  |
   | keyrotate_days     | int     | 28       |
-  | redirect_pages     | map     | %{"admin" => "/admin", "login" => "/login", "logout" => "/"} |
   | password_strength  | keyword list | []  |
 
   The values for user_model and repo should be module names.
@@ -33,8 +33,8 @@ defmodule Openmaize.Config do
         hash_name: :encrypted_password,
         crypto_mod: :pbkdf2,
         token_alg: :sha256,
+        token_validity: 60,
         keyrotate_days: 7,
-        redirect_pages: %{"admin" => "/admin", "login" => "/admin/login", "logout" => "/admin/login"},
         password_strength: [min_length: 12]
 
   """
@@ -104,30 +104,19 @@ defmodule Openmaize.Config do
   end
 
   @doc """
+  The length of time after which a JSON Web Token expires.
+
+  The default length of time is 120 minutes (2 hours).
+  """
+  def token_validity do
+    Application.get_env(:openmaize, :token_validity, 120)
+  end
+
+  @doc """
   The number of days after which the JWT signing keys will be rotated.
   """
   def keyrotate_days do
     Application.get_env(:openmaize, :keyrotate_days, 28)
-  end
-
-  @doc """
-  The pages users should be redirected to after logging in or if there
-  is an error.
-
-  This is a map where the key is the role of the user and the value is
-  the page to be redirected to.
-
-  ## Redirects for login and logout
-
-  The "login" key refers to the login page that unauthorized users should
-  be redirected to. The default value is "/login".
-
-  The "logout" key refers to the page users should be redirected to after
-  logging out. The default value is "/".
-  """
-  def redirect_pages do
-    Map.merge(%{"login" => "/login", "logout" => "/"},
-    Application.get_env(:openmaize, :redirect_pages, %{"admin" => "/admin"}))
   end
 
   @doc """

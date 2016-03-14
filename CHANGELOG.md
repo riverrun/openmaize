@@ -3,7 +3,13 @@
 ## v0.17.0-dev
 
 * Changes
+    * Removed all the `redirects` options.
+    * Removed authorization module.
     * Added `password_strength` value to the config - to be used when setting or resetting the password.
+    * Changed `token_opts` option in the Login module to a global `token_validity` option in the config.
+    * Moved `confirm_email` function plug to `Openmaize.ConfirmEmail` module plug.
+    * Moved `reset_password` function plug to `Openmaize.ResetPassword` module plug.
+    * Moved `gen_token_link` function to the Openmaize.ConfirmEmail module.
 
 ## v0.16.0
 
@@ -121,5 +127,5 @@
     * Protect pages based on role.
     * Redirects to login / home / role's page.
     * Support for sending messages to phoenix flash.
-    * Support for signup, password hash checking and distribution of Json Web Tokens.
-    * Support for storage and checking of Json Web Tokens.
+    * Support for signup, password hash checking and distribution of JSON Web Tokens.
+    * Support for storage and checking of JSON Web Tokens.
