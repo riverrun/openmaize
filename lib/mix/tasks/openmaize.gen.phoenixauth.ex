@@ -1,6 +1,10 @@
 defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   use Mix.Task
 
+  @moduledoc """
+  Create modules for authorization and email confirmation.
+  """
+
   def run(args) do
     switches = [api: :boolean, confirm: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
@@ -16,7 +20,25 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
                         {"confirm_test.exs", "web/controllers/confirm_test.exs"}]
     end
 
-    Mix.Openmaize.copy_files srcdir, files, mod_name
+    Mix.Openmaize.copy_files(srcdir, files, mod_name)
+    |> instructions()
   end
 
+  def instructions([]) do
+    """
+    In the `web/router.ex` file, add the following line to the pipeline:
+
+    plug Openmaize.Authenticate
+
+    You will also need to configure Openmaize. See the documentation for
+    Openmaize.Config for details.
+    """
+  end
+  def instructions(errors) do
+    files = Enum.join errors, "\n* "
+    """
+    The following files could not be installed:
+    #{files}
+    """
+  end
 end

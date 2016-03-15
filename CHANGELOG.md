@@ -1,7 +1,10 @@
 # Changelog
 
-## v0.17.0-dev
+## v0.17.0
 
+* Enhancements
+    * Added mix generators to generate an Authorize, and optionally, a Confirm module.
+    * Added `password_strength` value to the config - to be used when setting or resetting the password.
 * Changes
     * Removed all the `redirects` options.
     * Removed authorization module.
