@@ -17,7 +17,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
              {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
     if opts[:confirm] do
       files = files ++ [{"confirm.ex", "web/controllers/confirm.ex"},
-                        {"confirm_test.exs", "web/controllers/confirm_test.exs"}]
+                        {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
     end
 
     Mix.Openmaize.copy_files(srcdir, files, mod_name)
