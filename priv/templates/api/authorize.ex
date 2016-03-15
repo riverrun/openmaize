@@ -46,6 +46,25 @@ defmodule <%= base %>.Authorize do
   end
 
   @doc """
+  Check, based on role, that the user is authorized to access this resource.
+
+  ## Examples
+
+  First, import this module, and then add the following line to the controller:
+
+      plug :role_check, [roles: "admin", "user"] when action in [:show, :edit]
+
+  This command will check the user's role for the `show` and `edit` routes.
+  """
+  def role_check(%Plug.Conn{assigns: %{current_user: nil}} = conn, _opts) do
+    unauthenticated conn
+  end
+  def role_check(%Plug.Conn{assigns: %{current_user: current_user}} = conn, opts) do
+    roles = Keyword.get(opts, :roles, [])
+    current_user.role in roles and conn || unauthorized conn, current_user
+  end
+
+  @doc """
   Check, based on user id, that the user is authorized to access this resource.
   """
   def id_check(%Plug.Conn{assigns: %{current_user: nil}} = conn, _opts) do

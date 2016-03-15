@@ -2,6 +2,11 @@
 
 Authentication library for Elixir
 
+## Upgrading to version 0.17
+
+There have been many changes in the new version, 0.17.
+Please check the `UPGRADE_0.17.md` guide in this directory for details.
+
 ## Goals
 
 Openmaize is an authentication library that aims to be:
