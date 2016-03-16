@@ -1,9 +1,12 @@
 alias Openmaize.TestRepo
 
+Application.put_env(:openmaize, :pg_test_url,
+  "ecto://" <> (System.get_env("PG_URL") || "postgres:postgres@localhost")
+)
+
 Application.put_env(:openmaize, TestRepo,
   adapter: Ecto.Adapters.Postgres,
-  username: "dev",
-  password: System.get_env("POSTGRES_PASS"),
+  url: Application.get_env(:openmaize, :pg_test_url) <> "/openmaize_test",
   url: "ecto://localhost/openmaize_test",
   pool: Ecto.Adapters.SQL.Sandbox)
 

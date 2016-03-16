@@ -25,10 +25,11 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   end
 
   def instructions([]) do
-    """
+    Mix.shell.info """
+
     In the `web/router.ex` file, add the following line to the pipeline:
 
-    plug Openmaize.Authenticate
+        plug Openmaize.Authenticate
 
     You will also need to configure Openmaize. See the documentation for
     Openmaize.Config for details.
@@ -36,7 +37,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   end
   def instructions(errors) do
     files = Enum.join errors, "\n* "
-    """
+    Mix.shell.info """
+
     The following files could not be installed:
     #{files}
     """

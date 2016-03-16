@@ -20,7 +20,7 @@ defmodule <%= base %>.Confirm do
     unauthenticated conn, message
   end
   def handle_confirm(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    conn |> put_flash(:info, message) |> redirect(to: login_path(conn, :login))
+    conn |> put_flash(:info, message) |> redirect(to: "/login")
   end
 
   @doc """
@@ -47,6 +47,6 @@ defmodule <%= base %>.Confirm do
     |> render("reset_form.html", email: email, key: key)
   end
   def handle_reset(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    conn |> put_flash(:info, message) |> redirect(to: login_path(conn, :login))
+    conn |> put_flash(:info, message) |> redirect(to: "/login")
   end
 end

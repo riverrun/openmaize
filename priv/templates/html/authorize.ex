@@ -1,7 +1,6 @@
 defmodule <%= base %>.Authorize do
   import Plug.Conn
   import Phoenix.Controller
-  import <%= base %>.Router.Helpers
 
   @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}
 
@@ -44,7 +43,7 @@ defmodule <%= base %>.Authorize do
   Redirect an unauthenticated user to the login page.
   """
   def unauthenticated(conn, message \\ "You need to log in to view this page") do
-    conn |> put_flash(:error, message) |> redirect(to: login_path(conn, :login)) |> halt
+    conn |> put_flash(:error, message) |> redirect(to: "/login") |> halt
   end
 
   @doc """
