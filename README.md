@@ -1,4 +1,4 @@
-# Openmaize
+# Openmaize [![Build Status](https://travis-ci.org/elixircnx/openmaize.svg?branch=master "Build Status")]
 
 Authentication library for Elixir
 
