@@ -1,4 +1,5 @@
 defmodule <%= base %>.Authorize do
+
   import Plug.Conn
   import Phoenix.Controller
 

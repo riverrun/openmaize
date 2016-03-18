@@ -24,23 +24,26 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     |> instructions()
   end
 
-  def instructions([]) do
-    Mix.shell.info """
+  def instructions(oks) do
+    if :ok in oks do
+      Mix.shell.info """
 
-    In the `web/router.ex` file, add the following line to the pipeline:
+      Please check the generated files. Certain details in them, such as
+      paths, user details, roles, etc., will most likely need to be
+      changed.
 
-        plug Openmaize.Authenticate
+      In the `web/router.ex` file, add the following line to the pipeline:
 
-    You will also need to configure Openmaize. See the documentation for
-    Openmaize.Config for details.
-    """
-  end
-  def instructions(errors) do
-    files = Enum.join errors, "\n* "
-    Mix.shell.info """
+          plug Openmaize.Authenticate
 
-    The following files could not be installed:
-    #{files}
-    """
+      You will also need to configure Openmaize. See the documentation for
+      Openmaize.Config for details.
+      """
+    else
+      Mix.shell.info """
+
+      No files have been installed.
+      """
+    end
   end
 end
