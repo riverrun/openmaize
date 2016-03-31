@@ -15,16 +15,16 @@ defmodule Openmaize.OnetimePass do
   @doc """
   """
   def call(%Plug.Conn{params: %{"user" => %{"hotp" => hotp}}} = conn, opts) do
-    Otp.check_hotp(hotp, Config.otp_secret, opts) |> handle_auth
+    Otp.check_hotp(hotp, Config.otp_secret, opts) |> handle_auth(conn)
   end
   def call(%Plug.Conn{params: %{"user" => %{"totp" => totp}}} = conn, opts) do
-    Otp.check_totp(totp, Config.otp_secret, opts) |> handle_auth
+    Otp.check_totp(totp, Config.otp_secret, opts) |> handle_auth(conn)
   end
 
-  def handle_auth(false) do
+  def handle_auth(false, conn) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  def handle_auth(last) do
+  def handle_auth(last, conn) do
     put_private(conn, :openmaize_info, last)
   end
 end
