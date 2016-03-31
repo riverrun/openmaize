@@ -1,6 +1,6 @@
 defmodule Openmaize.Login do
   @moduledoc """
-  Plug to handle login.
+  Module to handle login using the Comeonin password hashing library.
 
   There are two options:
 
@@ -85,10 +85,11 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
-  defp handle_auth({:ok, user}, conn, opts) do
-    add_token(conn, user, opts)
+  defp handle_auth({:ok, user}, conn, opts), do: add_token(conn, user, opts)
+  defp handle_auth({:error, message}, conn, _opts) do
+    put_private(conn, :openmaize_error, message)
   end
-  defp handle_auth(_, conn, {_, _}) do
+  defp handle_auth(_, conn, _opts) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

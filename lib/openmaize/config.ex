@@ -14,6 +14,7 @@ defmodule Openmaize.Config do
   | token_alg          | atom    | :sha512  |
   | token_validity     | int     | 120 (minutes)  |
   | keyrotate_days     | int     | 28       |
+  | otp_secret         | string  | N/A      |
   | password_strength  | keyword list | []  |
 
   The values for user_model and repo should be module names.
@@ -117,6 +118,15 @@ defmodule Openmaize.Config do
   """
   def keyrotate_days do
     Application.get_env(:openmaize, :keyrotate_days, 28)
+  end
+
+  @doc """
+  Secret key for use with one-time passwords.
+
+  You will only need to use this if you are using two factor authentication.
+  """
+  def otp_secret do
+    Application.get_env(:openmaize, :otp_secret)
   end
 
   @doc """
