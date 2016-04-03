@@ -68,7 +68,7 @@ if Code.ensure_loaded?(Ecto) do
     will be added to the changeset.
 
     Comeonin.Bcrypt is the default hashing function, but this can be changed to
-    Comeonin.Pbkdf2 by setting the Config.get_crypto_mod value to :pbkdf2.
+    Comeonin.Pbkdf2 by setting the Config.crypto_mod value to :pbkdf2.
     """
     def add_password_hash(user, params) do
       (params[:password] || params["password"])
