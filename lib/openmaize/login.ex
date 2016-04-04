@@ -54,8 +54,7 @@ defmodule Openmaize.Login do
 
   def init(opts) do
     {Keyword.get(opts, :storage, :cookie),
-     Keyword.get(opts, :unique_id, :username),
-     Keyword.get(opts, :send_token, true)}
+     Keyword.get(opts, :unique_id, :username)}
   end
 
   @doc """
@@ -67,11 +66,11 @@ defmodule Openmaize.Login do
   in the body of the response.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {storage, uniq_id, send_token}) do
+           {storage, uniq_id}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
-    |> handle_auth(conn, {storage, uniq}, send_token)
+    |> handle_auth(conn, {storage, uniq})
   end
 
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
@@ -87,14 +86,14 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
-  defp handle_auth({:ok, user}, conn, opts, true), do: add_token(conn, user, opts)
-  defp handle_auth({:ok, user}, conn, _opts, false) do
+  defp handle_auth({:ok, %{otp_required: true} = user}, conn, _opts) do
     put_private(conn, :openmaize_user, user)
   end
-  defp handle_auth({:error, message}, conn, _opts, _) do
+  defp handle_auth({:ok, user}, conn, opts), do: add_token(conn, user, opts)
+  defp handle_auth({:error, message}, conn, _opts) do
     put_private(conn, :openmaize_error, message)
   end
-  defp handle_auth(_, conn, _opts, _) do
+  defp handle_auth(_, conn, _opts) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

@@ -21,8 +21,12 @@ defmodule Openmaize.SetupDB do
     |> TestRepo.insert
 
     user4 = %{email: "ray@mail.com", username: "ray", role: "user", password: "h4rd2gU3$$",
-              phone: "081555555", confirmed_at: Ecto.DateTime.utc, otp_secret: "MFRGGZDFMZTWQ2LK"}
+              phone: "081555555", confirmed_at: Ecto.DateTime.utc}
     {:ok, _} = %User{} |> User.auth_changeset(user4) |> TestRepo.insert
+
+    user5 = %{email: "brian@mail.com", username: "brian", role: "user", password: "h4rd2gU3$$",
+              otp_required: true, otp_secret: "MFRGGZDFMZTWQ2LK"}
+    {:ok, _} = %User{} |> User.auth_changeset(user5) |> TestRepo.insert
   end
 
 end
