@@ -1,7 +1,8 @@
 defmodule <%= base %>.AuthorizeTest do
   use <%= base %>.ConnCase
 
-  import Openmaize.{DB, JWT.Create}
+  import Openmaize.DB
+  import OpenmaizeJWT.Create
   alias <%= base %>.{Repo, User}
 
   @valid_attrs %{email: "tony@mail.com", password: "mangoes&g0oseberries"}

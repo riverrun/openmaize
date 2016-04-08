@@ -2,7 +2,7 @@ defmodule Openmaize.LogoutTest do
   use ExUnit.Case
   use Plug.Test
 
-  import Openmaize.JWT.Create
+  import OpenmaizeJWT.Create
   alias Openmaize.{Authenticate, Logout}
 
   setup_all do

@@ -1,9 +1,8 @@
 defmodule Openmaize.LogoutManager do
   use GenServer
 
-  alias Openmaize.Config
+  #alias Openmaize.Config
 
-  #@thirty_mins 1_800_000
   @sixty_mins 3_600_000
 
   def start_link() do
@@ -19,7 +18,7 @@ defmodule Openmaize.LogoutManager do
 
   def query_jwt(jwt), do: GenServer.call(__MODULE__, {:query, jwt})
 
-  def add_jwt(jwt), do: GenServer.cast(__MODULE__, {:push, jwt})
+  def store_jwt(jwt), do: GenServer.cast(__MODULE__, {:push, jwt})
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
@@ -51,7 +50,8 @@ defmodule Openmaize.LogoutManager do
   end
 
   defp create_subsets do
-    num = get_numsets(Config.token_validity, 60)
+    #num = get_numsets(Config.token_validity, 60)
+    num = get_numsets(120, 60)
     for _ <- 1..num, do: MapSet.new
   end
 

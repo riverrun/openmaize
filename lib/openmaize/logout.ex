@@ -33,14 +33,14 @@ defmodule Openmaize.Logout do
   Handle logout.
   """
   def call(%Plug.Conn{req_cookies: %{"access_token" => token}} = conn, _opts) do
-    LogoutManager.add_jwt(token)
+    LogoutManager.store_jwt(token)
     assign(conn, :current_user, nil)
     |> delete_resp_cookie("access_token")
     |> put_private(:openmaize_info, "You have been logged out")
   end
   def call(%Plug.Conn{req_headers: headers} = conn, _opts) do
     case List.keyfind(headers, "authorization", 0) do
-      {_, "Bearer " <> token} -> LogoutManager.add_jwt(token)
+      {_, "Bearer " <> token} -> LogoutManager.store_jwt(token)
       nil -> nil
     end
     assign(conn, :current_user, nil)

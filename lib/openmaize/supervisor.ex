@@ -7,8 +7,7 @@ defmodule Openmaize.Supervisor do
 
   def init([]) do
     children = [
-      worker(Openmaize.LogoutManager, []),
-      worker(Openmaize.KeyManager, [])
+      worker(Openmaize.LogoutManager, [])
     ]
     supervise(children, strategy: :one_for_one)
   end

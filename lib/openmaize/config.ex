@@ -8,12 +8,9 @@ defmodule Openmaize.Config do
   | :----------------- | :------ | -------: |
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
-  | db_module          | module  | Openmaize.DB  |
+  | db_module          | module  | Openmaize.DB   |
   | hash_name          | atom    | :password_hash |
   | crypto_mod         | atom    | :bcrypt  |
-  | token_alg          | atom    | :sha512  |
-  | token_validity     | int     | 120 (minutes)  |
-  | keyrotate_days     | int     | 28       |
   | password_strength  | keyword list | []  |
 
   The values for user_model and repo should be module names.
@@ -32,9 +29,6 @@ defmodule Openmaize.Config do
         db_module: Coolapp.DB,
         hash_name: :encrypted_password,
         crypto_mod: :pbkdf2,
-        token_alg: :sha256,
-        token_validity: 60,
-        keyrotate_days: 7,
         password_strength: [min_length: 12]
 
   """
@@ -56,9 +50,9 @@ defmodule Openmaize.Config do
   @doc """
   The name of the database module.
 
-  The default is OpenmaizeEcto, which is an optional dependency of
-  Openmaize. If you want to use the default, you will also need to
-  add `openmaize_ecto` to your dependencies.
+  You only need to set this value if you plan on overriding the
+  the functions in the Openmaize.DB module. If you are using Ecto,
+  you will probably not need to set this value.
   """
   def db_module do
     Application.get_env(:openmaize, :db_module, Openmaize.DB)
@@ -86,37 +80,6 @@ defmodule Openmaize.Config do
   end
   defp crypto_mod do
     Application.get_env(:openmaize, :crypto_mod, :bcrypt)
-  end
-
-  @doc """
-  The algorithm used to sign the token.
-
-  The default value is :sha512, and :sha256 is also supported.
-  """
-  def get_token_alg do
-    case token_alg do
-      :sha256 -> {"HS256", :sha256}
-      _ -> {"HS512", :sha512}
-    end
-  end
-  defp token_alg do
-    Application.get_env(:openmaize, :token_alg, :sha512)
-  end
-
-  @doc """
-  The length of time after which a JSON Web Token expires.
-
-  The default length of time is 120 minutes (2 hours).
-  """
-  def token_validity do
-    Application.get_env(:openmaize, :token_validity, 120)
-  end
-
-  @doc """
-  The number of days after which the JWT signing keys will be rotated.
-  """
-  def keyrotate_days do
-    Application.get_env(:openmaize, :keyrotate_days, 28)
   end
 
   @doc """
