@@ -37,18 +37,18 @@ defmodule Openmaize.JWT do
   The token is then either stored in a cookie or sent in the body of the
   response.
   """
-  def add_token(conn, user, {:cookie, uniq}) do
+  def add_token(conn, user, {storage, uniq}) do
     user = Map.take user, [:id, :role, uniq]
     {:ok, token} = generate_token user, {0, Config.token_validity}
-    conn
-    |> put_resp_cookie("access_token", token, [http_only: true])
+    put_token(conn, user, token, storage)
+  end
+
+  defp put_token(conn, user, token, :cookie) do
+    put_resp_cookie(conn, "access_token", token, [http_only: true])
     |> put_private(:openmaize_user, user)
   end
-  def add_token(conn, user, {nil, uniq}) do
-    user = Map.take user, [:id, :role, uniq]
-    {:ok, token} = generate_token user, {0, Config.token_validity}
-    conn
-    |> resp(200, ~s({"access_token": "#{token}"}))
+  defp put_token(conn, user, token, nil) do
+    resp(conn, 200, ~s({"access_token": "#{token}"}))
     |> put_private(:openmaize_user, user)
   end
 end
