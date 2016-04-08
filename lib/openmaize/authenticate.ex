@@ -18,11 +18,12 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
-  alias Openmaize.LogoutManager
 
   @behaviour Plug
 
-  def init(opts), do: Keyword.get(opts, :jwt_verify, &OpenmaizeJWT.Verify.verify_token/1)
+  def init(opts) do
+    Keyword.get(opts, :jwt_verify, &OpenmaizeJWT.Verify.verify_token/1)
+  end
 
   @doc """
   Authenticate the current user using JSON Web Tokens.
@@ -46,9 +47,7 @@ defmodule Openmaize.Authenticate do
   end
 
   defp check_token("Bearer " <> token, jwt_verify), do: check_token(token, jwt_verify)
-  defp check_token(token, jwt_verify) when is_binary(token) do
-    LogoutManager.query_jwt(token) or jwt_verify.(token)
-  end
+  defp check_token(token, jwt_verify) when is_binary(token), do: jwt_verify.(token)
   defp check_token(_, _), do: nil
 
   defp set_current_user({:ok, data}, conn), do: assign(conn, :current_user, data)

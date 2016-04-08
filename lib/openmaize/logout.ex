@@ -23,24 +23,25 @@ defmodule Openmaize.Logout do
   """
 
   import Plug.Conn
-  alias Openmaize.LogoutManager
 
   @behaviour Plug
 
-  def init(opts), do: opts
+  def init(opts) do
+    Keyword.get(opts, :store_jwt, &OpenmaizeJWT.LogoutManager.store_jwt/1)
+  end
 
   @doc """
   Handle logout.
   """
-  def call(%Plug.Conn{req_cookies: %{"access_token" => token}} = conn, _opts) do
-    LogoutManager.store_jwt(token)
+  def call(%Plug.Conn{req_cookies: %{"access_token" => token}} = conn, store_jwt) do
+    store_jwt.(token)
     assign(conn, :current_user, nil)
     |> delete_resp_cookie("access_token")
     |> put_private(:openmaize_info, "You have been logged out")
   end
-  def call(%Plug.Conn{req_headers: headers} = conn, _opts) do
+  def call(%Plug.Conn{req_headers: headers} = conn, store_jwt) do
     case List.keyfind(headers, "authorization", 0) do
-      {_, "Bearer " <> token} -> LogoutManager.store_jwt(token)
+      {_, "Bearer " <> token} -> store_jwt.(token)
       nil -> nil
     end
     assign(conn, :current_user, nil)
