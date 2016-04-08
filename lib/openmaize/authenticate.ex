@@ -3,7 +3,7 @@ defmodule Openmaize.Authenticate do
   Authenticate the current user, using JSON Web Tokens.
 
   For more information about JSON Web Tokens, see the documentation for
-  the Openmaize.JWT module.
+  the OpenmaizeJWT module.
 
   It is important to note that this module only checks the identity of
   the user. For authorization / access control, you need to perform
@@ -18,12 +18,11 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
-  import Openmaize.JWT.Verify
-  alias Openmaize.JWTmanager
+  alias Openmaize.LogoutManager
 
   @behaviour Plug
 
-  def init(opts), do: opts
+  def init(opts), do: Keyword.get(opts, :jwt_verify, &OpenmaizeJWT.Verify.verify_token/1)
 
   @doc """
   Authenticate the current user using JSON Web Tokens.
@@ -36,21 +35,21 @@ defmodule Openmaize.Authenticate do
   Phoenix, can then be used in your templates. If no token is found, the
   current_user is set to nil.
   """
-  def call(%Plug.Conn{req_cookies: %{"access_token" => token}} = conn, _opts) do
-    check_token(token) |> set_current_user(conn)
+  def call(%Plug.Conn{req_cookies: %{"access_token" => token}} = conn, jwt_verify) do
+    check_token(token, jwt_verify) |> set_current_user(conn)
   end
-  def call(%Plug.Conn{req_headers: headers} = conn, _opts) do
+  def call(%Plug.Conn{req_headers: headers} = conn, jwt_verify) do
     case List.keyfind(headers, "authorization", 0) do
-      {_, token} -> check_token(token) |> set_current_user(conn)
+      {_, token} -> check_token(token, jwt_verify) |> set_current_user(conn)
       nil -> set_current_user(nil, conn)
     end
   end
 
-  defp check_token("Bearer " <> token), do: check_token(token)
-  defp check_token(token) when is_binary(token) do
-    JWTmanager.query_jwt(token) or verify_token(token)
+  defp check_token("Bearer " <> token, jwt_verify), do: check_token(token, jwt_verify)
+  defp check_token(token, jwt_verify) when is_binary(token) do
+    LogoutManager.query_jwt(token) or jwt_verify.(token)
   end
-  defp check_token(_), do: nil
+  defp check_token(_, _), do: nil
 
   defp set_current_user({:ok, data}, conn), do: assign(conn, :current_user, data)
   defp set_current_user({:error, _}, conn), do: assign(conn, :current_user, nil)

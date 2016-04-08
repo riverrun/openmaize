@@ -47,14 +47,14 @@ defmodule Openmaize.Login do
   """
 
   import Plug.Conn
-  import Openmaize.JWT
   alias Openmaize.Config
 
   @behaviour Plug
 
   def init(opts) do
     {Keyword.get(opts, :storage, :cookie),
-     Keyword.get(opts, :unique_id, :username)}
+     Keyword.get(opts, :unique_id, :username),
+     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.add_token/3)}
   end
 
   @doc """
@@ -66,11 +66,11 @@ defmodule Openmaize.Login do
   in the body of the response.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {storage, uniq_id}) do
+           {storage, uniq_id, add_jwt}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
-    |> handle_auth(conn, {storage, uniq})
+    |> handle_auth(conn, {storage, uniq, add_jwt})
   end
 
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
@@ -89,7 +89,9 @@ defmodule Openmaize.Login do
   defp handle_auth({:ok, %{otp_required: true} = user}, conn, _opts) do
     put_private(conn, :openmaize_user, user)
   end
-  defp handle_auth({:ok, user}, conn, opts), do: add_token(conn, user, opts)
+  defp handle_auth({:ok, user}, conn, {_, _, add_jwt} = opts) do
+    add_jwt.(conn, user, opts)
+  end
   defp handle_auth({:error, message}, conn, _opts) do
     put_private(conn, :openmaize_error, message)
   end

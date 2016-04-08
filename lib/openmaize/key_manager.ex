@@ -1,4 +1,4 @@
-defmodule Openmaize.Keymanager do
+defmodule Openmaize.KeyManager do
   use GenServer
 
   alias Openmaize.Config

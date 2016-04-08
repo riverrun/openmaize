@@ -49,6 +49,6 @@ defmodule Openmaize do
   will be created.
   """
   def restart_keymanager do
-    Process.whereis(Openmaize.Keymanager) |> Process.exit(:kill)
+    Process.whereis(Openmaize.KeyManager) |> Process.exit(:kill)
   end
 end

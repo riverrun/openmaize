@@ -1,4 +1,4 @@
-defmodule Openmaize.JWTmanager do
+defmodule Openmaize.LogoutManager do
   use GenServer
 
   alias Openmaize.Config
