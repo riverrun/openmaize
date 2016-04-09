@@ -9,6 +9,11 @@ defmodule Openmaize.Authenticate do
   the user. For authorization / access control, you need to perform
   further checks.
 
+  There is one option:
+
+  * jwt_verify - the function used to verify the JSON Web Token
+    * the default is `&OpenmaizeJWT.Verify.verify_token/1`
+
   ## Examples using Phoenix
 
   Add the following line to the pipeline in the `web/router.ex` file:

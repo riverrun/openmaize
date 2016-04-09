@@ -2,7 +2,7 @@ defmodule Openmaize.Login do
   @moduledoc """
   Module to handle login using the Comeonin password hashing library.
 
-  There are two options:
+  There are three options:
 
   * storage - store the token in a cookie, which is the default, or not have Openmaize handle the storage
     * if you are developing an api or want to store the token in sessionStorage, set storage to nil
@@ -10,6 +10,8 @@ defmodule Openmaize.Login do
     * the default is `:username`
     * this can also be a function which checks the user input and returns an atom
       * see the Openmaize.Login.Name module for some example functions
+  * add_jwt - the function used to add the JSON Web Token to the response
+    * the default is `&OpenmaizeJWT.Plug.add_token/3`
 
   ## Examples with Phoenix
 
@@ -60,10 +62,13 @@ defmodule Openmaize.Login do
   @doc """
   Handle the login POST request.
 
-  If the login is successful, a JSON Web Token will be returned.
+  If the login is successful and `otp_required: true` is not in the
+  user model, a JSON Web Token will be added to the conn, either in
+  a cookie or in the body of the response. The conn is then returned.
 
-  The JWT will be either stored in a cookie, or it will be returned
-  in the body of the response.
+  If `otp_required: true` is in the user model, the user information
+  will be added to `conn.private.openmaize_user`, but no token
+  will be issued yet.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
            {storage, uniq_id, add_jwt}) do
