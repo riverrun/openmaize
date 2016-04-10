@@ -21,11 +21,7 @@ defmodule Openmaize.OnetimePass do
 
   @behaviour Plug
 
-  def init(opts) do
-    {Keyword.get(opts, :storage, :cookie),
-     Keyword.get(opts, :unique_id, :username),
-     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/3), opts}
-  end
+  def init(opts), do: opts
 
   @doc """
   Handle the one-time password POST request.
@@ -34,18 +30,12 @@ defmodule Openmaize.OnetimePass do
   to the conn, either in a cookie or in the body of the response. The conn
   is then returned.
   """
-  def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {storage, uniq_id, add_jwt, opts}) do
-    {uniq, user_id} = get_params(user_params, uniq_id)
+  def call(%Plug.Conn{params: %{"user" => user_params},
+    private: %{openmaize_otpdata: {storage, uniq, user_id, add_jwt}}} = conn, opts) do
     Config.db_module.find_user(user_id, uniq)
     |> check_key(user_params, opts)
     |> handle_auth(conn, {storage, uniq, add_jwt})
   end
-
-  defp get_params(user_params, uniq) when is_atom(uniq) do
-    {uniq, Map.get(user_params, to_string(uniq))}
-  end
-  defp get_params(user_params, uniq_func), do: uniq_func.(user_params)
 
   defp check_key(user, %{"hotp" => hotp}, opts) do
     {user, Otp.check_hotp(hotp, user.otp_secret, opts)}

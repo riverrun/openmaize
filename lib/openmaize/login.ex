@@ -74,7 +74,7 @@ defmodule Openmaize.Login do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
-    |> handle_auth(conn, {storage, uniq, add_jwt})
+    |> handle_auth(conn, {storage, uniq, user_id, add_jwt})
   end
 
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
@@ -90,10 +90,10 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
-  defp handle_auth({:ok, %{otp_required: true}}, conn, _opts) do
-    put_private(conn, :openmaize_otp_required, true)
+  defp handle_auth({:ok, %{otp_required: true}}, conn, opts) do
+    put_private(conn, :openmaize_otpdata, opts)
   end
-  defp handle_auth({:ok, user}, conn, {storage, uniq, add_jwt}) do
+  defp handle_auth({:ok, user}, conn, {storage, uniq, _, add_jwt}) do
     add_jwt.(conn, user, {storage, uniq})
   end
   defp handle_auth({:error, message}, conn, _opts) do
