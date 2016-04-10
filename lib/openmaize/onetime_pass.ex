@@ -34,27 +34,30 @@ defmodule Openmaize.OnetimePass do
   to the conn, either in a cookie or in the body of the response. The conn
   is then returned.
   """
-  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {storage, uniq, add_jwt, opts}) do
-    case Map.get(user_params, to_string(uniq)) do
-      nil -> handle_auth({nil, false}, conn, {storage, uniq, add_jwt})
-      user_id ->
-        Config.db_module.find_user(user_id, uniq)
-        |> check_key(user_params, opts)
-        |> handle_auth(conn, {storage, uniq, add_jwt})
-    end
+  def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
+           {storage, uniq_id, add_jwt, opts}) do
+    {uniq, user_id} = get_params(user_params, uniq_id)
+    Config.db_module.find_user(user_id, uniq)
+    |> check_key(user_params, opts)
+    |> handle_auth(conn, {storage, uniq, add_jwt})
   end
 
-  def check_key(user, %{"hotp" => hotp}, opts) do
+  defp get_params(user_params, uniq) when is_atom(uniq) do
+    {uniq, Map.get(user_params, to_string(uniq))}
+  end
+  defp get_params(user_params, uniq_func), do: uniq_func.(user_params)
+
+  defp check_key(user, %{"hotp" => hotp}, opts) do
     {user, Otp.check_hotp(hotp, user.otp_secret, opts)}
   end
-  def check_key(user, %{"totp" => totp}, opts) do
+  defp check_key(user, %{"totp" => totp}, opts) do
     {user, Otp.check_totp(totp, user.otp_secret, opts)}
   end
 
-  def handle_auth({_, false}, conn, _opts) do
+  defp handle_auth({_, false}, conn, _opts) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  def handle_auth({user, last}, conn, {storage, uniq, add_jwt}) do
+  defp handle_auth({user, last}, conn, {storage, uniq, add_jwt}) do
     conn |> put_private(:openmaize_info, last) |> add_jwt.(user, {storage, uniq})
   end
 end

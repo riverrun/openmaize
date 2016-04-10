@@ -10,6 +10,10 @@ defmodule Openmaize.OnetimePassTest do
     trunc((megasecs * 1000000 + secs) / 30)
   end
 
+  def email_username(%{"email" => email}) do
+    {Regex.match?(~r/^.+@.+\..+$/, email) and :email || :username, email}
+  end
+
   def call(uniq, name, otp_type, otp, opts) do
     conn(:post, "/twofactor",
          %{"user" => %{uniq => name, otp_type => otp}})
@@ -36,6 +40,18 @@ defmodule Openmaize.OnetimePassTest do
     refute conn.private[:openmaize_error]
     conn = call("username", "brian", "hotp", "088238",
                 {:cookie, :username, &OpenmaizeJWT.Plug.add_token/3, [last: 18]})
+    refute conn.resp_cookies["access_token"]
+    assert conn.private[:openmaize_error]
+  end
+
+  test "check hotp with function for unique_id" do
+    conn = call("email", "brian", "hotp", "816065",
+                {:cookie, &email_username/1, &OpenmaizeJWT.Plug.add_token/3, []})
+    assert conn.resp_cookies["access_token"]
+    assert conn.private[:openmaize_info] == 2
+    refute conn.private[:openmaize_error]
+    conn = call("email", "brian", "hotp", "816066",
+                {:cookie, &email_username/1, &OpenmaizeJWT.Plug.add_token/3, []})
     refute conn.resp_cookies["access_token"]
     assert conn.private[:openmaize_error]
   end
