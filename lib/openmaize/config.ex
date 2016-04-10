@@ -21,7 +21,8 @@ defmodule Openmaize.Config do
   ## Examples
 
   The simplest way to change the default values would be to add
-  the following to the `config.exs` file in your project.
+  an `openmaize` entry to the `config.exs` file in your project,
+  like the following example.
 
       config :openmaize,
         user_model: Coolapp.User,

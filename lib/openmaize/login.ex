@@ -66,9 +66,8 @@ defmodule Openmaize.Login do
   user model, a JSON Web Token will be added to the conn, either in
   a cookie or in the body of the response. The conn is then returned.
 
-  If `otp_required: true` is in the user model, the user information
-  will be added to `conn.private.openmaize_user`, but no token
-  will be issued yet.
+  If `otp_required: true` is in the user model, `conn.private.openmaize_otp_required`
+  will be set to true, but no token will be issued yet.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
            {storage, uniq_id, add_jwt}) do
@@ -91,8 +90,8 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
-  defp handle_auth({:ok, %{otp_required: true} = user}, conn, _opts) do
-    put_private(conn, :openmaize_user, user)
+  defp handle_auth({:ok, %{otp_required: true}}, conn, _opts) do
+    put_private(conn, :openmaize_otp_required, true)
   end
   defp handle_auth({:ok, user}, conn, {storage, uniq, add_jwt}) do
     add_jwt.(conn, user, {storage, uniq})
