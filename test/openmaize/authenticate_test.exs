@@ -2,7 +2,7 @@ defmodule Openmaize.AuthenticateTest do
   use ExUnit.Case
   use Plug.Test
 
-  import Openmaize.JWT.Create
+  import OpenmaizeJWT.Create
   alias Openmaize.Authenticate
 
   setup_all do
@@ -28,13 +28,13 @@ defmodule Openmaize.AuthenticateTest do
     conn(:get, url)
     |> put_req_cookie("access_token", token)
     |> fetch_cookies
-    |> Authenticate.call([])
+    |> Authenticate.call(&OpenmaizeJWT.Verify.verify_token/1)
   end
 
   def call(url, token, _) do
     conn(:get, url)
     |> put_req_header("authorization", "Bearer #{token}")
-    |> Authenticate.call([])
+    |> Authenticate.call(&OpenmaizeJWT.Verify.verify_token/1)
   end
 
   test "expired token", %{exp_token: exp_token} do
@@ -68,7 +68,7 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "missing token" do
-    conn = conn(:get, "/") |> Authenticate.call([])
+    conn = conn(:get, "/") |> Authenticate.call(&OpenmaizeJWT.Verify.verify_token/1)
     assert conn.assigns == %{current_user: nil}
   end
 

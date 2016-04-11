@@ -2,7 +2,7 @@ defmodule Openmaize.Login do
   @moduledoc """
   Module to handle login using the Comeonin password hashing library.
 
-  There are two options:
+  There are three options:
 
   * storage - store the token in a cookie, which is the default, or not have Openmaize handle the storage
     * if you are developing an api or want to store the token in sessionStorage, set storage to nil
@@ -10,6 +10,8 @@ defmodule Openmaize.Login do
     * the default is `:username`
     * this can also be a function which checks the user input and returns an atom
       * see the Openmaize.Login.Name module for some example functions
+  * add_jwt - the function used to add the JSON Web Token to the response
+    * the default is `&OpenmaizeJWT.Plug.add_token/3`
 
   ## Examples with Phoenix
 
@@ -47,30 +49,32 @@ defmodule Openmaize.Login do
   """
 
   import Plug.Conn
-  import Openmaize.JWT
   alias Openmaize.Config
 
   @behaviour Plug
 
   def init(opts) do
     {Keyword.get(opts, :storage, :cookie),
-     Keyword.get(opts, :unique_id, :username)}
+     Keyword.get(opts, :unique_id, :username),
+     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/3)}
   end
 
   @doc """
   Handle the login POST request.
 
-  If the login is successful, a JSON Web Token will be returned.
+  If the login is successful and `otp_required: true` is not in the
+  user model, a JSON Web Token will be added to the conn, either in
+  a cookie or in the body of the response. The conn is then returned.
 
-  The JWT will be either stored in a cookie, or it will be returned
-  in the body of the response.
+  If `otp_required: true` is in the user model, `conn.private.openmaize_otp_required`
+  will be set to true, but no token will be issued yet.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {storage, uniq_id}) do
+           {storage, uniq_id, add_jwt}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
-    |> handle_auth(conn, {storage, uniq})
+    |> handle_auth(conn, {storage, uniq, add_jwt})
   end
 
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
@@ -86,10 +90,12 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
-  defp handle_auth({:ok, %{otp_required: true} = user}, conn, _opts) do
-    put_private(conn, :openmaize_user, user)
+  defp handle_auth({:ok, %{id: id, otp_required: true}}, conn, {storage, uniq, _}) do
+    put_private(conn, :openmaize_otpdata, {storage, uniq, id})
   end
-  defp handle_auth({:ok, user}, conn, opts), do: add_token(conn, user, opts)
+  defp handle_auth({:ok, user}, conn, {storage, uniq, add_jwt}) do
+    add_jwt.(conn, user, {storage, uniq})
+  end
   defp handle_auth({:error, message}, conn, _opts) do
     put_private(conn, :openmaize_error, message)
   end

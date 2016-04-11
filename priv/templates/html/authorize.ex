@@ -109,9 +109,17 @@ defmodule <%= base %>.Authorize do
       def login_user(conn, params), do: handle_login(conn, params)
 
   See the documentation for Openmaize.Login for all the login options.
+
+  ## Two factor authentication
+
+  This function can also be used for two factor authentication for any
+  user with `otp_required` set to true.
   """
   def handle_login(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
     unauthenticated conn, message
+  end
+  def handle_login(%Plug.Conn{private: %{openmaize_otpdata: {storage, uniq, id}}} = conn, _) do
+    render conn, "twofa.html", storage: storage, uniq: uniq, id: id
   end
   def handle_login(%Plug.Conn{private:
                             %{openmaize_user: %{role: role}}} = conn, _params) do

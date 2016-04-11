@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.18.0
+
+* Enhancements
+    * Added one-time password support for use in two factor authentication.
+* Changes
+    * Moved the JSON Web Token specific code to separate library, OpenmaizeJWT, which is now an optional dependency.
+
 ## v0.17.0
 
 * Enhancements
