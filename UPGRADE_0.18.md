@@ -1,3 +1,37 @@
+# Upgrading to version 0.18
+
+## JWT-related code is now part of the OpenmaizeJWT package
+
+Add {:openmaize_jwt, "~> 0.9"} to your mix.exs file if you want to continue using Openmaize as before.
+
+This change has been made to make it easier for developers to use other JSON Web Token libraries if they wish.
+
+## Added support for two factor authentication
+
+There is now support for checking one-time passwords, which can be used in two factor authentication.
+
+If you want to use two factor authentication in your app, you need to add the following fields to your user schema:
+
+```
+    field :otp_required, :boolean
+    field :otp_secret, :string
+```
+
+You can generate the otp_secret with the Comeonin.Otp.gen_secret function.
+
+[This example app](https://github.com/riverrun/openmaize-phoenix) has an example of using two factor authentication for certain users - see the `web/controllers/authorize.ex` and `web/controllers/page_controller.ex` files for details..
+
+## Small change to `authorize.ex` template
+
+The following lines have been added to the `authorize.ex` html template (not for use with apis).
+You only need to add these lines if you are using two factor authentication.
+
+```
+    def handle_login(%Plug.Conn{private: %{openmaize_otpdata: {storage, uniq, id}}} = conn, _) do
+      render conn, "twofa.html", storage: storage, uniq: uniq, id: id
+    end
+```
+
 # Upgrading to version 0.17
 
 ## `redirects` option has been removed

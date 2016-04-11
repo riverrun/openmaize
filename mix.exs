@@ -26,8 +26,8 @@ defmodule Openmaize.Mixfile do
     [
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.1"},
-      {:comeonin, "~> 2.3"},
-      {:openmaize_jwt, "~> 0.8", optional: true},
+      {:comeonin, "~> 2.4"},
+      {:openmaize_jwt, "~> 0.9", optional: true},
       {:ecto, "~> 1.1", optional: true},
       {:postgrex, "~> 0.11", optional: true},
       {:not_qwerty123, "~> 1.1", optional: true},
