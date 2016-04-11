@@ -16,28 +16,28 @@ defmodule Openmaize.OnetimePassTest do
 
   test "check hotp with default options" do
     user = %{"hotp" => "816065", "storage" => :cookie, "uniq" => :username,
-             "user_id" => "brian", "add_jwt" => &OpenmaizeJWT.Plug.add_token/3}
-    conn = call(user, [])
+             "user_id" => "brian"}
+    conn = call(user, {&OpenmaizeJWT.Plug.add_token/3, []})
     assert conn.resp_cookies["access_token"]
     assert conn.private[:openmaize_info] == 2
     refute conn.private[:openmaize_error]
     fail = %{"hotp" => "816066", "storage" => :cookie, "uniq" => :username,
-             "user_id" => "brian", "add_jwt" => &OpenmaizeJWT.Plug.add_token/3}
-    conn = call(fail, [])
+             "user_id" => "brian"}
+    conn = call(fail, {&OpenmaizeJWT.Plug.add_token/3, []})
     refute conn.resp_cookies["access_token"]
     assert conn.private[:openmaize_error]
   end
 
   test "check hotp with last option" do
     user = %{"hotp" => "088239", "storage" => :cookie, "uniq" => :username,
-             "user_id" => "brian", "add_jwt" => &OpenmaizeJWT.Plug.add_token/3}
-    conn = call(user, [last: 18])
+             "user_id" => "brian"}
+    conn = call(user, {&OpenmaizeJWT.Plug.add_token/3, [last: 18]})
     assert conn.resp_cookies["access_token"]
     assert conn.private[:openmaize_info] == 19
     refute conn.private[:openmaize_error]
     fail = %{"hotp" => "088238", "storage" => :cookie, "uniq" => :username,
-             "user_id" => "brian", "add_jwt" => &OpenmaizeJWT.Plug.add_token/3}
-    conn = call(fail, [last: 18])
+             "user_id" => "brian"}
+    conn = call(fail, {&OpenmaizeJWT.Plug.add_token/3, [last: 18]})
     refute conn.resp_cookies["access_token"]
     assert conn.private[:openmaize_error]
   end
@@ -45,8 +45,8 @@ defmodule Openmaize.OnetimePassTest do
   test "check totp with default options" do
     token = Otp.gen_totp("MFRGGZDFMZTWQ2LK")
     user = %{"totp" => token, "storage" => :cookie, "uniq" => :email,
-             "user_id" => "brian@mail.com", "add_jwt" => &OpenmaizeJWT.Plug.add_token/3}
-    conn = call(user, [])
+             "user_id" => "brian@mail.com"}
+    conn = call(user, {&OpenmaizeJWT.Plug.add_token/3, []})
     assert conn.resp_cookies["access_token"]
     assert conn.private[:openmaize_info]
     refute conn.private[:openmaize_error]

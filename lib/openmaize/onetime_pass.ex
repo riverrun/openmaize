@@ -2,14 +2,8 @@ defmodule Openmaize.OnetimePass do
   @moduledoc """
   Module to handle one-time passwords for use in two factor authentication.
 
-  There are three options (these are the same options as for the Login module):
+  There is one option
 
-  * storage - store the token in a cookie, which is the default, or not have Openmaize handle the storage
-    * if you are developing an api or want to store the token in sessionStorage, set storage to nil
-  * unique_id - the name which is used to identify the user (in the database)
-    * the default is `:username`
-    * this can also be a function which checks the user input and returns an atom
-    * see the Openmaize.Login.Name module for some example functions
   * add_jwt - the function used to add the JSON Web Token to the response
     * the default is `&OpenmaizeJWT.Plug.add_token/3`
 
@@ -21,7 +15,9 @@ defmodule Openmaize.OnetimePass do
 
   @behaviour Plug
 
-  def init(opts), do: opts
+  def init(opts) do
+    Keyword.pop opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/3
+  end
 
   @doc """
   Handle the one-time password POST request.
@@ -30,8 +26,8 @@ defmodule Openmaize.OnetimePass do
   to the conn, either in a cookie or in the body of the response. The conn
   is then returned.
   """
-  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
-    %{"storage" => storage, "uniq" => uniq, "user_id" => user_id, "add_jwt" => add_jwt} = user_params
+  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {add_jwt, opts}) do
+    %{"storage" => storage, "uniq" => uniq, "user_id" => user_id} = user_params
     Config.db_module.find_user(user_id, uniq)
     |> check_key(user_params, opts)
     |> handle_auth(conn, {storage, uniq, add_jwt})

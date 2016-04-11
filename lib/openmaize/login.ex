@@ -90,8 +90,8 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
-  defp handle_auth({:ok, %{otp_required: true}}, conn, opts) do
-    put_private(conn, :openmaize_otpdata, opts)
+  defp handle_auth({:ok, %{otp_required: true}}, conn, {storage, uniq, user_id, _}) do
+    put_private(conn, :openmaize_otpdata, {storage, uniq, user_id})
   end
   defp handle_auth({:ok, user}, conn, {storage, uniq, _, add_jwt}) do
     add_jwt.(conn, user, {storage, uniq})
