@@ -27,10 +27,10 @@ defmodule Openmaize.OnetimePass do
   is then returned.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {add_jwt, opts}) do
-    %{"storage" => storage, "uniq" => uniq, "user_id" => user_id} = user_params
-    Config.db_module.find_user(user_id, uniq)
+    %{"storage" => storage, "uniq" => uniq, "id" => id} = user_params
+    Config.db_module.find_user_byid(id)
     |> check_key(user_params, opts)
-    |> handle_auth(conn, {storage, uniq, add_jwt})
+    |> handle_auth(conn, {storage, String.to_atom(uniq), add_jwt})
   end
 
   defp check_key(user, %{"hotp" => hotp}, opts) do

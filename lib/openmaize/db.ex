@@ -58,6 +58,13 @@ if Code.ensure_loaded?(Ecto) do
     end
 
     @doc """
+    Find the user, using the user id, in the database.
+    """
+    def find_user_byid(id) do
+      Config.repo.get(Config.user_model, id)
+    end
+
+    @doc """
     Hash the password and add it to the user model or changeset.
 
     Before the password is hashed, it is checked to make sure that
