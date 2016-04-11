@@ -30,8 +30,8 @@ defmodule Openmaize.OnetimePass do
   to the conn, either in a cookie or in the body of the response. The conn
   is then returned.
   """
-  def call(%Plug.Conn{params: %{"user" => user_params},
-    private: %{openmaize_otpdata: {storage, uniq, user_id, add_jwt}}} = conn, opts) do
+  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, opts) do
+    %{"storage" => storage, "uniq" => uniq, "user_id" => user_id, "add_jwt" => add_jwt} = user_params
     Config.db_module.find_user(user_id, uniq)
     |> check_key(user_params, opts)
     |> handle_auth(conn, {storage, uniq, add_jwt})
