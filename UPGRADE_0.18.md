@@ -2,7 +2,7 @@
 
 ## JWT-related code is now part of the OpenmaizeJWT package
 
-Add {:openmaize_jwt, "~> 0.9"} to your mix.exs file if you want to continue using Openmaize as before.
+Add the line {:openmaize_jwt, "~> 0.9"} to the deps and add `:openmaize_jwt` to the list of applications in your mix.exs file if you want to continue using Openmaize as before.
 
 This change has been made to make it easier for developers to use other JSON Web Token libraries if they wish.
 
