@@ -3,8 +3,35 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   @moduledoc """
   Create modules for authorization and email confirmation.
+
+  ## Options
+
+  There are two options:
+
+  * api - provide functions for an api
+    * the default is false
+  * confirm - provide functions for email confirmation and password resetting
+    * the default is false
+
+  ## Examples
+
+  In the root directory of your project, run the following command:
+
+      mix openmaize.gen.phoenixauth
+
+  This command will create an Authorize module in the `web/controllers`
+  directory and tests in the `test/controllers` directory.
+
+  To add email confirmation functionality, run the following command:
+
+      mix openmaize.gen.phoenixauth --confirm
+
+  In addition to the Authorize module and tests, this command will
+  create a Confirm module in the `web/controllers` directory and
+  tests in the `tests/controllers` directory.
   """
 
+  @doc false
   def run(args) do
     switches = [api: :boolean, confirm: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
@@ -24,6 +51,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     |> instructions()
   end
 
+  @doc false
   def instructions(oks) do
     if :ok in oks do
       Mix.shell.info """

@@ -1,6 +1,10 @@
 defmodule Mix.Openmaize do
   @moduledoc """
   Helper functions for the mix generators.
+
+  There is one mix generator available - `openmaize.gen.phoenixauth`.
+  See the documentation for Mix.Tasks.Openmaize.Gen.Phoenixauth for
+  more information.
   """
 
   @doc """
