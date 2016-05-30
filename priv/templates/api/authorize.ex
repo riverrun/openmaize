@@ -13,8 +13,8 @@ defmodule <%= base %>.Authorize do
 
       def action(conn, _), do: authorize_action conn, ["admin", "user"], __MODULE__
 
-  This command will only allow connections for users with the "admin" and "user"
-  roles.
+  This command will only allow connections for users with the "admin" or "user"
+  role.
 
   You will also need to change the other functions in the controller to accept
   a third argument, which is the current user. For example, change:
