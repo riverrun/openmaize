@@ -5,13 +5,13 @@ defmodule Openmaize.ConfirmEmailTest do
   import Ecto.Changeset
   alias Openmaize.{ConfirmEmail, TestRepo, User}
 
-  @valid_link "email=fred%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
+  @valid_link "email=fred%2B1%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
   @name_link "username=fred&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
   @invalid_link "email=wrong%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
   @incomplete_link "email=wrong%40mail.com"
 
   setup do
-    {:ok, _user} = TestRepo.get_by(User, email: "fred@mail.com")
+    {:ok, _user} = TestRepo.get_by(User, email: "fred+1@mail.com")
     |> change(%{confirmed_at: nil})
     |> Openmaize.Config.repo.update
     :ok
@@ -24,7 +24,7 @@ defmodule Openmaize.ConfirmEmailTest do
   end
 
   def user_confirmed do
-    user = TestRepo.get_by(User, email: "fred@mail.com")
+    user = TestRepo.get_by(User, email: "fred+1@mail.com")
     user.confirmed_at
   end
 

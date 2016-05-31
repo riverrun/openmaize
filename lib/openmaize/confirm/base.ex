@@ -49,7 +49,7 @@ defmodule Openmaize.Confirm.Base do
     case Map.get(user_params, to_string(uniq)) do
       nil -> finalize(nil, conn, nil, mail_func)
       user_id ->
-        URI.decode_www_form(user_id)
+        user_id
         |> Config.db_module.find_user(uniq)
         |> check_key(key, key_expiry * 60, password)
         |> finalize(conn, user_id, mail_func)

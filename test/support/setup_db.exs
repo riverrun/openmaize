@@ -3,7 +3,7 @@ defmodule Openmaize.SetupDB do
   alias Openmaize.{TestRepo, User}
 
   def add_users do
-    user1 = %{email: "fred@mail.com", username: "fred", role: "user", password: "mangoes&g0oseberries",
+    user1 = %{email: "fred+1@mail.com", username: "fred", role: "user", password: "mangoes&g0oseberries",
               confirmed_at: nil, confirmation_sent_at: Ecto.DateTime.utc, reset_sent_at: Ecto.DateTime.utc}
     user2 = %{email: "dim@mail.com", username: "dim", role: "user", password: "mangoes&g0oseberries",
               confirmed_at: nil, confirmation_sent_at: Ecto.DateTime.utc, reset_sent_at: Ecto.DateTime.utc}
