@@ -111,8 +111,8 @@ if Code.ensure_loaded?(Ecto) do
 
     Add the following two entries to your user schema:
 
-    field :reset_token, :string
-    field :reset_sent_at, Ecto.DateTime
+        field :reset_token, :string
+        field :reset_sent_at, Ecto.DateTime
 
     As with `add_confirm_token`, the function `Openmaize.ConfirmEmail.gen_token_link`
     can be used to generate the token and link.
