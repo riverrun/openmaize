@@ -11,8 +11,8 @@ defmodule Openmaize.Authenticate do
 
   There is one option:
 
-  * jwt_verify - the function used to verify the JSON Web Token
-    * the default is `&OpenmaizeJWT.Verify.verify_token/1`
+    * jwt_verify - the function used to verify the JSON Web Token
+      * the default is `&OpenmaizeJWT.Verify.verify_token/1`
 
   ## Examples using Phoenix
 

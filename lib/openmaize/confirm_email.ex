@@ -9,11 +9,11 @@ defmodule Openmaize.ConfirmEmail do
 
   There are four options:
 
-  * key_expires_after - the length, in minutes, that the token is valid for
-    * the default is 120 minutes (2 hours)
-  * unique_id - the identifier in the query string, or the parameters
-    * the default is :email
-  * mail_function - the emailing function that you need to define
+    * key_expires_after - the length, in minutes, that the token is valid for
+      * the default is 120 minutes (2 hours)
+    * unique_id - the identifier in the query string, or the parameters
+      * the default is :email
+    * mail_function - the emailing function that you need to define
 
   ## Examples
 

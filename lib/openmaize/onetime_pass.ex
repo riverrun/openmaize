@@ -4,8 +4,8 @@ defmodule Openmaize.OnetimePass do
 
   There is one option
 
-  * add_jwt - the function used to add the JSON Web Token to the response
-    * the default is `&OpenmaizeJWT.Plug.add_token/3`
+    * add_jwt - the function used to add the JSON Web Token to the response
+      * the default is `&OpenmaizeJWT.Plug.add_token/3`
 
   """
 
@@ -16,7 +16,7 @@ defmodule Openmaize.OnetimePass do
   @behaviour Plug
 
   def init(opts) do
-    Keyword.pop opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/3
+    Keyword.pop opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/4
   end
 
   @doc """
@@ -48,6 +48,8 @@ defmodule Openmaize.OnetimePass do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
   defp handle_auth({user, last}, conn, {storage, uniq, add_jwt}) do
-    conn |> put_private(:openmaize_info, last) |> add_jwt.(user, {storage, uniq})
+    conn
+    |> put_private(:openmaize_info, last)
+    |> add_jwt.(user, {storage, uniq}, Config.token_data)
   end
 end

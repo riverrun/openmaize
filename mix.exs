@@ -1,7 +1,7 @@
 defmodule Openmaize.Mixfile do
   use Mix.Project
 
-  @version "0.18.1"
+  @version "1.0.0"
 
   @description """
   Authentication library for Elixir using Plug.
@@ -27,7 +27,8 @@ defmodule Openmaize.Mixfile do
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.1"},
       {:comeonin, "~> 2.4"},
-      {:openmaize_jwt, "~> 0.9", optional: true},
+      {:openmaize_jwt, git: "https://github.com/riverrun/openmaizejwt.git"},
+      #{:openmaize_jwt, "~> 0.9", optional: true},
       {:ecto, "~> 1.1", optional: true},
       {:postgrex, "~> 0.11", optional: true},
       {:not_qwerty123, "~> 1.1", optional: true},

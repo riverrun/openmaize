@@ -4,14 +4,14 @@ defmodule Openmaize.Login do
 
   There are three options:
 
-  * storage - store the token in a cookie, which is the default, or not have Openmaize handle the storage
-    * if you are developing an api or want to store the token in sessionStorage, set storage to nil
-  * unique_id - the name which is used to identify the user (in the database)
-    * the default is `:username`
-    * this can also be a function which checks the user input and returns an atom
-      * see the Openmaize.Login.Name module for some example functions
-  * add_jwt - the function used to add the JSON Web Token to the response
-    * the default is `&OpenmaizeJWT.Plug.add_token/3`
+    * storage - store the token in a cookie, which is the default, or not have Openmaize handle the storage
+      * if you are developing an api or want to store the token in sessionStorage, set storage to nil
+    * unique_id - the name which is used to identify the user (in the database)
+      * the default is `:username`
+      * this can also be a function which checks the user input and returns an atom
+        * see the Openmaize.Login.Name module for some example functions
+    * add_jwt - the function used to add the JSON Web Token to the response
+      * the default is `&OpenmaizeJWT.Plug.add_token/3`
 
   ## Examples with Phoenix
 
@@ -56,7 +56,7 @@ defmodule Openmaize.Login do
   def init(opts) do
     {Keyword.get(opts, :storage, :cookie),
      Keyword.get(opts, :unique_id, :username),
-     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/3)}
+     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/4)}
   end
 
   @doc """
@@ -94,7 +94,7 @@ defmodule Openmaize.Login do
     put_private(conn, :openmaize_otpdata, {storage, uniq, id})
   end
   defp handle_auth({:ok, user}, conn, {storage, uniq, add_jwt}) do
-    add_jwt.(conn, user, {storage, uniq})
+    add_jwt.(conn, user, {storage, uniq}, Config.token_data)
   end
   defp handle_auth({:error, message}, conn, _opts) do
     put_private(conn, :openmaize_error, message)

@@ -21,9 +21,9 @@ defmodule Openmaize.Password do
 
   If you have NotQwerty123 installed, there are three options:
 
-  * min_length - the minimum length of the password
-  * extra_chars - check for punctuation characters (including spaces) and digits
-  * common - check to see if the password is too common (too easy to guess)
+    * min_length - the minimum length of the password
+    * extra_chars - check for punctuation characters (including spaces) and digits
+    * common - check to see if the password is too common (too easy to guess)
 
   The default value for `min_length` is 8 characters if `extra_chars` is true,
   but 12 characters if `extra_chars` is false. This is because the password

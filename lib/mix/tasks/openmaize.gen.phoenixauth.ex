@@ -8,10 +8,10 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   There are two options:
 
-  * api - provide functions for an api
-    * the default is false
-  * confirm - provide functions for email confirmation and password resetting
-    * the default is false
+    * api - provide functions for an api
+      * the default is false
+    * confirm - provide functions for email confirmation and password resetting
+      * the default is false
 
   ## Examples
 

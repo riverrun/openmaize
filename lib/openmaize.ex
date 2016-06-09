@@ -6,24 +6,24 @@ defmodule Openmaize do
 
   ## Authentication
 
-  * Openmaize.Authenticate - authenticate the user, using JSON Web Tokens.
-  * Openmaize.Login - handle login POST requests.
-  * Openmaize.Logout - handle logout requests.
+    * Openmaize.Authenticate - authenticate the user, using JSON Web Tokens.
+    * Openmaize.Login - handle login POST requests.
+    * Openmaize.Logout - handle logout requests.
 
   ## Email confirmation and password resetting
 
-  * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
-  * Openmaize.ResetPassword - verify the token that was sent to the user by email,
-  but this time so that the user's password can be reset.
+    * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
+    * Openmaize.ResetPassword - verify the token that was sent to the user by email,
+    but this time so that the user's password can be reset.
 
   ## Various helper functions
 
   In the Openmaize.DB module:
 
-  * add_password_hash - take an Ecto changeset, hash the password and add the
-  password hash to the changeset.
-  * add_confirm_token - add a confirmation token to the changeset.
-  * add_reset_token - add a reset token to the changeset.
+    * add_password_hash - take an Ecto changeset, hash the password and add the
+    password hash to the changeset.
+    * add_confirm_token - add a confirmation token to the changeset.
+    * add_reset_token - add a reset token to the changeset.
 
   See the relevant module documentation for more details.
 
