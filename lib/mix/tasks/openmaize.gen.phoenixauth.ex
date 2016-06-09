@@ -2,38 +2,34 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   use Mix.Task
 
   @moduledoc """
-  Create modules for authorization and email confirmation.
+  Create modules for authorization and, optionally, email confirmation.
 
   ## Options
 
-  There are two options:
+  There is one option:
 
     * api - provide functions for an api
-      * the default is false
-    * confirm - provide functions for email confirmation and password resetting
       * the default is false
 
   ## Examples
 
-  In the root directory of your project, run the following command:
+  In the root directory of your project, run the following command
+  (add the `--api` option if your app is for an api):
 
       mix openmaize.gen.phoenixauth
 
   This command will create an Authorize module in the `web/controllers`
   directory and tests in the `test/controllers` directory.
 
-  To add email confirmation functionality, run the following command:
-
-      mix openmaize.gen.phoenixauth --confirm
-
-  In addition to the Authorize module and tests, this command will
-  create a Confirm module in the `web/controllers` directory and
-  tests in the `tests/controllers` directory.
+  You will be asked if you want to add modules for email confirmation
+  and password resetting, and if you reply yes, there will be a Confirm
+  module created in the `web/controllers` directory and tests added to
+  the `tests/controllers` directory.
   """
 
   @doc false
   def run(args) do
-    switches = [api: :boolean, confirm: :boolean]
+    switches = [api: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
 
     mod_name = Mix.Openmaize.base_name
@@ -42,7 +38,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
     files = [{"authorize.ex", "web/controllers/authorize.ex"},
              {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
-    if opts[:confirm] do
+    if Mix.shell.yes?("\nAdd modules for email confirmation?") do
       files = files ++ [{"confirm.ex", "web/controllers/confirm.ex"},
                         {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
     end
