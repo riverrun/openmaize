@@ -56,7 +56,7 @@ defmodule Openmaize.Login do
   def init(opts) do
     {Keyword.get(opts, :storage, :cookie),
      Keyword.get(opts, :unique_id, :username),
-     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/4)}
+     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/3)}
   end
 
   @doc """
@@ -94,7 +94,7 @@ defmodule Openmaize.Login do
     put_private(conn, :openmaize_otpdata, {storage, uniq, id})
   end
   defp handle_auth({:ok, user}, conn, {storage, uniq, add_jwt}) do
-    add_jwt.(conn, user, {storage, uniq}, Config.token_data)
+    add_jwt.(conn, user, {storage, uniq})
   end
   defp handle_auth({:error, message}, conn, _opts) do
     put_private(conn, :openmaize_error, message)

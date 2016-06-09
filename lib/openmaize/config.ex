@@ -8,7 +8,6 @@ defmodule Openmaize.Config do
   | :----------------- | :------ | -------: |
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
-  | token_data         | list    | []       |
   | db_module          | module  | Openmaize.DB   |
   | hash_name          | atom    | :password_hash |
   | crypto_mod         | atom    | :bcrypt  |
@@ -28,7 +27,6 @@ defmodule Openmaize.Config do
       config :openmaize,
         user_model: Coolapp.User,
         repo: Coolapp.Repo,
-        token_data: [:iss, :aud],
         db_module: Coolapp.DB,
         hash_name: :encrypted_password,
         crypto_mod: :pbkdf2,
@@ -48,13 +46,6 @@ defmodule Openmaize.Config do
   """
   def repo do
     Application.get_env(:openmaize, :repo)
-  end
-
-  @doc """
-  Additional information to be added to the token.
-  """
-  def token_data do
-    Application.get_env(:openmaize, :token_data, [])
   end
 
   @doc """

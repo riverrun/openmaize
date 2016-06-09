@@ -16,7 +16,7 @@ defmodule Openmaize.OnetimePass do
   @behaviour Plug
 
   def init(opts) do
-    Keyword.pop opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/4
+    Keyword.pop opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/3
   end
 
   @doc """
@@ -48,8 +48,6 @@ defmodule Openmaize.OnetimePass do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
   defp handle_auth({user, last}, conn, {storage, uniq, add_jwt}) do
-    conn
-    |> put_private(:openmaize_info, last)
-    |> add_jwt.(user, {storage, uniq}, Config.token_data)
+    conn |> put_private(:openmaize_info, last) |> add_jwt.(user, {storage, uniq})
   end
 end
