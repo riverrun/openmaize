@@ -1,6 +1,6 @@
 defmodule Openmaize.Login do
   @moduledoc """
-  Module to handle login using the Comeonin password hashing library.
+  Module to handle login.
 
   There are three options:
 
@@ -11,7 +11,7 @@ defmodule Openmaize.Login do
       * this can also be a function which checks the user input and returns an atom
         * see the Openmaize.Login.Name module for some example functions
     * add_jwt - the function used to add the JSON Web Token to the response
-      * the default is `&OpenmaizeJWT.Plug.add_token/3`
+      * the default is `&OpenmaizeJWT.Plug.add_token/5`
 
   ## Examples with Phoenix
 
@@ -56,7 +56,8 @@ defmodule Openmaize.Login do
   def init(opts) do
     {Keyword.get(opts, :storage, :cookie),
      Keyword.get(opts, :unique_id, :username),
-     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/3)}
+     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/5),
+     Keyword.get(opts, :token_validity, 120)}
   end
 
   @doc """
@@ -70,11 +71,11 @@ defmodule Openmaize.Login do
   will be set to true, but no token will be issued yet.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {storage, uniq_id, add_jwt}) do
+           {storage, uniq_id, add_jwt, token_validity}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
-    |> handle_auth(conn, {storage, uniq, add_jwt})
+    |> handle_auth(conn, {storage, uniq, add_jwt, token_validity})
   end
 
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
@@ -90,11 +91,11 @@ defmodule Openmaize.Login do
     Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
-  defp handle_auth({:ok, %{id: id, otp_required: true}}, conn, {storage, uniq, _}) do
+  defp handle_auth({:ok, %{id: id, otp_required: true}}, conn, {storage, uniq, _, _}) do
     put_private(conn, :openmaize_otpdata, {storage, uniq, id})
   end
-  defp handle_auth({:ok, user}, conn, {storage, uniq, add_jwt}) do
-    add_jwt.(conn, user, {storage, uniq})
+  defp handle_auth({:ok, user}, conn, {storage, uniq, add_jwt, token_validity}) do
+    add_jwt.(conn, user, storage, uniq, token_validity)
   end
   defp handle_auth({:error, message}, conn, _opts) do
     put_private(conn, :openmaize_error, message)
