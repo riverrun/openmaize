@@ -16,8 +16,7 @@ defmodule Openmaize.OnetimePass do
   @behaviour Plug
 
   def init(opts) do
-    {Keyword.pop(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/5),
-     Keyword.pop(opts, :token_validity, 120)}
+    Keyword.pop opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/5
   end
 
   @doc """
@@ -27,7 +26,8 @@ defmodule Openmaize.OnetimePass do
   to the conn, either in a cookie or in the body of the response. The conn
   is then returned.
   """
-  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {add_jwt, token_validity, opts}) do
+  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {add_jwt, opts}) do
+    token_validity = user_params["remember"] || 120
     {storage, uniq, id} = get_params(user_params)
     Config.db_module.find_user_byid(id)
     |> check_key(user_params, opts)

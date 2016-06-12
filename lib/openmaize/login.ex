@@ -56,8 +56,7 @@ defmodule Openmaize.Login do
   def init(opts) do
     {Keyword.get(opts, :storage, :cookie),
      Keyword.get(opts, :unique_id, :username),
-     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/5),
-     Keyword.get(opts, :token_validity, 120)}
+     Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/5)}
   end
 
   @doc """
@@ -71,12 +70,13 @@ defmodule Openmaize.Login do
   will be set to true, but no token will be issued yet.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-           {storage, uniq_id, add_jwt, token_validity}) do
+   {storage, uniq_id, add_jwt}) do
+    token_validity = user_params["remember"] || 120
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     Config.db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
     |> handle_auth(conn, {storage, uniq, add_jwt, token_validity})
-  end
+   end
 
   defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
     {uniq, Map.get(user_params, to_string(uniq)), password}
