@@ -35,8 +35,6 @@ defmodule Openmaize.ResetPassword do
   This command will be run when the user sends the form with the data to
   reset the password. You will need to write a function to handle the
   `get "/reset"` request, that is, to render the form to reset the password.
-
-  # add example `reset_password` function
   """
 
   use Openmaize.Confirm.Base

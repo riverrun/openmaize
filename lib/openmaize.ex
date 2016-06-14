@@ -29,6 +29,11 @@ defmodule Openmaize do
 
   For configuration, see the documentation for Openmaize.Config.
 
+  ## Using with Phoenix
+
+  You can generate an example Authorize module and / or a Confirm module
+  by running the command `mix openmaize.gen.phoenixauth`.
+
   There is an example of Openmaize being used with Phoenix at
   [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
 

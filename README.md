@@ -73,6 +73,11 @@ password hash to the changeset.
 
 See the relevant module documentation for more details.
 
+## Using with Phoenix
+
+You can generate an example Authorize module and / or a Confirm module
+by running the command `mix openmaize.gen.phoenixauth`.
+
 There is an example of Openmaize being used with Phoenix at
 [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
 

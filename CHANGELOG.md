@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.0
+## v0.19.0
 
 * Changes
     * Added `token_data` config option to OpenmaizeJWT. This allows the developer to add extra data to the token.

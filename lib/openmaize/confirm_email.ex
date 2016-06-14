@@ -23,8 +23,6 @@ defmodule Openmaize.ConfirmEmail do
       plug Openmaize.ConfirmEmail, [mail_function: &Mailer.send_receipt/1] when action in [:confirm]
 
   This command will be run when the user accesses the `confirm` route.
-
-  # add example `confirm` function
   """
 
   use Openmaize.Confirm.Base

@@ -1,7 +1,7 @@
 defmodule Openmaize.Mixfile do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "0.19.0"
 
   @description """
   Authentication library for Elixir using Plug.
@@ -9,13 +9,13 @@ defmodule Openmaize.Mixfile do
 
   def project do
     [app: :openmaize,
-      version: @version,
-      elixir: "~> 1.2",
-      name: "Openmaize",
-      description: @description,
-      package: package,
-      source_url: "https://github.com/elixircnx/openmaize",
-      deps: deps]
+     version: @version,
+     elixir: "~> 1.2",
+     name: "Openmaize",
+     description: @description,
+     package: package,
+     source_url: "https://github.com/elixircnx/openmaize",
+     deps: deps]
   end
 
   def application do
@@ -23,26 +23,22 @@ defmodule Openmaize.Mixfile do
   end
 
   defp deps do
-    [
-      {:cowboy, "~> 1.0"},
-      {:plug, "~> 1.1"},
-      {:comeonin, "~> 2.4"},
-      {:openmaize_jwt, git: "https://github.com/riverrun/openmaizejwt.git"},
-      #{:openmaize_jwt, "~> 0.9", optional: true},
-      {:ecto, "~> 1.1", optional: true},
-      {:postgrex, "~> 0.11", optional: true},
-      {:not_qwerty123, "~> 1.1", optional: true},
-      {:earmark, "~> 0.2", only: :dev},
-      {:ex_doc,  "~> 0.11", only: :dev}
-    ]
+    [{:cowboy, "~> 1.0"},
+     {:plug, "~> 1.1"},
+     {:comeonin, "~> 2.4"},
+     {:openmaize_jwt, git: "https://github.com/riverrun/openmaizejwt.git"},
+     #{:openmaize_jwt, "~> 0.10", optional: true},
+     {:ecto, "~> 1.1", optional: true},
+     {:postgrex, "~> 0.11", optional: true},
+     {:not_qwerty123, "~> 1.1", optional: true},
+     {:earmark, "~> 0.2", only: :dev},
+     {:ex_doc,  "~> 0.11", only: :dev}]
   end
 
   defp package do
-    [
-      maintainers: ["David Whitlock"],
-      licenses: ["BSD"],
-      links: %{"GitHub" => "https://github.com/elixircnx/openmaize",
-        "Docs" => "http://hexdocs.pm/openmaize"}
-    ]
+    [maintainers: ["David Whitlock"],
+     licenses: ["BSD"],
+     links: %{"GitHub" => "https://github.com/elixircnx/openmaize",
+      "Docs" => "http://hexdocs.pm/openmaize"}]
   end
 end
