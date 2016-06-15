@@ -2,7 +2,7 @@ defmodule Openmaize.DBTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.{DB, TestRepo, User}
+  alias Openmaize.{DB, DummyCrypto, TestRepo, User}
 
   test "easy password results in an error being added to the changeset" do
     user = %{email: "bill@mail.com", username: "bill", role: "user", password: "easytoguess",
@@ -27,6 +27,15 @@ defmodule Openmaize.DBTest do
     changeset = DB.add_reset_token(user, "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw")
     assert changeset.changes.reset_token
     assert changeset.changes.reset_sent_at
+  end
+
+  test "hashes according to algorithm" do
+    Application.put_env(:openmaize, :crypto_mod, DummyCrypto)
+
+    changeset = %User{} |> User.auth_changeset(%{password: "g0g0g4dg3t!!"})
+    assert changeset.changes.password_hash == "dumb-g0g0g4dg3t!!-crypto"
+  after
+    Application.delete_env(:openmaize, :crypto_mod)
   end
 
 end

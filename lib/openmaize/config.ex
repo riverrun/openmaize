@@ -30,7 +30,7 @@ defmodule Openmaize.Config do
         repo: Coolapp.Repo,
         db_module: Coolapp.DB,
         hash_name: :encrypted_password,
-        crypto_mod: :pbkdf2,
+        crypto_mod: Comeonin.Bcrypt,
         password_strength: [min_length: 12]
 
   """
