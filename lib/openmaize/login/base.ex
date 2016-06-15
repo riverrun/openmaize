@@ -23,14 +23,13 @@ defmodule Openmaize.Login.Base do
       end
 
       @doc """
-      Handle the login POST request.
+      Plug to handle the login POST request.
 
-      If the login is successful and `otp_required: true` is not in the
-      user model, a JSON Web Token will be added to the conn, either in
-      a cookie or in the body of the response. The conn is then returned.
+      If there is a `remember_me` value in the user_params, and it
+      is set to true, then the `override_exp` value will be used to
+      set the token expiry time / date.
 
-      If `otp_required: true` is in the user model, `conn.private.openmaize_otp_required`
-      will be set to true, but no token will be issued yet.
+      #Add more documentation about remember me
       """
       def call(%Plug.Conn{params: %{"user" =>
          %{"remember_me" => true} = user_params}} = conn, opts) do
@@ -49,6 +48,14 @@ defmodule Openmaize.Login.Base do
   alias Openmaize.Config
 
   @doc """
+  Handle the login POST request.
+
+  If the login is successful and `otp_required: true` is not in the
+  user model, a JSON Web Token will be added to the conn, either in
+  a cookie or in the body of the response. The conn is then returned.
+
+  If `otp_required: true` is in the user model, `conn.private.openmaize_otp_required`
+  will be set to true, but no token will be issued yet.
   """
   def handle_login(conn, user_params, {storage, uniq_id, add_jwt, override_exp}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)

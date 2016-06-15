@@ -95,7 +95,9 @@ defmodule Openmaize.LoginTest do
     opts = {:cookie, :username, &OpenmaizeJWT.Plug.add_token/5, 10_080}
     conn = conn(:post, "/login", %{"user" => %{"username" => "ray",
        "password" => "h4rd2gU3$$", "remember_me" => true}}) |> Login.call(opts)
-    {:ok, %{exp: exp}} = Verify.verify_token conn.resp_cookies["access_token"].value
+    token = conn.resp_cookies["access_token"]
+    assert token.max_age == 604_800
+    {:ok, %{exp: exp}} = Verify.verify_token token.value
     assert exp - Tools.current_time > 500_000_000
   end
 
@@ -103,7 +105,9 @@ defmodule Openmaize.LoginTest do
     opts = {:cookie, :username, &OpenmaizeJWT.Plug.add_token/5, 10_080}
     conn = conn(:post, "/login", %{"user" => %{"username" => "ray",
        "password" => "h4rd2gU3$$", "remember_me" => false}}) |> Login.call(opts)
-    {:ok, %{exp: exp}} = Verify.verify_token conn.resp_cookies["access_token"].value
+    token = conn.resp_cookies["access_token"]
+    assert token.max_age == 7200
+    {:ok, %{exp: exp}} = Verify.verify_token token.value
     assert exp - Tools.current_time < 8_000_000
   end
 

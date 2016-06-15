@@ -27,14 +27,16 @@ defmodule Openmaize.OnetimePass do
   is then returned.
   """
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {add_jwt, opts}) do
-    {storage, uniq, id} = get_params(user_params)
+    {storage, uniq, id, override_exp} = get_params(user_params)
     Config.db_module.find_user_byid(id)
     |> check_key(user_params, opts)
-    |> handle_auth(conn, {storage, uniq, add_jwt})
+    |> handle_auth(conn, {storage, uniq, add_jwt, override_exp})
   end
 
-  defp get_params(%{"storage" => storage, "uniq" => uniq, "id" => id}) do
-    {String.to_atom(storage), String.to_atom(uniq), id}
+  defp get_params(%{"storage" => storage, "uniq" => uniq, "id" => id,
+    "override_exp" => override_exp}) do
+    {String.to_atom(storage), String.to_atom(uniq),
+     id, override_exp && String.to_integer(override_exp)}
   end
 
   defp check_key(user, %{"hotp" => hotp}, opts) do
@@ -47,9 +49,9 @@ defmodule Openmaize.OnetimePass do
   defp handle_auth({_, false}, conn, _opts) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  defp handle_auth({user, last}, conn, {storage, uniq, add_jwt}) do
+  defp handle_auth({user, last}, conn, {storage, uniq, add_jwt, override_exp}) do
     conn
     |> put_private(:openmaize_info, last)
-    |> add_jwt.(user, storage, uniq, nil)
+    |> add_jwt.(user, storage, uniq, override_exp)
   end
 end
