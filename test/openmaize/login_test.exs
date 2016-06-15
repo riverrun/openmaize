@@ -2,7 +2,7 @@ defmodule Openmaize.LoginTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.{Login, Login.Name}
+  alias Openmaize.{DummyCrypto, Login, Login.Name}
   alias OpenmaizeJWT.{Tools, Verify}
 
   def call(name, password, uniq, opts) do
@@ -25,6 +25,17 @@ defmodule Openmaize.LoginTest do
     assert conn.resp_cookies["access_token"]
     refute conn.private[:openmaize_error]
     assert conn.private[:openmaize_user]
+  end
+
+  test "login fails when crypto mod changes" do
+    Application.put_env(:openmaize, :crypto_mod, DummyCrypto)
+    opts = {:cookie, :email, &OpenmaizeJWT.Plug.add_token/5, nil}
+    conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
+    refute conn.resp_cookies["access_token"]
+    assert conn.private[:openmaize_error]
+    refute conn.private[:openmaize_user]
+  after
+    Application.delete_env(:openmaize, :crypto_mod)
   end
 
   test "login fails for incorrect password" do
