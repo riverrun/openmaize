@@ -45,7 +45,8 @@ defmodule Openmaize.Login do
 
       plug Openmaize.Login, [override_exp: 10080] when action in [:login_user]
 
-  The above command creates a token that is valid for 7 days (10080 minutes).
+  The above command creates a token that is valid for 7 days (10080 minutes)
+  if "remember_me" in the user_params is set to true.
   """
 
   use Openmaize.Login.Base

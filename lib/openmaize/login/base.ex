@@ -28,8 +28,6 @@ defmodule Openmaize.Login.Base do
       If there is a `remember_me` value in the user_params, and it
       is set to true, then the `override_exp` value will be used to
       set the token expiry time / date.
-
-      #Add more documentation about remember me
       """
       def call(%Plug.Conn{params: %{"user" =>
          %{"remember_me" => true} = user_params}} = conn, opts) do

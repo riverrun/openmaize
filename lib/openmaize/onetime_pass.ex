@@ -33,10 +33,10 @@ defmodule Openmaize.OnetimePass do
     |> handle_auth(conn, {storage, uniq, add_jwt, override_exp})
   end
 
-  defp get_params(%{"storage" => storage, "uniq" => uniq, "id" => id,
-    "override_exp" => override_exp}) do
-    {String.to_atom(storage), String.to_atom(uniq),
-     id, override_exp && String.to_integer(override_exp)}
+  defp get_params(%{"storage" => storage, "uniq" => uniq, "id" => id} = user_params) do
+    override_exp = Map.get user_params, "override_exp"
+    {String.to_atom(storage), String.to_atom(uniq), id,
+     override_exp && String.to_integer(override_exp)}
   end
 
   defp check_key(user, %{"hotp" => hotp}, opts) do

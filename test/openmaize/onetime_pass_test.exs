@@ -16,8 +16,7 @@ defmodule Openmaize.OnetimePassTest do
   end
 
   test "check hotp with default options" do
-    user = %{"hotp" => "816065", "storage" => "cookie", "uniq" => "username",
-     "id" => "5", "override_exp" => nil}
+    user = %{"hotp" => "816065", "storage" => "cookie", "uniq" => "username", "id" => "5"}
     conn = call(user, {&OpenmaizeJWT.Plug.add_token/5, []})
     assert conn.resp_cookies["access_token"]
     assert conn.private[:openmaize_info] == 2
@@ -30,8 +29,7 @@ defmodule Openmaize.OnetimePassTest do
   end
 
   test "check hotp with last option" do
-    user = %{"hotp" => "088239", "storage" => "cookie", "uniq" => "username",
-     "id" => "5", "override_exp" => nil}
+    user = %{"hotp" => "088239", "storage" => "cookie", "uniq" => "username", "id" => "5"}
     conn = call(user, {&OpenmaizeJWT.Plug.add_token/5, [last: 18]})
     assert conn.resp_cookies["access_token"]
     assert conn.private[:openmaize_info] == 19

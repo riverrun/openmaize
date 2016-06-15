@@ -119,8 +119,8 @@ defmodule <%= base %>.Authorize do
     unauthenticated conn, message
   end
   def handle_login(%Plug.Conn{private: %{openmaize_otpdata:
-     {storage, uniq, id, override_exp}}} = conn, _) do
-    render conn, "twofa.html", storage: storage, uniq: uniq, id: id, override_exp: override_exp
+     {storage, uniq, id, _}}} = conn, _) do
+    render conn, "twofa.html", storage: storage, uniq: uniq, id: id
   end
   def handle_login(%Plug.Conn{private: %{openmaize_user: %{role: role}}} = conn, _params) do
     conn |> put_flash(:info, "You have been logged in") |> redirect(to: @redirects[role])
