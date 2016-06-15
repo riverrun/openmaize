@@ -62,12 +62,12 @@ defmodule Openmaize.Login.Base do
   end
   defp get_params(user_params, uniq_func), do: uniq_func.(user_params)
 
-  defp check_pass(nil, _, _), do: Config.get_crypto_mod.dummy_checkpw
+  defp check_pass(nil, _, _), do: Config.crypto_mod.dummy_checkpw
   defp check_pass(%{confirmed_at: nil}, _, _),
     do: {:error, "You have to confirm your email address before continuing."}
   defp check_pass(user, password, hash_name) do
     %{^hash_name => hash} = user
-    Config.get_crypto_mod.checkpw(password, hash) and {:ok, user}
+    Config.crypto_mod.checkpw(password, hash) and {:ok, user}
   end
 
   defp handle_auth({:ok, %{id: id, otp_required: true}}, conn, {storage, uniq, _, _}) do

@@ -75,7 +75,7 @@ if Code.ensure_loaded?(Ecto) do
     will be added to the changeset.
 
     Comeonin.Bcrypt is the default hashing function, but this can be changed to
-    Comeonin.Pbkdf2 by setting the Config.crypto_mod value to :pbkdf2.
+    Comeonin.Pbkdf2 by setting the Config.crypto_mod value.
     """
     def add_password_hash(user, params) do
       (params[:password] || params["password"])
@@ -152,7 +152,7 @@ if Code.ensure_loaded?(Ecto) do
 
     defp add_hash_changeset({:ok, password}, user) do
       Ecto.Changeset.change(user, %{Config.hash_name =>
-                                     Config.get_crypto_mod.hashpwsalt(password)})
+                                     Config.crypto_mod.hashpwsalt(password)})
     end
     defp add_hash_changeset({:error, message}, user) do
       Ecto.Changeset.change(user, %{password: ""})
@@ -161,7 +161,7 @@ if Code.ensure_loaded?(Ecto) do
 
     defp reset_update_repo({:ok, password}, user) do
       Config.repo.transaction(fn ->
-        user = Ecto.Changeset.change(user, %{Config.hash_name => Config.get_crypto_mod.hashpwsalt(password)})
+        user = Ecto.Changeset.change(user, %{Config.hash_name => Config.crypto_mod.hashpwsalt(password)})
         |> Config.repo.update!
 
         Ecto.Changeset.change(user, %{reset_token: nil, reset_sent_at: nil})

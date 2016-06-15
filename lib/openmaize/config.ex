@@ -4,13 +4,14 @@ defmodule Openmaize.Config do
 
   The following are valid configuration items.
 
+
   | name               | type    | default  |
   | :----------------- | :------ | -------: |
   | user_model         | module  | N/A      |
   | repo               | module  | N/A      |
   | db_module          | module  | Openmaize.DB   |
   | hash_name          | atom    | :password_hash |
-  | crypto_mod         | atom    | :bcrypt  |
+  | crypto_mod         | module  | Comeonin.Bcrypt  |
   | password_strength  | keyword list | []  |
 
   The values for user_model and repo should be module names.
@@ -67,20 +68,16 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The password hashing and checking algorithm. You can choose between
-  bcrypt and pbkdf2_sha512. Bcrypt is the default.
-
-  For more information about these two algorithms, see the documentation
-  for Comeonin.
+  The password hashing and checking algorithm. Bcrypt is the default.
+  You can supply any module.  Module must implement the following
+  functions:
+  hashpwsalt/1 hashes the password
+  dummy_checkpw/0 performs a hash and returns false
+  checkpw/2 given a password and a salt, returns if match
+  See Comeonin.Bcrypt for example.
   """
-  def get_crypto_mod do
-    case crypto_mod do
-      :pbkdf2 -> Comeonin.Pbkdf2
-      _ -> Comeonin.Bcrypt
-    end
-  end
-  defp crypto_mod do
-    Application.get_env(:openmaize, :crypto_mod, :bcrypt)
+  def crypto_mod do
+    Application.get_env(:openmaize, :crypto_mod, Comeonin.Bcrypt)
   end
 
   @doc """
