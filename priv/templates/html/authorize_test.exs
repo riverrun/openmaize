@@ -9,7 +9,7 @@ defmodule <%= base %>.AuthorizeTest do
   @invalid_attrs %{email: "tony@mail.com", password: "maaaangoes&g00zeberries"}
 
   {:ok, user_token} = %{id: 3, email: "tony@mail.com", role: "user"}
-                      |> generate_token({0, 86400})
+                      |> generate_token({0, 1440})
   @user_token user_token
 
   setup do
@@ -67,7 +67,7 @@ defmodule <%= base %>.AuthorizeTest do
 
   test "logout succeeds" do
   {:ok, user_token} = %{id: 3, email: "tony@mail.com", role: "user"}
-                      |> generate_token({0, 86400})
+                      |> generate_token({0, 1440})
     conn = conn()
     |> put_req_cookie("access_token", user_token)
     |> get("/logout")

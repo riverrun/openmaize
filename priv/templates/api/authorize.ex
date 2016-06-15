@@ -24,7 +24,7 @@ defmodule <%= base %>.Authorize do
     unauthenticated conn
   end
   def authorize_action(%Plug.Conn{assigns: %{current_user: current_user},
-                                  params: params} = conn, roles, module) do
+    params: params} = conn, roles, module) do
     if current_user.role in roles do
       apply(module, action_name(conn), [conn, params, current_user])
     else
@@ -71,8 +71,8 @@ defmodule <%= base %>.Authorize do
   def id_check(%Plug.Conn{assigns: %{current_user: nil}} = conn, _opts) do
     unauthenticated conn
   end
-  def id_check(%Plug.Conn{params: %{"id" => id},
-              assigns: %{current_user: %{id: current_id} = current_user}} = conn, _opts) do
+  def id_check(%Plug.Conn{params: %{"id" => id}, assigns: %{current_user:
+     %{id: current_id} = current_user}} = conn, _opts) do
     id == to_string(current_id) and conn || unauthorized conn, current_user
   end
 

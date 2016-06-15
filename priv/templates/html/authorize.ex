@@ -32,7 +32,7 @@ defmodule <%= base %>.Authorize do
     unauthenticated conn
   end
   def authorize_action(%Plug.Conn{assigns: %{current_user: current_user},
-                                  params: params} = conn, roles, module) do
+    params: params} = conn, roles, module) do
     if current_user.role in roles do
       apply(module, action_name(conn), [conn, params, current_user])
     else
@@ -90,8 +90,8 @@ defmodule <%= base %>.Authorize do
   def id_check(%Plug.Conn{assigns: %{current_user: nil}} = conn, _opts) do
     unauthenticated conn
   end
-  def id_check(%Plug.Conn{params: %{"id" => id},
-              assigns: %{current_user: %{id: current_id} = current_user}} = conn, _opts) do
+  def id_check(%Plug.Conn{params: %{"id" => id}, assigns: %{current_user:
+     %{id: current_id} = current_user}} = conn, _opts) do
     id == to_string(current_id) and conn || unauthorized conn, current_user
   end
 
@@ -118,11 +118,11 @@ defmodule <%= base %>.Authorize do
   def handle_login(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
     unauthenticated conn, message
   end
-  def handle_login(%Plug.Conn{private: %{openmaize_otpdata: {storage, uniq, id}}} = conn, _) do
-    render conn, "twofa.html", storage: storage, uniq: uniq, id: id
+  def handle_login(%Plug.Conn{private: %{openmaize_otpdata:
+     {storage, uniq, id, override_exp}}} = conn, _) do
+    render conn, "twofa.html", storage: storage, uniq: uniq, id: id, override_exp: override_exp
   end
-  def handle_login(%Plug.Conn{private:
-                            %{openmaize_user: %{role: role}}} = conn, _params) do
+  def handle_login(%Plug.Conn{private: %{openmaize_user: %{role: role}}} = conn, _params) do
     conn |> put_flash(:info, "You have been logged in") |> redirect(to: @redirects[role])
   end
 

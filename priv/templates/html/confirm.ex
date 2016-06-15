@@ -42,7 +42,7 @@ defmodule <%= base %>.Confirm do
   See the documentation for Openmaize.ResetPassword for more information.
   """
   def handle_reset(%Plug.Conn{private: %{openmaize_error: message}} = conn,
-                  %{"user" => %{"email" => email, "key" => key}}) do
+   %{"user" => %{"email" => email, "key" => key}}) do
     conn
     |> put_flash(:error, message)
     |> render("reset_form.html", email: email, key: key)

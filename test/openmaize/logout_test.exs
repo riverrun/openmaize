@@ -7,7 +7,7 @@ defmodule Openmaize.LogoutTest do
 
   setup_all do
     {:ok, user_token} = %{id: 1, name: "Raymond Luxury Yacht", role: "user"}
-    |> generate_token({0, 7200})
+    |> generate_token({0, 120})
 
     {:ok, %{user_token: user_token}}
   end
