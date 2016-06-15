@@ -29,6 +29,11 @@ defmodule Openmaize.DBTest do
     assert changeset.changes.reset_sent_at
   end
 
+  test "defaults to hashing password with bcrypt" do
+    changeset = %User{} |> User.auth_changeset(%{password: "g0g0g4dg3t!!"})
+    assert Comeonin.Bcrypt.checkpw("g0g0g4dg3t!!", changeset.changes.password_hash)
+  end
+
   test "hashes according to algorithm" do
     Application.put_env(:openmaize, :crypto_mod, DummyCrypto)
 
