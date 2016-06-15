@@ -5,14 +5,14 @@ defmodule Openmaize.Config do
   The following are valid configuration items.
 
 
-  | name               | type    | default  |
-  | :----------------- | :------ | -------: |
-  | user_model         | module  | N/A      |
-  | repo               | module  | N/A      |
-  | db_module          | module  | Openmaize.DB   |
-  | hash_name          | atom    | :password_hash |
-  | crypto_mod         | module  | Comeonin.Bcrypt  |
-  | password_strength  | keyword list | []  |
+  | name               | type         | default          |
+  | :----------------- | :----------- | ---------------: |
+  | user_model         | module       | N/A              |
+  | repo               | module       | N/A              |
+  | db_module          | module       | Openmaize.DB     |
+  | hash_name          | atom         | :password_hash   |
+  | crypto_mod         | module       | Comeonin.Bcrypt  |
+  | password_strength  | keyword list | []               |
 
   The values for user_model and repo should be module names.
   If, for example, your app is called Coolapp and your user
