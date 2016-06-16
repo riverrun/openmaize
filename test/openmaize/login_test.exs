@@ -105,7 +105,7 @@ defmodule Openmaize.LoginTest do
   test "override default token validity, remember me example" do
     opts = {:cookie, :username, &OpenmaizeJWT.Plug.add_token/5, 10_080}
     conn = conn(:post, "/login", %{"user" => %{"username" => "ray",
-       "password" => "h4rd2gU3$$", "remember_me" => true}}) |> Login.call(opts)
+       "password" => "h4rd2gU3$$", "remember_me" => "true"}}) |> Login.call(opts)
     token = conn.resp_cookies["access_token"]
     assert token.max_age == 604_800
     {:ok, %{exp: exp}} = Verify.verify_token token.value
@@ -115,7 +115,7 @@ defmodule Openmaize.LoginTest do
   test "remember me set to false example" do
     opts = {:cookie, :username, &OpenmaizeJWT.Plug.add_token/5, 10_080}
     conn = conn(:post, "/login", %{"user" => %{"username" => "ray",
-       "password" => "h4rd2gU3$$", "remember_me" => false}}) |> Login.call(opts)
+       "password" => "h4rd2gU3$$", "remember_me" => "false"}}) |> Login.call(opts)
     token = conn.resp_cookies["access_token"]
     assert token.max_age == 7200
     {:ok, %{exp: exp}} = Verify.verify_token token.value

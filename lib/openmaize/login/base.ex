@@ -24,13 +24,9 @@ defmodule Openmaize.Login.Base do
 
       @doc """
       Plug to handle the login POST request.
-
-      If there is a `remember_me` value in the user_params, and it
-      is set to true, then the `override_exp` value will be used to
-      set the token expiry time / date.
       """
       def call(%Plug.Conn{params: %{"user" =>
-         %{"remember_me" => true} = user_params}} = conn, opts) do
+         %{"remember_me" => "true"} = user_params}} = conn, opts) do
         handle_login conn, user_params, opts
       end
       def call(%Plug.Conn{params: %{"user" => user_params}} = conn,

@@ -12,9 +12,19 @@ defmodule Openmaize.Login do
         * see the Openmaize.Login.Name module for some example functions
     * add_jwt - the function used to add the JSON Web Token to the response
       * the default is `&OpenmaizeJWT.Plug.add_token/5`
-    * override_exp - override the default number of minutes that a token is valid for
-      * the token validity is usually set in the OpenmaizeJWT config
+    * override_exp - set the default number of minutes that a token is valid for (overriding the default)
+      * the default token validity is set in the OpenmaizeJWT config
       * the default is nil (no override)
+
+  ## Remember me
+
+  By using the `override_exp` option, you can override the default token
+  validity on a case-by-case basis. This can help you implement a `remember
+  me` option on the login page.
+
+  It is recommended that `override_exp` is not set too high (in the example
+  below, it is set to 10_080 [7 days]). In addition, it should not be used
+  when protecting high, or even medium, value resources.
 
   ## Examples with Phoenix
 
@@ -43,7 +53,7 @@ defmodule Openmaize.Login do
   And if you want to override the default value for token validity, to
   implement a 'remember me' functionality, for example:
 
-      plug Openmaize.Login, [override_exp: 10080] when action in [:login_user]
+      plug Openmaize.Login, [override_exp: 10_080] when action in [:login_user]
 
   The above command creates a token that is valid for 7 days (10080 minutes)
   if "remember_me" in the user_params is set to true.

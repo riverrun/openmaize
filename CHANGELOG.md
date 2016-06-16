@@ -3,8 +3,11 @@
 ## v0.19.0
 
 * Changes
+    * Made it possible to override default token validity - can be used to implement `remember_me` functionality.
     * Added `token_data` config option to OpenmaizeJWT. This allows the developer to add extra data to the token.
     * Changed the way the confirm option is handled in the mix generator.
+    * Changed the config value for `crypto_mod`.
+        * It is now a module name, not an atom, and other algorithms, not just Comeonin, can be used.
 
 ## v0.18.0
 
