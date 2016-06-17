@@ -33,6 +33,26 @@ defmodule <%= base %>.Authorize do
   end
 
   @doc """
+  Similar to `authorize_action`, but the current_user is the full user struct.
+
+  The `authorize_action` function produces a current_user with just the data
+  from the JSON Web Token. With this function, the database is checked and the
+  current_user contains all the data about the user from the database.
+  """
+  def authorize_action_dbcheck(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do
+    unauthenticated conn
+  end
+  def authorize_action_dbcheck(%Plug.Conn{assigns: %{current_user: current_user},
+    params: params} = conn, roles, module) do
+    if current_user.role in roles do
+      user = Config.repo.get(Config.user_model, current_user.id)
+      apply(module, action_name(conn), [conn, params, user])
+    else
+      unauthorized conn, current_user
+    end
+  end
+
+  @doc """
   Send an unauthenticated user an error message.
   """
   def unauthenticated(conn) do
