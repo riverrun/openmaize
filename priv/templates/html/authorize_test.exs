@@ -70,7 +70,7 @@ defmodule <%= base %>.AuthorizeTest do
                       |> generate_token({0, 1440})
     conn = conn()
     |> put_req_cookie("access_token", user_token)
-    |> get("/logout")
+    |> delete("/logout")
     assert redirected_to(conn) == "/"
   end
 

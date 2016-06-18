@@ -2,6 +2,7 @@ defmodule <%= base %>.Authorize do
 
   import Plug.Conn
   import Phoenix.Controller
+  alias <%= base %>.{Repo, User}
 
   @doc """
   Custom action that can be used to override the `action` function in any
@@ -45,7 +46,7 @@ defmodule <%= base %>.Authorize do
   def authorize_action_dbcheck(%Plug.Conn{assigns: %{current_user: current_user},
     params: params} = conn, roles, module) do
     if current_user.role in roles do
-      user = Config.repo.get(Config.user_model, current_user.id)
+      user = Repo.get(User, current_user.id)
       apply(module, action_name(conn), [conn, params, user])
     else
       unauthorized conn, current_user
