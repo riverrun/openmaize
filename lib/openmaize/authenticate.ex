@@ -27,7 +27,7 @@ defmodule Openmaize.Authenticate do
   @behaviour Plug
 
   def init(opts) do
-    Keyword.get(opts, :jwt_verify, &OpenmaizeJWT.Verify.verify_token/1)
+    Keyword.get opts, :jwt_verify, &OpenmaizeJWT.Verify.verify_token/1
   end
 
   @doc """

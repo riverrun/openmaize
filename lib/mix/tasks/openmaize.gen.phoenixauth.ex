@@ -34,13 +34,13 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
     mod_name = Mix.Openmaize.base_name
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
-                        opts[:api] && "api" || "html"]
+     opts[:api] && "api" || "html"]
 
     files = [{"authorize.ex", "web/controllers/authorize.ex"},
-             {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
-    if Mix.shell.yes?("\nAdd modules for email confirmation?") do
-      files = files ++ [{"confirm.ex", "web/controllers/confirm.ex"},
-                        {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
+     {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
+    files = if Mix.shell.yes?("\nAdd modules for email confirmation?") do
+      files ++ [{"confirm.ex", "web/controllers/confirm.ex"},
+       {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
     end
 
     Mix.Openmaize.copy_files(srcdir, files, mod_name)
@@ -58,7 +58,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
       In the `web/router.ex` file, add the following line to the pipeline:
 
-          plug Openmaize.Authenticate
+      plug Openmaize.Authenticate
 
       You will also need to configure Openmaize. See the documentation for
       Openmaize.Config for details.

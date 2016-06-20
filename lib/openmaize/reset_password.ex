@@ -4,7 +4,7 @@ defmodule Openmaize.ResetPassword do
 
   ## Options
 
-  There are four options:
+  There are three options:
 
     * key_expires_after - the length, in minutes, that the token is valid for
       * the default is 120 minutes (2 hours)
@@ -40,7 +40,7 @@ defmodule Openmaize.ResetPassword do
   use Openmaize.Confirm.Base
 
   def call(%Plug.Conn{params: %{"user" =>
-      %{"key" => key, "password" => password} = user_params}} = conn, opts)
+     %{"key" => key, "password" => password} = user_params}} = conn, opts)
   when byte_size(key) == 32 do
     check_user_key(conn, user_params, key, password, opts)
   end

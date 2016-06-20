@@ -45,7 +45,7 @@ defmodule Openmaize.Confirm.Base do
   an `openmaize_error` message will be added to the conn.
   """
   def check_user_key(conn, user_params, key, password,
-                     {key_expiry, uniq, mail_func}) do
+   {key_expiry, uniq, mail_func}) do
     case Map.get(user_params, to_string(uniq)) do
       nil -> finalize(nil, conn, nil, mail_func)
       user_id ->

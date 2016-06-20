@@ -13,9 +13,9 @@ defmodule Openmaize.Mixfile do
      elixir: "~> 1.2",
      name: "Openmaize",
      description: @description,
-     package: package,
+     package: package(),
      source_url: "https://github.com/elixircnx/openmaize",
-     deps: deps]
+     deps: deps()]
   end
 
   def application do

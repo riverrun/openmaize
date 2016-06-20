@@ -27,7 +27,7 @@ defmodule Openmaize.Logout do
   @behaviour Plug
 
   def init(opts) do
-    Keyword.get(opts, :store_jwt, &OpenmaizeJWT.LogoutManager.store_jwt/1)
+    Keyword.get opts, :store_jwt, &OpenmaizeJWT.LogoutManager.store_jwt/1
   end
 
   @doc """
