@@ -40,7 +40,7 @@ defmodule Openmaize.ConfirmEmail do
   unique_id to :username. The default unique_id is :email.
   """
   def gen_token_link(user_id, unique_id \\ :email) do
-    key = :crypto.strong_rand_bytes(24) |> Base.url_encode64()
+    key = :crypto.strong_rand_bytes(24) |> Base.url_encode64
     {key, "#{unique_id}=#{URI.encode_www_form(user_id)}&key=#{key}"}
   end
 end

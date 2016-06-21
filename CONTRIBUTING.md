@@ -85,7 +85,7 @@ in order to craft an excellent pull request:
    # Navigate to the newly cloned directory
    cd openmaize
    # Assign the original repo to a remote called "upstream"
-   git remote add upstream https://github.com/elixircnx/openmaize
+   git remote add upstream https://github.com/riverrun/openmaize
    ```
 
 2. If you cloned a while ago, get the latest changes from upstream:

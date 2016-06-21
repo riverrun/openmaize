@@ -1,10 +1,10 @@
 defmodule Openmaize.Mixfile do
   use Mix.Project
 
-  @version "0.19.2"
+  @version "0.19.3"
 
   @description """
-  Authentication library for Elixir using Plug.
+  Authentication library for Elixir using Plug
   """
 
   def project do
@@ -14,7 +14,7 @@ defmodule Openmaize.Mixfile do
      name: "Openmaize",
      description: @description,
      package: package(),
-     source_url: "https://github.com/elixircnx/openmaize",
+     source_url: "https://github.com/riverrun/openmaize",
      deps: deps()]
   end
 
@@ -37,7 +37,7 @@ defmodule Openmaize.Mixfile do
   defp package do
     [maintainers: ["David Whitlock"],
      licenses: ["BSD"],
-     links: %{"GitHub" => "https://github.com/elixircnx/openmaize",
+     links: %{"GitHub" => "https://github.com/riverrun/openmaize",
       "Docs" => "http://hexdocs.pm/openmaize"}]
   end
 end

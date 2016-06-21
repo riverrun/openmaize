@@ -54,7 +54,7 @@ if Code.ensure_loaded?(Ecto) do
       Ecto.Query.from(u in Config.user_model,
                       where: field(u, ^uniq) == ^user_id,
                       select: u)
-      |> Config.repo.one()
+      |> Config.repo.one
     end
 
     @doc """
@@ -127,7 +127,7 @@ if Code.ensure_loaded?(Ecto) do
     """
     def user_confirmed(user) do
       Ecto.Changeset.change(user, %{confirmed_at: Ecto.DateTime.utc})
-      |> Config.repo.update()
+      |> Config.repo.update
     end
 
     @doc """
@@ -146,7 +146,7 @@ if Code.ensure_loaded?(Ecto) do
     """
     def check_time(nil, _), do: false
     def check_time(sent_at, valid_secs) do
-      (sent_at |> Ecto.DateTime.to_erl()
+      (sent_at |> Ecto.DateTime.to_erl
        |> :calendar.datetime_to_gregorian_seconds) + valid_secs >
       (:calendar.universal_time |> :calendar.datetime_to_gregorian_seconds)
     end
@@ -164,10 +164,10 @@ if Code.ensure_loaded?(Ecto) do
       Config.repo.transaction(fn ->
         user = Ecto.Changeset.change(user,
          %{Config.hash_name => Config.crypto_mod.hashpwsalt(password)})
-                              |> Config.repo.update!()
+                              |> Config.repo.update!
 
         Ecto.Changeset.change(user, %{reset_token: nil, reset_sent_at: nil})
-        |> Config.repo.update!()
+        |> Config.repo.update!
       end)
     end
     defp reset_update_repo({:error, message}, _user) do
