@@ -1,4 +1,4 @@
-# Openmaize [![Build Status](https://travis-ci.org/elixircnx/openmaize.svg?branch=master)](https://travis-ci.org/elixircnx/openmaize)
+# Openmaize [![Build Status](https://travis-ci.org/elixircnx/openmaize.svg?branch=master)](https://travis-ci.org/elixircnx/openmaize) [![Deps Status](https://beta.hexfaktor.org/badge/all/github/elixircnx/openmaize.svg)](https://beta.hexfaktor.org/github/elixircnx/openmaize)
 
 Authentication library for Elixir
 
