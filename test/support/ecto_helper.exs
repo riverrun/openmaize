@@ -1,3 +1,4 @@
+Logger.configure(level: :info)
 alias Openmaize.TestRepo
 
 Application.put_env(:openmaize, :pg_test_url,
@@ -38,12 +39,12 @@ defmodule UsersMigration do
 end
 
 # Load up the repository, start it, and run migrations
-Ecto.Storage.down(TestRepo)
-:ok = Ecto.Storage.up(TestRepo)
+_   = Ecto.Adapters.Postgres.storage_down(TestRepo.config)
+:ok = Ecto.Adapters.Postgres.storage_up(TestRepo.config)
 {:ok, pid} = TestRepo.start_link
 :ok = Ecto.Migrator.up(TestRepo, 0, UsersMigration, log: false)
 
-defmodule Openmaize.User do
+defmodule Openmaize.TestUser do
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -74,12 +75,12 @@ defmodule Openmaize.User do
   def auth_changeset(model, params) do
     model
     |> changeset(params)
-    |> Openmaize.DB.add_password_hash(params)
+    |> Openmaize.EctoDB.add_password_hash(params)
   end
 
   def confirm_changeset(model, params, key) do
     model
     |> auth_changeset(params)
-    |> Openmaize.DB.add_confirm_token(key)
+    |> Openmaize.EctoDB.add_confirm_token(key)
   end
 end
