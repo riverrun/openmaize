@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
   use Mix.Task
 
   @moduledoc """
-  Create modules for database-related tasks.
+  Create modules for tasks that use Ecto to call the database.
   """
 
   @doc false
@@ -14,11 +14,11 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
      {"ecto_db_test.exs", "test/models/ecto_db_test.exs"}]
 
     Mix.Openmaize.copy_files(srcdir, files, mod_name)
-    |> instructions()
+    |> instructions(mod_name)
   end
 
   @doc false
-  def instructions(oks) do
+  def instructions(oks, mod_name) do
     if :ok in oks do
       Mix.shell.info """
 
@@ -26,8 +26,13 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
       paths, user details, roles, etc., will most likely need to be
       changed.
 
-      You will also need to configure set the `db_module` value in the
-      config. See the documentation for Openmaize.Config for details.
+      In the config file, set the `db_module` value:
+
+          config :openmaize,
+            db_module: #{mod_name}.EctoDB
+
+      See the documentation for Openmaize.Config and OpenmaizeJWT.Config
+      for further details on how to configure Openmaize.
       """
     else
       Mix.shell.info """

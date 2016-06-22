@@ -30,6 +30,12 @@ defmodule Openmaize.EctoDBTest do
     assert changeset.changes.reset_sent_at
   end
 
+  test "check time" do
+    assert EctoDB.check_time(Ecto.DateTime.utc, 60)
+    refute EctoDB.check_time(Ecto.DateTime.utc, -60)
+    refute EctoDB.check_time(nil, 60)
+  end
+
   test "defaults to hashing password with bcrypt" do
     changeset = %TestUser{} |> TestUser.auth_changeset(%{password: "g0g0g4dg3t!!"})
     assert Comeonin.Bcrypt.checkpw("g0g0g4dg3t!!", changeset.changes.password_hash)

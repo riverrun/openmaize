@@ -1,4 +1,4 @@
-defmodule Openmaize.DB do
+defmodule Openmaize.Database do
   @moduledoc """
   ADD INSTRUCTIONS FOR MIX GENERATOR
 
@@ -13,7 +13,7 @@ defmodule Openmaize.DB do
 
   """
 
-  @callback find_user(String.t, term) :: struct
+  @callback find_user(String.t, atom) :: struct
   @callback find_user_byid(String.t) :: struct
   @callback user_confirmed(struct) :: {:ok, struct} | {:error, struct}
   @callback password_reset(struct, String.t) :: {:ok, struct} | {:error, struct}

@@ -1,9 +1,7 @@
 defmodule <%= base %>.AuthorizeTest do
   use <%= base %>.ConnCase
 
-  import Openmaize.DB
   import OpenmaizeJWT.Create
-  alias <%= base %>.{Repo, User}
 
   @valid_attrs %{email: "tony@mail.com", password: "mangoes&g0oseberries"}
   @invalid_attrs %{email: "tony@mail.com", password: "maaaangoes&g00zeberries"}
@@ -52,15 +50,11 @@ defmodule <%= base %>.AuthorizeTest do
   end
 
   test "login succeeds" do
-    # Remove the Repo.get_by line if you are not using email confirmation
-    Repo.get_by(User, %{email: "tony@mail.com"}) |> user_confirmed
     conn = post conn, "/login", user: @valid_attrs
     assert response(conn, 200)
   end
 
   test "login fails" do
-    # Remove the Repo.get_by line if you are not using email confirmation
-    Repo.get_by(User, %{email: "reg@mail.com"}) |> user_confirmed
     conn = post conn, "/login", user: @invalid_attrs
     assert response(conn, 401)
   end

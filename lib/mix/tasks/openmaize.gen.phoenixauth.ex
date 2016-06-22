@@ -58,7 +58,13 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
       In the `web/router.ex` file, add the following line to the pipeline:
 
-      plug Openmaize.Authenticate
+          plug Openmaize.Authenticate
+
+      Before you use Openmaize, you need to install a module which implements
+      the Openmaize.Database behaviour. If you are using Ecto, you can generate a
+      template for this by running the following command:
+
+          mix openmaize.gen.ectodb
 
       You will also need to configure Openmaize. See the documentation for
       Openmaize.Config for details.

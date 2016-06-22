@@ -19,7 +19,7 @@ defmodule Openmaize.Config do
   like the following example.
 
       config :openmaize,
-        db_module: Coolapp.DB,
+        db_module: Coolapp.EctoDB,
         crypto_mod: Comeonin.Bcrypt,
         hash_name: :encrypted_password,
         password_strength: [min_length: 12]

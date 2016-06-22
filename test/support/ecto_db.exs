@@ -4,12 +4,12 @@ defmodule Openmaize.EctoDB do
   alias Openmaize.{TestRepo, TestUser}
   alias Openmaize.{Config, Password}
 
-  @behaviour Openmaize.DB
+  @behaviour Openmaize.Database
 
   def find_user(user_id, uniq) do
     from(u in TestUser,
-                    where: field(u, ^uniq) == ^user_id,
-                    select: u)
+        where: field(u, ^uniq) == ^user_id,
+        select: u)
     |> TestRepo.one
   end
 
@@ -61,9 +61,9 @@ defmodule Openmaize.EctoDB do
 
   defp reset_update_repo({:ok, password}, user) do
     TestRepo.transaction(fn ->
-      user = change(user,
-       %{Config.hash_name => Config.crypto_mod.hashpwsalt(password)})
-                            |> TestRepo.update!
+      user = change(user, %{Config.hash_name =>
+        Config.crypto_mod.hashpwsalt(password)})
+      |> TestRepo.update!
 
       change(user, %{reset_token: nil, reset_sent_at: nil})
       |> TestRepo.update!

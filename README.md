@@ -4,9 +4,8 @@ Authentication library for Elixir
 
 ## Upgrading to the newest version
 
-There have been a few changes in the newest versions, 0.19 and 0.18, and there were
- many changes in version 0.17.
-Please check the `UPGRADE_0.18.md` guide in this directory for details.
+There have been a few changes in the newest versions, 0.17 to 0.20.
+Please check the `UPGRADE_0.20.md` guide in this directory for details.
 
 ## Goals
 
@@ -26,7 +25,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   defp deps do
-    [ {:openmaize, "~> 0.19"} ]
+    [ {:openmaize, "~> 1.0.0-beta.0"} ]
   end
   ```
 
@@ -42,8 +41,11 @@ tested with the Phoenix Web Framework.
 
 ## Use
 
-Before you use Openmaize, you need to make sure that your user model is
-configured correctly. See the documentation for Openmaize.DB for details.
+Before you use Openmaize, you need to make sure that you have a module
+that implements the Openmaize.Database behaviour. If you are using Ecto,
+you can generate the necessary files by running the following command:
+
+    mix openmaize.gen.ectodb
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
@@ -62,14 +64,9 @@ It provides the following functionality:
 * Openmaize.ResetPassword - verify the token that was sent to the user by email,
 but this time so that the user's password can be reset.
 
-## Various helper functions
+## Generators to help you get started
 
-In the Openmaize.DB module:
-
-* add_password_hash - take an Ecto changeset, hash the password and add the
-password hash to the changeset.
-* add_confirm_token - add a confirmation token to the changeset.
-* add_reset_token - add a reset token to the changeset.
+MORE INFO HERE
 
 See the relevant module documentation for more details.
 
