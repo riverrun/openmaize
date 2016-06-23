@@ -16,6 +16,9 @@ If you are using Ecto, run the following command:
 
 This will create an OpenmaizeEcto module in the `web/models` directory.
 
+In addition, you will need to replace every reference to `Openmaize.DB`
+in your project with `MyApp.OpenmaizeEcto`.
+
 ## Added Openmaize.Database behaviour
 
 If you are not using Ecto, or if you want to define your own
