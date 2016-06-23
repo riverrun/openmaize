@@ -1,7 +1,9 @@
 defmodule <%= base %>.AuthorizeTest do
   use <%= base %>.ConnCase
 
+  import <%= base %>.EctoDB
   import OpenmaizeJWT.Create
+  alias <%= base %>.{Repo, User}
 
   @valid_attrs %{email: "tony@mail.com", password: "mangoes&g0oseberries"}
   @invalid_attrs %{email: "tony@mail.com", password: "maaaangoes&g00zeberries"}

@@ -143,8 +143,7 @@ defmodule <%= base %>.EctoDB do
       Config.crypto_mod.hashpwsalt(password)})
   end
   defp add_hash_changeset({:error, message}, user) do
-    change(user, %{password: ""})
-    |> add_error(:password, message)
+    change(user, %{password: ""}) |> add_error(:password, message)
   end
 
   defp reset_update_repo({:ok, password}, user) do
