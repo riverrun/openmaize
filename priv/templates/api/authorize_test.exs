@@ -50,12 +50,16 @@ defmodule <%= base %>.AuthorizeTest do
   end
 
   test "login succeeds" do
-    conn = post conn, "/login", user: @valid_attrs
+    # Remove the Repo.get_by line if you are not using email confirmation
+    Repo.get_by(User, %{email: "tony@mail.com"}) |> user_confirmed
+    conn = post conn(), "/login", user: @valid_attrs
     assert response(conn, 200)
   end
 
   test "login fails" do
-    conn = post conn, "/login", user: @invalid_attrs
+    # Remove the Repo.get_by line if you are not using email confirmation
+    Repo.get_by(User, %{email: "reg@mail.com"}) |> user_confirmed
+    conn = post conn(), "/login", user: @invalid_attrs
     assert response(conn, 401)
   end
 
