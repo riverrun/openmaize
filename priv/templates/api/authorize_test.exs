@@ -13,7 +13,7 @@ defmodule <%= base %>.AuthorizeTest do
   @user_token user_token
 
   setup do
-    conn = conn()
+    conn = build_conn()
     |> put_req_cookie("access_token", @user_token)
     {:ok, conn: conn}
   end
@@ -31,7 +31,7 @@ defmodule <%= base %>.AuthorizeTest do
   end
 
   test "authorization for nil user fails" do
-    conn = conn() |> get("/users")
+    conn = build_conn() |> get("/users")
     assert response(conn, 401)
   end
 
@@ -47,28 +47,28 @@ defmodule <%= base %>.AuthorizeTest do
   end
 
   test "id check fails for nil user" do
-    conn = conn() |> get("/users/3")
+    conn = build_conn() |> get("/users/3")
     assert response(conn, 401)
   end
 
   test "login succeeds" do
     # Remove the Repo.get_by line if you are not using email confirmation
     Repo.get_by(User, %{email: "tony@mail.com"}) |> user_confirmed
-    conn = post conn(), "/login", user: @valid_attrs
+    conn = post build_conn(), "/login", user: @valid_attrs
     assert response(conn, 200)
   end
 
   test "login fails" do
     # Remove the Repo.get_by line if you are not using email confirmation
     Repo.get_by(User, %{email: "reg@mail.com"}) |> user_confirmed
-    conn = post conn(), "/login", user: @invalid_attrs
+    conn = post build_conn(), "/login", user: @invalid_attrs
     assert response(conn, 401)
   end
 
   test "logout succeeds" do
   {:ok, user_token} = %{id: 3, email: "tony@mail.com", role: "user"}
                       |> generate_token({0, 1440})
-    conn = conn()
+    conn = build_conn()
     |> put_req_cookie("access_token", user_token)
     |> get("/logout")
     assert response(conn, 200)
