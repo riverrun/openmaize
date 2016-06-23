@@ -10,8 +10,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
     mod_name = Mix.Openmaize.base_name
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates", "database"]
 
-    files = [{"ecto_db.ex", "web/models/ecto_db.ex"},
-     {"ecto_db_test.exs", "test/models/ecto_db_test.exs"}]
+    files = [{"openmaize_ecto.ex", "web/models/openmaize_ecto.ex"},
+     {"openmaize_ecto_test.exs", "test/models/openmaize_ecto_test.exs"}]
 
     Mix.Openmaize.copy_files(srcdir, files, mod_name)
     |> instructions(mod_name)
@@ -29,7 +29,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
       In the config file, set the `db_module` value:
 
           config :openmaize,
-            db_module: #{mod_name}.EctoDB
+            db_module: #{mod_name}.OpenmaizeEcto
 
       See the documentation for Openmaize.Config and OpenmaizeJWT.Config
       for further details on how to configure Openmaize.

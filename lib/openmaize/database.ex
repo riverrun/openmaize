@@ -35,13 +35,13 @@ defmodule Openmaize.Database do
   @callback find_user(String.t, atom) :: struct
 
   @doc """
-  Query the database based on the user id (as a string).
+  Query the database based on the user id.
 
-  The only argument is the user struct.
+  The only argument is the user id.
 
   This function returns a user struct.
   """
-  @callback find_user_byid(String.t) :: struct
+  @callback find_user_byid(String.t | Integer) :: struct
 
   @doc """
   Update the database with the time when the email address was confirmed.
@@ -61,9 +61,9 @@ defmodule Openmaize.Database do
   The first argument is the user struct, and the second argument is
   the password.
 
-  This function returns a {:ok, user struct} or {:error, changeset (struct)}.
+  This function returns a {:ok, user struct} or {:error, error message}.
   """
-  @callback password_reset(struct, String.t) :: {:ok, struct} | {:error, struct}
+  @callback password_reset(struct, String.t) :: {:ok, struct} | {:error, String.t}
 
   @doc """
   Function used to check if a token has expired.

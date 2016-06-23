@@ -1,6 +1,6 @@
 # Upgrading to version 1.0
 
-## Added mix generator to create an EctoDB module
+## Added mix generator to create an OpenmaizeEcto module
 
 Most of the functions that interact with the database have been
 moved outside Openmaize, but they are available as a separate
@@ -10,7 +10,7 @@ If you are using Ecto, run the following command:
 
     mix openmaize.gen.ectodb
 
-This will create an EctoDB module in the `web/models` directory.
+This will create an OpenmaizeEcto module in the `web/models` directory.
 
 ## Added Openmaize.Database behaviour
 

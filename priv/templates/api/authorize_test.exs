@@ -1,7 +1,7 @@
 defmodule <%= base %>.AuthorizeTest do
   use <%= base %>.ConnCase
 
-  import <%= base %>.EctoDB
+  import <%= base %>.OpenmaizeEcto
   import OpenmaizeJWT.Create
   alias <%= base %>.{Repo, User}
 
