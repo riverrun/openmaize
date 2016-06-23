@@ -4,8 +4,8 @@ Authentication library for Elixir
 
 ## Upgrading to the newest version
 
-There have been a few changes in the newest versions, 0.17 to 0.20.
-Please check the `UPGRADE_0.20.md` guide in this directory for details.
+There have been a few changes in the newest versions, 1.0.0-beta.0.
+Please check the `UPGRADE_1.0.md` guide in this directory for details.
 
 ## Goals
 
@@ -47,10 +47,15 @@ you can generate the necessary files by running the following command:
 
     mix openmaize.gen.ectodb
 
+To generate modules to handle authorization, and optionally email confirmation,
+run the following command:
+
+    mix openmaize.gen.phoenixauth
+
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
 
-It provides the following functionality:
+Openmaize provides the following functionality:
 
 ### Authentication
 
@@ -63,10 +68,6 @@ It provides the following functionality:
 * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
 * Openmaize.ResetPassword - verify the token that was sent to the user by email,
 but this time so that the user's password can be reset.
-
-## Generators to help you get started
-
-MORE INFO HERE
 
 See the relevant module documentation for more details.
 

@@ -2,7 +2,21 @@ defmodule Openmaize do
   @moduledoc """
   Openmaize is an authentication library for Elixir.
 
-  It provides the following functionality:
+  Before you use Openmaize, you need to make sure that you have a module
+  that implements the Openmaize.Database behaviour. If you are using Ecto,
+  you can generate the necessary files by running the following command:
+
+      mix openmaize.gen.ectodb
+
+  To generate modules to handle authorization, and optionally email confirmation,
+  run the following command:
+
+      mix openmaize.gen.phoenixauth
+
+  You then need to configure Openmaize. For more information, see the documentation
+  for the Openmaize.Config module.
+
+  Openmaize provides the following functionality:
 
   ## Authentication
 
@@ -15,10 +29,6 @@ defmodule Openmaize do
     * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
     * Openmaize.ResetPassword - verify the token that was sent to the user by email,
     but this time so that the user's password can be reset.
-
-  ## Generators to help you get started
-
-  MORE INFO HERE
 
   See the relevant module documentation for more details.
 
