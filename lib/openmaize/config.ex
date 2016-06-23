@@ -7,17 +7,10 @@ defmodule Openmaize.Config do
 
   | name               | type         | default          |
   | :----------------- | :----------- | ---------------: |
-  | user_model         | module       | N/A              |
-  | repo               | module       | N/A              |
-  | db_module          | module       | Openmaize.DB     |
+  | db_module          | module       | N/A              |
   | crypto_mod         | module       | Comeonin.Bcrypt  |
   | hash_name          | atom         | :password_hash   |
   | password_strength  | keyword list | []               |
-
-  The values for user_model and repo should be module names.
-  If, for example, your app is called Coolapp and your user
-  model is called User, then `user_model` should be
-  Coolapp.User and `repo` should be Coolapp.Repo.
 
   ## Examples
 
@@ -26,9 +19,7 @@ defmodule Openmaize.Config do
   like the following example.
 
       config :openmaize,
-        user_model: Coolapp.User,
-        repo: Coolapp.Repo,
-        db_module: Coolapp.DB,
+        db_module: Coolapp.OpenmaizeEcto,
         crypto_mod: Comeonin.Bcrypt,
         hash_name: :encrypted_password,
         password_strength: [min_length: 12]
@@ -36,28 +27,10 @@ defmodule Openmaize.Config do
   """
 
   @doc """
-  The user model name.
-  """
-  def user_model do
-    Application.get_env(:openmaize, :user_model)
-  end
-
-  @doc """
-  The repo name.
-  """
-  def repo do
-    Application.get_env(:openmaize, :repo)
-  end
-
-  @doc """
   The name of the database module.
-
-  You only need to set this value if you plan on overriding the
-  the functions in the Openmaize.DB module. If you are using Ecto,
-  you will probably not need to set this value.
   """
   def db_module do
-    Application.get_env(:openmaize, :db_module, Openmaize.DB)
+    Application.get_env(:openmaize, :db_module)
   end
 
   @doc """

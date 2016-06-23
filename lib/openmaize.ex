@@ -16,14 +16,9 @@ defmodule Openmaize do
     * Openmaize.ResetPassword - verify the token that was sent to the user by email,
     but this time so that the user's password can be reset.
 
-  ## Various helper functions
+  ## Generators to help you get started
 
-  In the Openmaize.DB module:
-
-    * add_password_hash - take an Ecto changeset, hash the password and add the
-    password hash to the changeset.
-    * add_confirm_token - add a confirmation token to the changeset.
-    * add_reset_token - add a reset token to the changeset.
+  MORE INFO HERE
 
   See the relevant module documentation for more details.
 

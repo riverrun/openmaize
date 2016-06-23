@@ -36,11 +36,13 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 
-    files = [{"authorize.ex", "web/controllers/authorize.ex"},
+    auth_files = [{"authorize.ex", "web/controllers/authorize.ex"},
      {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
     files = if Mix.shell.yes?("\nAdd modules for email confirmation?") do
-      files ++ [{"confirm.ex", "web/controllers/confirm.ex"},
+      auth_files ++ [{"confirm.ex", "web/controllers/confirm.ex"},
        {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
+    else
+      auth_files
     end
 
     Mix.Openmaize.copy_files(srcdir, files, mod_name)
@@ -58,7 +60,13 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
       In the `web/router.ex` file, add the following line to the pipeline:
 
-      plug Openmaize.Authenticate
+          plug Openmaize.Authenticate
+
+      Before you use Openmaize, you need to install a module which implements
+      the Openmaize.Database behaviour. If you are using Ecto, you can generate a
+      template for this by running the following command:
+
+          mix openmaize.gen.ectodb
 
       You will also need to configure Openmaize. See the documentation for
       Openmaize.Config for details.

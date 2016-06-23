@@ -2,9 +2,6 @@ defmodule Openmaize.ConfirmEmail do
   @moduledoc """
   Confirm a user's email address.
 
-  See the documentation for `add_confirm_token` and `add_reset_token` in
-  the Openmaize.DB module for details about creating the token.
-
   ## Options
 
   There are three options:

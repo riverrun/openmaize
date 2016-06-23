@@ -67,7 +67,7 @@ defmodule <%= base %>.Authorize do
   def unauthenticated(conn, message \\ "You need to log in to view this page") do
     conn
     |> put_flash(:error, message)
-    |> redirect(to: login_path(conn, :login))
+    |> redirect(to: "/login")
     |> halt
   end
 

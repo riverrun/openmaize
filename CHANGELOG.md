@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.20.0
+
+* Enhancements
+    * Added a mix generator to generate an OpenmaizeEcto module.
+        * This module implements the Openmaize.Database behaviour.
+* Changes
+    * Removed the Openmaize.DB module.
+    * Added the Openmaize.Database behaviour.
+
 ## v0.19.0
 
 * Changes
