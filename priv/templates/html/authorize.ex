@@ -129,7 +129,7 @@ defmodule <%= base %>.Authorize do
 
   Add the following line to the controller which handles login:
 
-      plug Openmaize.Login when action in [:login_user]
+      plug Openmaize.Login, [db_module: <%= base %>.OpenmaizeEcto] when action in [:login_user]
 
   and then call `handle_login` from the `login_user` function:
 
