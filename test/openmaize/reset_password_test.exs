@@ -4,7 +4,7 @@ defmodule Openmaize.ResetPasswordTest do
 
   import Ecto.Changeset
   alias Comeonin.Bcrypt
-  alias Openmaize.{ResetPassword, TestRepo, TestUser}
+  alias Openmaize.{EctoDB, ResetPassword, TestRepo, TestUser}
 
   setup do
     {:ok, _user} = TestRepo.get_by(TestUser, email: "dim@mail.com")
@@ -29,14 +29,14 @@ defmodule Openmaize.ResetPasswordTest do
 
   test "reset password succeeds" do
     password = "my N1pples expl0de with the light!"
-    conn = call_reset(password, {120, :email, nil})
+    conn = call_reset(password, {EctoDB, 120, :email, nil})
     assert password_changed(password)
     assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "reset password fails with expired token" do
     password = "C'est bon, la vie"
-    conn = call_reset(password, {0, :email, nil})
+    conn = call_reset(password, {EctoDB, 0, :email, nil})
     refute password_changed(password)
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
@@ -45,8 +45,15 @@ defmodule Openmaize.ResetPasswordTest do
     user = TestRepo.get_by(TestUser, email: "dim@mail.com")
     change(user, %{reset_sent_at: nil})
     |> Openmaize.TestRepo.update
-    conn = call_reset("password", {120, :email, nil})
+    conn = call_reset("password", {EctoDB, 120, :email, nil})
     assert conn.private.openmaize_error =~ "Confirmation for"
+  end
+
+  test "raises error if no db_module is set" do
+    password = "my N1pples expl0de with the light!"
+    assert_raise ArgumentError, "You need to set the db_module value for Openmaize.ResetPassword", fn ->
+      call_reset(password, {nil, 120, :email, nil})
+    end
   end
 
 end

@@ -1,11 +1,14 @@
 # Changelog
 
-## v0.20.0
+## v1.0.0
 
 * Enhancements
     * Added a mix generator to generate an OpenmaizeEcto module.
         * This module implements the Openmaize.Database behaviour.
 * Changes
+    * Moved the Config.db_module functionality to using keyword arguments
+        * This affects the Openmaize.Login, Openmaize.OnetimePass,
+        Openmaize.ConfirmEmail and Openmaize.ResetPassword plugs.
     * Removed the Openmaize.DB module.
     * Added the Openmaize.Database behaviour.
 

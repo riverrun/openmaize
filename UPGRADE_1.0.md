@@ -4,6 +4,25 @@ Add the following to mix.exs:
 
     {:openmaize, "~> 1.0.0-beta"}
 
+## Moved `db_module` option out of the config
+
+Before, you needed to add `db_module: MyApp.OpenmaizeEcto` to your
+config.
+
+Now, you will need to add this to each plug call (this affects the
+Openmaize.Login, Openmaize.OnetimePass, Openmaize.ConfirmEmail and
+Openmaize.ResetPassword plugs.
+
+Here are two examples with Openmaize.Login:
+
+    plug Openmaize.Login, [db_module: MyApp.OpenmaizeEcto] when action in [:login_user]
+
+And if you want to use `email` to identify the user:
+
+    plug Openmaize.Login, [db_module: MyApp.OpenmaizeEcto,
+      unique_id: :email] when action in [:login_user]
+
+
 ## Added mix generator to create an OpenmaizeEcto module
 
 Most of the functions that interact with the database have been

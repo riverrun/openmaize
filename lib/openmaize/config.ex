@@ -7,7 +7,6 @@ defmodule Openmaize.Config do
 
   | name               | type         | default          |
   | :----------------- | :----------- | ---------------: |
-  | db_module          | module       | N/A              |
   | crypto_mod         | module       | Comeonin.Bcrypt  |
   | hash_name          | atom         | :password_hash   |
   | password_strength  | keyword list | []               |
@@ -19,19 +18,11 @@ defmodule Openmaize.Config do
   like the following example.
 
       config :openmaize,
-        db_module: Coolapp.OpenmaizeEcto,
         crypto_mod: Comeonin.Bcrypt,
         hash_name: :encrypted_password,
         password_strength: [min_length: 12]
 
   """
-
-  @doc """
-  The name of the database module.
-  """
-  def db_module do
-    Application.get_env(:openmaize, :db_module)
-  end
 
   @doc """
   The password hashing and checking algorithm. Bcrypt is the default.

@@ -17,17 +17,21 @@ defmodule Openmaize.Confirm.Base do
 
       @doc false
       def init(opts) do
-        {Keyword.get(opts, :key_expires_after, 120),
+        {Keyword.get(opts, :db_module),
+         Keyword.get(opts, :key_expires_after, 120),
          Keyword.get(opts, :unique_id, :email),
          Keyword.get(opts, :mail_function)}
       end
 
       @doc false
+      def call(_, {nil, _, _, _}) do
+        raise ArgumentError, "You need to set the db_module value for Openmaize.ConfirmEmail"
+      end
       def call(%Plug.Conn{params: %{"key" => key} = user_params} = conn, opts)
       when byte_size(key) == 32 do
         check_user_key(conn, user_params, key, :nopassword, opts)
       end
-      def call(conn, {_, _, _}), do: invalid_link_error(conn)
+      def call(conn, _opts), do: invalid_link_error(conn)
 
       defoverridable [init: 1, call: 2]
     end
@@ -35,7 +39,6 @@ defmodule Openmaize.Confirm.Base do
 
   import Plug.Conn
   import Comeonin.Tools
-  alias Openmaize.Config
 
   @doc """
   Check the user key and, if necessary, the user password.
@@ -45,13 +48,13 @@ defmodule Openmaize.Confirm.Base do
   an `openmaize_error` message will be added to the conn.
   """
   def check_user_key(conn, user_params, key, password,
-   {key_expiry, uniq, mail_func}) do
+   {db_module, key_expiry, uniq, mail_func}) do
     case Map.get(user_params, to_string(uniq)) do
       nil -> finalize(nil, conn, nil, mail_func)
       user_id ->
         user_id
-        |> Config.db_module.find_user(uniq)
-        |> check_key(key, key_expiry * 60, password)
+        |> db_module.find_user(uniq)
+        |> check_key(db_module, key, key_expiry * 60, password)
         |> finalize(conn, user_id, mail_func)
     end
   end
@@ -63,16 +66,16 @@ defmodule Openmaize.Confirm.Base do
     put_private(conn, :openmaize_error, "Invalid link")
   end
 
-  defp check_key(nil, _, _, _), do: false
-  defp check_key(user, key, valid_secs, :nopassword) do
-    Config.db_module.check_time(user.confirmation_sent_at, valid_secs) and
+  defp check_key(_, nil, _, _, _), do: false
+  defp check_key(user, db_module, key, valid_secs, :nopassword) do
+    db_module.check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
-    Config.db_module.user_confirmed(user)
+    db_module.user_confirmed(user)
   end
-  defp check_key(user, key, valid_secs, password) do
-    Config.db_module.check_time(user.reset_sent_at, valid_secs) and
+  defp check_key(user, db_module, key, valid_secs, password) do
+    db_module.check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and
-    Config.db_module.password_reset(user, password)
+    db_module.password_reset(user, password)
   end
 
   defp finalize({:ok, user}, conn, _, mail_func) do

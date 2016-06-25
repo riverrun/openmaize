@@ -10,6 +10,4 @@ Code.require_file "support/ecto_db.exs", __DIR__
 Code.require_file "support/setup_db.exs", __DIR__
 Code.require_file "support/access_control.exs", __DIR__
 
-Application.put_env(:openmaize, :db_module, Openmaize.EctoDB)
-
 Openmaize.SetupDB.add_users()
