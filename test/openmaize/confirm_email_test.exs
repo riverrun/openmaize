@@ -28,38 +28,42 @@ defmodule Openmaize.ConfirmEmailTest do
     user.confirmed_at
   end
 
+  test "init function" do
+    assert ConfirmEmail.init([]) == {nil, {120, :email, nil}}
+  end
+
   test "confirmation succeeds for valid token" do
-    conn = call_confirm(@valid_link, {EctoDB, 120, :email, nil})
+    conn = call_confirm(@valid_link, {EctoDB, {120, :email, nil}})
     assert user_confirmed()
     assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "confirmation fails for invalid token" do
-    conn = call_confirm(@invalid_link, {EctoDB, 120, :email, nil})
+    conn = call_confirm(@invalid_link, {EctoDB, {120, :email, nil}})
     refute user_confirmed()
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "confirmation fails for expired token" do
-    conn = call_confirm(@valid_link, {EctoDB, 0, :email, nil})
+    conn = call_confirm(@valid_link, {EctoDB, {0, :email, nil}})
     refute user_confirmed()
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "invalid link error" do
-    conn = call_confirm(@incomplete_link, {EctoDB, 120, :email, nil})
+    conn = call_confirm(@incomplete_link, {EctoDB, {120, :email, nil}})
     refute user_confirmed()
     assert conn.private.openmaize_error =~ "Invalid link"
   end
 
   test "confirmation succeeds with different unique id" do
-    conn = call_confirm(@name_link, {EctoDB, 120, :username, nil})
+    conn = call_confirm(@name_link, {EctoDB, {120, :username, nil}})
     assert user_confirmed()
     assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "confirmation fails when query fails" do
-    conn = call_confirm("key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw", {EctoDB, 120, :email, nil})
+    conn = call_confirm("key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw", {EctoDB, {120, :email, nil}})
     refute user_confirmed()
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
@@ -78,7 +82,7 @@ defmodule Openmaize.ConfirmEmailTest do
 
   test "raises error if no db_module is set" do
     assert_raise ArgumentError, "You need to set the db_module value for Openmaize.ConfirmEmail", fn ->
-      call_confirm(@valid_link, {nil, 120, :email, nil})
+      call_confirm(@valid_link, {nil, {120, :email, nil}})
     end
   end
 

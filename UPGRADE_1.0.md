@@ -9,7 +9,7 @@ Add the following to mix.exs:
 Before, you needed to add `db_module: MyApp.OpenmaizeEcto` to your
 config.
 
-Now, you will need to add this to each plug call (this affects the
+Now, you will need to add this to each plug call - this affects the
 Openmaize.Login, Openmaize.OnetimePass, Openmaize.ConfirmEmail and
 Openmaize.ResetPassword plugs.
 

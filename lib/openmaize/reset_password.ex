@@ -43,7 +43,7 @@ defmodule Openmaize.ResetPassword do
 
   use Openmaize.Confirm.Base
 
-  def call(_, {nil, _, _, _}) do
+  def call(_, {nil, _}) do
     raise ArgumentError, "You need to set the db_module value for Openmaize.ResetPassword"
   end
   def call(%Plug.Conn{params: %{"user" =>

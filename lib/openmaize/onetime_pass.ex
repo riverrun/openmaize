@@ -19,7 +19,7 @@ defmodule Openmaize.OnetimePass do
 
   def init(opts) do
     {Keyword.get(opts, :db_module),
-    Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/5)}
+    Keyword.pop(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/5)}
   end
 
   @doc """
@@ -29,10 +29,10 @@ defmodule Openmaize.OnetimePass do
   to the conn, either in a cookie or in the body of the response. The conn
   is then returned.
   """
-  def call(_, {nil, _, _}) do
+  def call(_, {nil, _}) do
     raise ArgumentError, "You need to set the db_module value for Openmaize.OnetimePass"
   end
-  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {db_module, add_jwt, opts}) do
+  def call(%Plug.Conn{params: %{"user" => user_params}} = conn, {db_module, {add_jwt, opts}}) do
     {storage, uniq, id, override_exp} = get_params(user_params)
     db_module.find_user_byid(id)
     |> check_key(user_params, opts)

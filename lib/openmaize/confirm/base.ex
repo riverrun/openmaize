@@ -18,13 +18,13 @@ defmodule Openmaize.Confirm.Base do
       @doc false
       def init(opts) do
         {Keyword.get(opts, :db_module),
-         Keyword.get(opts, :key_expires_after, 120),
+         {Keyword.get(opts, :key_expires_after, 120),
          Keyword.get(opts, :unique_id, :email),
-         Keyword.get(opts, :mail_function)}
+         Keyword.get(opts, :mail_function)}}
       end
 
       @doc false
-      def call(_, {nil, _, _, _}) do
+      def call(_, {nil, _}) do
         raise ArgumentError, "You need to set the db_module value for Openmaize.ConfirmEmail"
       end
       def call(%Plug.Conn{params: %{"key" => key} = user_params} = conn, opts)
@@ -48,7 +48,7 @@ defmodule Openmaize.Confirm.Base do
   an `openmaize_error` message will be added to the conn.
   """
   def check_user_key(conn, user_params, key, password,
-   {db_module, key_expiry, uniq, mail_func}) do
+   {db_module, {key_expiry, uniq, mail_func}}) do
     case Map.get(user_params, to_string(uniq)) do
       nil -> finalize(nil, conn, nil, mail_func)
       user_id ->

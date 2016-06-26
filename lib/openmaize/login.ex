@@ -72,10 +72,10 @@ defmodule Openmaize.Login do
 
   def init(opts) do
     {Keyword.get(opts, :db_module),
-     Keyword.get(opts, :storage, :cookie),
+     {Keyword.get(opts, :storage, :cookie),
      Keyword.get(opts, :unique_id, :username),
      Keyword.get(opts, :add_jwt, &OpenmaizeJWT.Plug.add_token/5),
-     Keyword.get(opts, :override_exp)}
+     Keyword.get(opts, :override_exp)}}
   end
 
   @doc """
@@ -88,7 +88,7 @@ defmodule Openmaize.Login do
   If `otp_required: true` is in the user model, `conn.private.openmaize_otp_required`
   will be set to true, but no token will be issued yet.
   """
-  def call(_, {nil, _, _, _, _}) do
+  def call(_, {nil, _}) do
     raise ArgumentError, "You need to set the db_module value for Openmaize.Login"
   end
   def call(%Plug.Conn{params: %{"user" =>
@@ -96,11 +96,11 @@ defmodule Openmaize.Login do
     handle_login conn, user_params, opts
   end
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
-   {db_module, storage, uniq_id, add_jwt, _}) do
-    handle_login conn, user_params, {db_module, storage, uniq_id, add_jwt, nil}
+   {db_module, {storage, uniq_id, add_jwt, _}}) do
+    handle_login conn, user_params, {db_module, {storage, uniq_id, add_jwt, nil}}
   end
 
-  defp handle_login(conn, user_params, {db_module, storage, uniq_id, add_jwt, override_exp}) do
+  defp handle_login(conn, user_params, {db_module, {storage, uniq_id, add_jwt, override_exp}}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)
