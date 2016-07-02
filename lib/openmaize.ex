@@ -16,19 +16,29 @@ defmodule Openmaize do
   You then need to configure Openmaize. For more information, see the documentation
   for the Openmaize.Config module.
 
-  Openmaize provides the following functionality:
+  ## Migrating from Devise
 
-  ## Authentication
+  Follow the above instructions for generating database and authorization
+  modules, and then add the following lines to the config file:
 
-    * Openmaize.Authenticate - authenticate the user, using JSON Web Tokens.
-    * Openmaize.Login - handle login POST requests.
-    * Openmaize.Logout - handle logout requests.
+      config :openmaize,
+        hash_name: :encrypted_password
 
-  ## Email confirmation and password resetting
+  Some of the functions in the Authorize module depend on a `role` being
+  set for each user. If you are not using roles, you will need to edit
+  these functions before use.
 
-    * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
-    * Openmaize.ResetPassword - verify the token that was sent to the user by email,
-    but this time so that the user's password can be reset.
+  ## Openmaize features
+
+    * Authentication
+      * Openmaize.Authenticate - authenticate the user, using JSON Web Tokens.
+      * Openmaize.Login - handle login POST requests.
+      * Openmaize.Logout - handle logout requests.
+
+    * Email confirmation and password resetting
+      * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
+      * Openmaize.ResetPassword - verify the token that was sent to the user by email,
+      but this time so that the user's password can be reset.
 
   See the relevant module documentation for more details.
 

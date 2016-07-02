@@ -9,6 +9,9 @@ defmodule Openmaize.AuthenticateTest do
     {:ok, user_token} = %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
     |> generate_token({0, 120})
 
+    {:ok, norole_token} = %{id: 1, username: "Raymond Luxury Yacht"}
+    |> generate_token({0, 120})
+
     {:ok, exp_token} = %{id: 1, username: "Raymond Luxury Yacht", role: "user"}
     |> generate_token({0, 0})
 
@@ -20,7 +23,7 @@ defmodule Openmaize.AuthenticateTest do
     |> generate_token({0, 120})
     Application.delete_env(:openmaize, :token_alg)
 
-    {:ok, %{user_token: user_token, exp_token: exp_token,
+    {:ok, %{user_token: user_token, norole_token: norole_token, exp_token: exp_token,
             nbf_token: nbf_token, user_256_token: user_256_token}}
   end
 
@@ -65,6 +68,11 @@ defmodule Openmaize.AuthenticateTest do
   test "invalid token stored in sessionStorage", %{user_token: user_token} do
     conn = call("/users", user_token <> "a", nil)
     assert conn.assigns ==  %{current_user: nil}
+  end
+
+  test "correct token without role", %{norole_token: norole_token} do
+    conn = call("/", norole_token, :cookie)
+    %{id: 1, username: "Raymond Luxury Yacht"} = conn.assigns.current_user
   end
 
   test "missing token" do

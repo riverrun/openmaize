@@ -10,7 +10,7 @@ defmodule Openmaize.AuthorizeTest do
   def call(path, current_user, roles) do
     conn(:get, path)
     |> assign(:current_user, current_user)
-    |> authorize(roles: roles)
+    |> authorize_role(roles: roles)
   end
 
   def call_id(conn, id, user) do

@@ -2,12 +2,12 @@ defmodule Openmaize.AccessControl do
 
   import Plug.Conn
 
-  def authorize(%Plug.Conn{assigns: %{current_user: current_user}} = conn, opts) do
+  def authorize_role(%Plug.Conn{assigns: %{current_user: current_user}} = conn, opts) do
     full_check(conn, Keyword.get(opts, :roles, []), current_user)
   end
 
   def authorize_id(%Plug.Conn{params: %{"id" => id},
-                      assigns: %{current_user: current_user}} = conn, _opts) do
+    assigns: %{current_user: current_user}} = conn, _opts) do
     id_check(conn, id, current_user)
   end
 
