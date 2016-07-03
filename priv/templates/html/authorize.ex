@@ -2,7 +2,7 @@ defmodule <%= base %>.Authorize do
 
   import Plug.Conn
   import Phoenix.Controller
-  alias <%= base %>.{Repo, User}
+  #alias <%= base %>.{Repo, User}
 
   @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}
 
@@ -10,11 +10,56 @@ defmodule <%= base %>.Authorize do
   Custom action that can be used to override the `action` function in any
   Phoenix controller.
 
+  This function checks for a `current_user` value. If there is no current_user,
+  the `unauthenticated` function is called.
+
+  ## The current_user struct
+
+  This function produces a `current_user` with just the data from the JSON
+  Web Token. If you want the `current_user` to contain all the data about
+  the user from the database, uncomment the line `alias <%= base %>.{Repo, User}`
+  at the top of this module and the line `user = Repo.get(User, current_user.id)`
+  in this function.
+
+  ## Examples
+
+  First, import this module in the controller, and then add the following line:
+
+      def action(conn, _), do: authorize_action conn, __MODULE__
+
+  This command will only allow connections for users with the "admin" or "user"
+  role.
+
+  You will also need to change the other functions in the controller to accept
+  a third argument, which is the current user. For example, change:
+  `def index(conn, params) do` to: `def index(conn, params, user) do`
+  """
+  def authorize_action(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do
+    unauthenticated conn
+  end
+  def authorize_action(%Plug.Conn{assigns: %{current_user: current_user},
+    params: params} = conn, module) do
+    #user = Repo.get(User, current_user.id)
+    apply(module, action_name(conn), [conn, params, current_user])
+  end
+
+  @doc """
+  Similar to `authorize_action`, but the user's role is also checked to
+  make sure it is in the list of authorized roles.
+
   This function checks for a `current_user` value, and if it finds it, it
   then checks that the user's role is in the list of allowed roles. If
   there is no current_user, the `unauthenticated` function is called, and
   if the user's role is not in the list of allowed roles, the `unauthorized`
   function is called.
+
+  ## The current_user struct
+
+  This function produces a `current_user` with just the data from the JSON
+  Web Token. If you want the `current_user` to contain all the data about
+  the user from the database, uncomment the line `alias <%= base %>.{Repo, User}`
+  at the top of this module and the line `user = Repo.get(User, current_user.id)`
+  in this function.
 
   ## Examples
 
@@ -29,32 +74,13 @@ defmodule <%= base %>.Authorize do
   a third argument, which is the current user. For example, change:
   `def index(conn, params) do` to: `def index(conn, params, user) do`
   """
-  def authorize_action(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do
+  def authorize_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do
     unauthenticated conn
   end
-  def authorize_action(%Plug.Conn{assigns: %{current_user: current_user},
+  def authorize_action_role(%Plug.Conn{assigns: %{current_user: current_user},
     params: params} = conn, roles, module) do
     if current_user.role in roles do
-      apply(module, action_name(conn), [conn, params, current_user])
-    else
-      unauthorized conn, current_user
-    end
-  end
-
-  @doc """
-  Similar to `authorize_action`, but the current_user is the full user struct.
-
-  The `authorize_action` function produces a current_user with just the data
-  from the JSON Web Token. With this function, the database is checked and the
-  current_user contains all the data about the user from the database.
-  """
-  def authorize_action_dbcheck(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do
-    unauthenticated conn
-  end
-  def authorize_action_dbcheck(%Plug.Conn{assigns: %{current_user: current_user},
-    params: params} = conn, roles, module) do
-    if current_user.role in roles do
-      user = Repo.get(User, current_user.id)
+      #user = Repo.get(User, current_user.id)
       apply(module, action_name(conn), [conn, params, user])
     else
       unauthorized conn, current_user
@@ -73,6 +99,9 @@ defmodule <%= base %>.Authorize do
 
   @doc """
   Redirect an unauthorized user to that user's role's page.
+
+  If you are not using roles, you will need to edit this function
+  before using it.
 
   Each role has a redirect page associated with it, and these are set in the
   `@redirects` module attribute in this file.
@@ -124,6 +153,9 @@ defmodule <%= base %>.Authorize do
 
   @doc """
   Login and redirect to the user's role's page if successful.
+
+  If you are not using roles, you will need to edit this function
+  before using it.
 
   ## Examples
 
