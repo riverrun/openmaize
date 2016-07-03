@@ -37,7 +37,7 @@ defmodule <%= base %>.Authorize do
   end
   def authorize_action(%Plug.Conn{assigns: %{current_user: current_user},
     params: params} = conn, module) do
-    #user = Repo.get(User, current_user.id)
+    #current_user = Repo.get(User, current_user.id)
     apply(module, action_name(conn), [conn, params, current_user])
   end
 
@@ -78,8 +78,8 @@ defmodule <%= base %>.Authorize do
   def authorize_action_role(%Plug.Conn{assigns: %{current_user: current_user},
     params: params} = conn, roles, module) do
     if current_user.role in roles do
-      #user = Repo.get(User, current_user.id)
-      apply(module, action_name(conn), [conn, params, user])
+      #current_user = Repo.get(User, current_user.id)
+      apply(module, action_name(conn), [conn, params, current_user])
     else
       unauthorized conn, current_user
     end
