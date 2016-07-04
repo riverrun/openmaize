@@ -25,7 +25,8 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   defp deps do
-    [ {:openmaize, "~> 1.0.0-beta"} ]
+    [{:openmaize, "~> 1.0.0-beta"},
+    {:openmaize_jwt, "~> 0.12"]
   end
   ```
 
@@ -33,7 +34,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   def application do
-    [applications: [:logger, :openmaize]]
+    [applications: [:logger, :openmaize, :openmaize_jwt]]
   end
   ```
 
