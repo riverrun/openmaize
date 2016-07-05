@@ -65,7 +65,7 @@ defmodule <%= base %>.Authorize do
 
   First, import this module in the controller, and then add the following line:
 
-      def action(conn, _), do: authorize_action conn, ["admin", "user"], __MODULE__
+      def action(conn, _), do: authorize_action_role conn, ["admin", "user"], __MODULE__
 
   This command will only allow connections for users with the "admin" or "user"
   role.
