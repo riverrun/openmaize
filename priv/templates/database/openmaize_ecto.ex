@@ -29,7 +29,7 @@ defmodule <%= base %>.OpenmaizeEcto do
   of the password field. This means that it will not be stored in the database.
   """
 
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
   alias <%= base %>.{Repo, User}
   alias Openmaize.{Config, Password}
 
@@ -39,10 +39,7 @@ defmodule <%= base %>.OpenmaizeEcto do
   Find the user in the database.
   """
   def find_user(user_id, uniq) do
-    from(u in User,
-        where: field(u, ^uniq) == ^user_id,
-        select: u)
-    |> Repo.one
+    Repo.get_by(User, [{uniq, user_id}])
   end
 
   @doc """
