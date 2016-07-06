@@ -26,7 +26,7 @@ tested with the Phoenix Web Framework.
   ```elixir
   defp deps do
     [{:openmaize, "~> 1.0.0"},
-    {:openmaize_jwt, "~> 0.12"]
+    {:openmaize_jwt, "~> 0.12"}]
   end
   ```
 
