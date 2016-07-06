@@ -2,7 +2,7 @@
 
 Add the following to mix.exs:
 
-    {:openmaize, "~> 1.0.0-beta"}
+    {:openmaize, "~> 1.0"}
 
 ## Moved `db_module` option out of the config
 
