@@ -19,8 +19,8 @@ defmodule Openmaize.Confirm.Base do
       def init(opts) do
         {Keyword.get(opts, :db_module),
          {Keyword.get(opts, :key_expires_after, 120),
-         Keyword.get(opts, :unique_id, :email),
-         Keyword.get(opts, :mail_function)}}
+          Keyword.get(opts, :unique_id, :email),
+          Keyword.get(opts, :mail_function)}}
       end
 
       @doc false

@@ -31,7 +31,7 @@ defmodule Openmaize do
   ## Openmaize features
 
     * Authentication
-      * Openmaize.Authenticate - authenticate the user, using JSON Web Tokens.
+      * Openmaize.Authenticate - authenticate the user, using sessions.
       * Openmaize.Login - handle login POST requests.
       * Openmaize.Logout - handle logout requests.
 

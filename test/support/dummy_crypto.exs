@@ -1,6 +1,6 @@
 defmodule Openmaize.DummyCrypto do
   @moduledoc """
-  A dummy crypto module for testing purposes
+  A dummy crypto module for testing purposes.
   """
 
   def hashpwsalt(password) do

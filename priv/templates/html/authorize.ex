@@ -190,16 +190,11 @@ defmodule <%= base %>.Authorize do
   @doc """
   Logout and redirect to the home page.
 
-  ## Examples
-
-  Add the following line to the controller which handles logout:
-
-      plug Openmaize.Logout when action in [:logout]
-
-  and then call `handle_logout` from the `logout` function in the
-  controller.
+  NO NEED FOR LOGOUT PLUG
   """
   def handle_logout(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    conn |> put_flash(:info, message) |> redirect(to: "/")
+    configure_session(conn, drop: true)
+    |> put_flash(:info, message)
+    |> redirect(to: "/")
   end
 end

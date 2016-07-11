@@ -4,7 +4,7 @@ Authentication library for Elixir
 
 ## Upgrading to the newest version
 
-There have been a few changes in the newest versions, 1.0.0-beta.
+There have been a few changes in the newest versions, 1.0.0.
 Please check the `UPGRADE_1.0.md` guide in this directory for details.
 
 ## Goals
@@ -25,8 +25,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   defp deps do
-    [{:openmaize, "~> 1.0"},
-    {:openmaize_jwt, "~> 0.12"}]
+    [{:openmaize, "~> 1.0"}]
   end
   ```
 
@@ -34,7 +33,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   def application do
-    [applications: [:logger, :openmaize, :openmaize_jwt]]
+    [applications: [:logger, :openmaize]]
   end
   ```
 
@@ -71,7 +70,7 @@ these functions before use.
 ## Features
 
   * Authentication
-    * Openmaize.Authenticate - plug to authenticate users, using JSON Web Tokens.
+    * Openmaize.Authenticate - plug to authenticate users, using sessions.
     * Openmaize.Login - plug to handle login POST requests.
     * Openmaize.Logout - plug to handle logout requests.
   * Email confirmation and password resetting
