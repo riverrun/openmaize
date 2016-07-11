@@ -33,12 +33,14 @@ defmodule Openmaize.Authenticate do
     raise ArgumentError, "You need to set the db_module value for Openmaize.Authenticate"
   end
   def call(conn, db_module) do
-    get_session(conn, :user_id)
-    |> db_module.find_user_byid()
-    |> set_current_user(conn)
+    get_session(conn, :user_id) |> get_user(conn, db_module)
   end
 
-  defp set_current_user({:ok, user}, conn), do: assign(conn, :current_user, user)
-  defp set_current_user({:error, _}, conn), do: assign(conn, :current_user, nil)
-  defp set_current_user(_, conn), do: assign(conn, :current_user, nil)
+  defp get_user(nil, conn, _), do: assign(conn, :current_user, nil)
+  defp get_user(id, conn, db_module) do
+    db_module.find_user_byid(id) |> set_current_user(conn)
+  end
+
+  defp set_current_user(nil, conn), do: assign(conn, :current_user, nil)
+  defp set_current_user(user, conn), do: assign(conn, :current_user, user)
 end
