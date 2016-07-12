@@ -11,8 +11,7 @@ defmodule Openmaize.OnetimePass do
       ALSO OPTIONS FOR OTP
   """
 
-  import Plug.Conn
-  alias Comeonin.Otp
+  import Openmaize.OnetimePass.Base
 
   @behaviour Plug
 
@@ -34,21 +33,5 @@ defmodule Openmaize.OnetimePass do
     db_module.find_user_byid(id)
     |> check_key(user_params, opts)
     |> handle_auth(conn)
-  end
-
-  defp check_key(user, %{"hotp" => hotp}, opts) do
-    {user, Otp.check_hotp(hotp, user.otp_secret, opts)}
-  end
-  defp check_key(user, %{"totp" => totp}, opts) do
-    {user, Otp.check_totp(totp, user.otp_secret, opts)}
-  end
-
-  defp handle_auth({_, false}, conn) do
-    put_private(conn, :openmaize_error, "Invalid credentials")
-  end
-  defp handle_auth({user, last}, conn) do
-    conn
-    |> put_private(:openmaize_info, last)
-    |> put_session(:user_id, user.id)
   end
 end

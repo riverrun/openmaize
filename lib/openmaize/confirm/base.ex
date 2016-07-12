@@ -1,41 +1,10 @@
 defmodule Openmaize.Confirm.Base do
   @moduledoc """
-  Base implementation of the email confirmation module.
+  Functions used with email confirmation.
 
   This is used by both the Openmaize.Confirm and Openmaize.ResetPassword
   modules.
-
-  You can also use it to create your own custom module / plug.
   """
-
-  @doc false
-  defmacro __using__(_) do
-    quote do
-      @behaviour Plug
-
-      import unquote(__MODULE__)
-
-      @doc false
-      def init(opts) do
-        {Keyword.get(opts, :db_module),
-         {Keyword.get(opts, :key_expires_after, 120),
-          Keyword.get(opts, :unique_id, :email),
-          Keyword.get(opts, :mail_function)}}
-      end
-
-      @doc false
-      def call(_, {nil, _}) do
-        raise ArgumentError, "You need to set the db_module value for Openmaize.ConfirmEmail"
-      end
-      def call(%Plug.Conn{params: %{"key" => key} = user_params} = conn, opts)
-      when byte_size(key) == 32 do
-        check_user_key(conn, user_params, key, :nopassword, opts)
-      end
-      def call(conn, _opts), do: invalid_link_error(conn)
-
-      defoverridable [init: 1, call: 2]
-    end
-  end
 
   import Plug.Conn
   import Comeonin.Tools

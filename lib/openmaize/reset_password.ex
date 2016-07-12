@@ -41,8 +41,19 @@ defmodule Openmaize.ResetPassword do
   `get "/reset"` request, that is, to render the form to reset the password.
   """
 
-  use Openmaize.Confirm.Base
+  import Openmaize.Confirm.Base
 
+  @behaviour Plug
+
+  def init(opts) do
+    {Keyword.get(opts, :db_module),
+     {Keyword.get(opts, :key_expires_after, 120),
+      Keyword.get(opts, :unique_id, :email),
+      Keyword.get(opts, :mail_function)}}
+  end
+
+  @doc """
+  """
   def call(_, {nil, _}) do
     raise ArgumentError, "You need to set the db_module value for Openmaize.ResetPassword"
   end

@@ -26,7 +26,27 @@ defmodule Openmaize.ConfirmEmail do
   This command will be run when the user accesses the `confirm` route.
   """
 
-  use Openmaize.Confirm.Base
+  import Openmaize.Confirm.Base
+
+  @behaviour Plug
+
+  def init(opts) do
+    {Keyword.get(opts, :db_module),
+     {Keyword.get(opts, :key_expires_after, 120),
+      Keyword.get(opts, :unique_id, :email),
+      Keyword.get(opts, :mail_function)}}
+  end
+
+  @doc """
+  """
+  def call(_, {nil, _}) do
+    raise ArgumentError, "You need to set the db_module value for Openmaize.ConfirmEmail"
+  end
+  def call(%Plug.Conn{params: %{"key" => key} = user_params} = conn, opts)
+  when byte_size(key) == 32 do
+    check_user_key(conn, user_params, key, :nopassword, opts)
+  end
+  def call(conn, _opts), do: invalid_link_error(conn)
 
   @doc """
   Generate a confirmation token and a link containing the email address
