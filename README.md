@@ -63,6 +63,8 @@ modules, and then add the following lines to the config file:
     config :openmaize,
       hash_name: :encrypted_password
 
+Make sure that you have a `role` defined in your user model.
+
 Some of the functions in the Authorize module depend on a `role` being
 set for each user. If you are not using roles, you will need to edit
 these functions before use.

@@ -94,8 +94,13 @@ defmodule Openmaize.Login do
   defp handle_auth({:ok, %{id: id, otp_required: true}}, conn) do
     put_private(conn, :openmaize_otpdata, id)
   end
-  defp handle_auth({:ok, user}, conn) do
-    put_session(conn, :user_id, user.id)
+  defp handle_auth({:ok, %{id: id, role: role}}, conn) do
+    put_private(conn, :openmaize_user, %{id: id, role: role})
+    |> put_session(:user_id, id)
+  end
+  defp handle_auth({:ok, %{id: id}}, conn) do
+    put_private(conn, :openmaize_user, %{id: id})
+    |> put_session(:user_id, id)
   end
   defp handle_auth({:error, message}, conn) do
     put_private(conn, :openmaize_error, message)

@@ -171,7 +171,7 @@ defmodule <%= base %>.Authorize do
   @doc """
   Logout and redirect to the home page.
   """
-  def handle_logout(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
+  def handle_logout(conn, _params) do
     configure_session(conn, drop: true)
     |> put_flash(:info, message)
     |> redirect(to: "/")
