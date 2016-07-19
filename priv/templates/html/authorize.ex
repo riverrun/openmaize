@@ -173,7 +173,7 @@ defmodule <%= base %>.Authorize do
   """
   def handle_logout(conn, _params) do
     configure_session(conn, drop: true)
-    |> put_flash(:info, message)
+    |> put_flash(:info, "You have been logged out")
     |> redirect(to: "/")
   end
 end

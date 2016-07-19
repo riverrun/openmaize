@@ -9,7 +9,6 @@ defmodule Openmaize.SessionHelper do
   @default_opts [store: :cookie, key: "spameggs", signing_salt: "signing salt", log: false]
   @signing_opts Plug.Session.init(@default_opts)
 
-
   def sign_conn(conn, secret \\ @secret) do
     put_in(conn.secret_key_base, secret)
     |> Plug.Session.call(@signing_opts)

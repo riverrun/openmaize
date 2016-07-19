@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.0
+
+* Changes
+    * Now using sessions (provided by Plug) instead of JSON Web Tokens
+        * Authentication using JSON Web Tokens will be handled by OpenmaizeJWT, a separate library
+
 ## v1.0.0
 
 * Enhancements

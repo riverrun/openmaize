@@ -5,7 +5,7 @@ Authentication library for Elixir
 ## Upgrading to the newest version
 
 There have been a few changes in the newest versions, 1.0.0.
-Please check the `UPGRADE_1.0.md` guide in this directory for details.
+Please check the `UPGRADE_1.1.md` guide in this directory for details.
 
 ## Goals
 
@@ -25,7 +25,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   defp deps do
-    [{:openmaize, "~> 1.0"}]
+    [{:openmaize, "~> 1.1"}]
   end
   ```
 
