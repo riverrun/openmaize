@@ -20,17 +20,21 @@ defmodule Openmaize.Login.Base do
   @doc """
   Handle the failure / success of the login and return the `conn`.
   """
-  def handle_auth({:ok, %{id: id, otp_required: true}}, conn) do
+  def handle_auth({:ok, %{id: id, otp_required: true}}, conn, _, _) do
     put_private(conn, :openmaize_otpdata, id)
   end
-  def handle_auth({:ok, %{id: id, role: role}}, conn) do
+  def handle_auth({:ok, %{id: id, role: role}}, conn, :session, _) do
     put_private(conn, :openmaize_user, %{id: id, role: role})
     |> put_session(:user_id, id)
   end
-  def handle_auth({:error, message}, conn) do
+  def handle_auth({:ok, %{id: id, role: role} = user}, conn, auth_func, uniq) do
+    put_private(conn, :openmaize_user, %{id: id, role: role})
+    |> auth_func.(user, uniq)
+  end
+  def handle_auth({:error, message}, conn, _, _) do
     put_private(conn, :openmaize_error, message)
   end
-  def handle_auth(_, conn) do
+  def handle_auth(_, conn, _, _) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

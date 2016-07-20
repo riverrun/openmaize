@@ -12,18 +12,18 @@ defmodule Openmaize.LoginTest do
   end
 
   test "init function" do
-    assert Login.init([]) == {nil, :username}
+    assert Login.init([]) == {nil, :username, :session}
   end
 
   test "login succeeds with username" do
-    opts = {EctoDB, :username}
+    opts = {EctoDB, :username, :session}
     conn = call("ray", "h4rd2gU3$$", "username", opts)
     assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
     assert get_session(conn, :user_id) == 4
   end
 
   test "login succeeds with email" do
-    opts = {EctoDB, :email}
+    opts = {EctoDB, :email, :session}
     conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
     assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
     assert get_session(conn, :user_id) == 4
@@ -31,7 +31,7 @@ defmodule Openmaize.LoginTest do
 
   test "login fails when crypto mod changes" do
     Application.put_env(:openmaize, :crypto_mod, DummyCrypto)
-    opts = {EctoDB, :email}
+    opts = {EctoDB, :email, :session}
     conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
     refute get_session(conn, :user_id)
     assert conn.private[:openmaize_error]
@@ -40,63 +40,63 @@ defmodule Openmaize.LoginTest do
   end
 
   test "login fails for incorrect password" do
-    opts = {EctoDB, :email}
+    opts = {EctoDB, :email, :session}
     conn = call("ray@mail.com", "oohwhatwasitagain", "email", opts)
     refute get_session(conn, :user_id)
     assert conn.private[:openmaize_error]
   end
 
   test "login fails for invalid email" do
-    opts = {EctoDB, :email}
+    opts = {EctoDB, :email, :session}
     conn = call("dick@mail.com", "h4rd2gU3$$", "email", opts)
     refute get_session(conn, :user_id)
     assert conn.private[:openmaize_error]
   end
 
   test "multiple possible unique ids - email for email_username func" do
-    opts = {EctoDB, &Name.email_username/1}
+    opts = {EctoDB, &Name.email_username/1, :session}
     conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
     assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
     assert get_session(conn, :user_id) == 4
   end
 
   test "multiple possible unique ids - username for email_username func" do
-    opts = {EctoDB, &Name.email_username/1}
+    opts = {EctoDB, &Name.email_username/1, :session}
     conn = call("ray", "h4rd2gU3$$", "email", opts)
     assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
     assert get_session(conn, :user_id) == 4
   end
 
   test "multiple possible unique ids - phone for phone_username func" do
-    opts = {EctoDB, &Name.phone_username/1}
+    opts = {EctoDB, &Name.phone_username/1, :session}
     conn = call("081555555", "h4rd2gU3$$", "phone", opts)
     assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
     assert get_session(conn, :user_id) == 4
   end
 
   test "multiple possible unique ids - username for phone_username func" do
-    opts = {EctoDB, &Name.phone_username/1}
+    opts = {EctoDB, &Name.phone_username/1, :session}
     conn = call("ray", "h4rd2gU3$$", "phone", opts)
     assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
     assert get_session(conn, :user_id) == 4
   end
 
   test "fail login with multiple possible unique ids - phone for phone_username func" do
-    opts = {EctoDB, &Name.phone_username/1}
+    opts = {EctoDB, &Name.phone_username/1, :session}
     conn = call("081555555", "oohwhatwasitagain", "phone", opts)
     refute get_session(conn, :user_id)
     assert conn.private[:openmaize_error]
   end
 
   test "fail login with multiple possible unique ids - username for phone_username func" do
-    opts = {EctoDB, &Name.phone_username/1}
+    opts = {EctoDB, &Name.phone_username/1, :session}
     conn = call("rav", "h4rd2gU3$$", "phone", opts)
     refute get_session(conn, :user_id)
     assert conn.private[:openmaize_error]
   end
 
   test "raises error if no db_module is set" do
-    opts = {nil, :email}
+    opts = {nil, :email, :session}
     assert_raise ArgumentError, "You need to set the db_module value for Openmaize.Login", fn ->
       call("ray@mail.com", "h4rd2gU3$$", "email", opts)
     end

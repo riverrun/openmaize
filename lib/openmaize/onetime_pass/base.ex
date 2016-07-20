@@ -19,12 +19,17 @@ defmodule Openmaize.OnetimePass.Base do
   @doc """
   Handle the failure / success of the login and return the `conn`.
   """
-  def handle_auth({_, false}, conn) do
+  def handle_auth({_, false}, conn, _, _) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  def handle_auth({user, last}, conn) do
+  def handle_auth({user, last}, conn, :session, _) do
     conn
     |> put_private(:openmaize_info, last)
     |> put_session(:user_id, user.id)
+  end
+  def handle_auth({user, last}, conn, auth_func, uniq) do
+    conn
+    |> put_private(:openmaize_info, last)
+    |> auth_func.(user, uniq)
   end
 end
