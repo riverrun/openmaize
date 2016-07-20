@@ -16,9 +16,7 @@ defmodule Openmaize.OnetimePass do
   @behaviour Plug
 
   def init(opts) do
-    {db_module, opts} = Keyword.pop opts, :db_module
-    {auth_func, otp_opts} = Keyword.pop opts, :auth_func, :session
-    {db_module, auth_func, otp_opts}
+    Keyword.pop opts, :db_module
   end
 
   @doc """
@@ -27,13 +25,13 @@ defmodule Openmaize.OnetimePass do
   If the one-time password check is successful, the user will be added
   to the session.
   """
-  def call(_, {nil, _, _}) do
+  def call(_, {nil, _}) do
     raise ArgumentError, "You need to set the db_module value for Openmaize.OnetimePass"
   end
-  def call(%Plug.Conn{params: %{"user" => %{"id" => id, "uniq" => uniq} = user_params}} = conn,
-   {db_module, auth_func, opts}) do
+  def call(%Plug.Conn{params: %{"user" => %{"id" => id} = user_params}} = conn,
+   {db_module, opts}) do
     db_module.find_user_byid(id)
     |> check_key(user_params, opts)
-    |> handle_auth(conn, auth_func, uniq)
+    |> handle_auth(conn)
   end
 end

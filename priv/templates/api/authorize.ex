@@ -139,7 +139,6 @@ defmodule <%= base %>.Authorize do
   Logout and send the user a message.
   """
   def handle_logout(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    #configure_session(conn, drop: true)
     render(conn, <%= base %>.UserView, "info.json", %{info: message})
   end
 end
