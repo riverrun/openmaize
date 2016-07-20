@@ -22,7 +22,7 @@ defmodule Openmaize.OnetimePass.Base do
   def handle_auth({_, false}, conn) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  def handle_auth({%{id: id, role: role}, last}, conn) do
-    put_private(conn, :openmaize_user, %{id: id, role: role, last: last})
+  def handle_auth({user, last}, conn) do
+    put_private(conn, :openmaize_user, Map.put(user, last: last))
   end
 end
