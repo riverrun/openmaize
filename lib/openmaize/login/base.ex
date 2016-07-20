@@ -7,16 +7,6 @@ defmodule Openmaize.Login.Base do
   alias Openmaize.Config
 
   @doc """
-  Function to handle login.
-  """
-  def handle_login(conn, user_params, {db_module, uniq_id}) do
-    {uniq, user_id, password} = get_params(user_params, uniq_id)
-    db_module.find_user(user_id, uniq)
-    |> check_pass(password, Config.hash_name)
-    |> handle_auth(conn)
-  end
-
-  @doc """
   Check the user and password.
   """
   def check_pass(nil, _, _), do: Config.crypto_mod.dummy_checkpw
@@ -43,9 +33,4 @@ defmodule Openmaize.Login.Base do
   def handle_auth(_, conn) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-
-  defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
-    {uniq, Map.get(user_params, to_string(uniq)), password}
-  end
-  defp get_params(user_params, uniq_func), do: uniq_func.(user_params)
 end

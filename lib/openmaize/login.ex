@@ -49,6 +49,7 @@ defmodule Openmaize.Login do
   @behaviour Plug
 
   import Openmaize.Login.Base
+  alias Openmaize.Config
 
   def init(opts) do
     {Keyword.get(opts, :db_module),
@@ -69,6 +70,14 @@ defmodule Openmaize.Login do
   end
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
    {db_module, uniq_id}) do
-    handle_login conn, user_params, {db_module, uniq_id}
+    {uniq, user_id, password} = get_params(user_params, uniq_id)
+    db_module.find_user(user_id, uniq)
+    |> check_pass(password, Config.hash_name)
+    |> handle_auth(conn)
   end
+
+  defp get_params(%{"password" => password} = user_params, uniq) when is_atom(uniq) do
+    {uniq, Map.get(user_params, to_string(uniq)), password}
+  end
+  defp get_params(user_params, uniq_func), do: uniq_func.(user_params)
 end
