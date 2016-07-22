@@ -1,6 +1,6 @@
 # Openmaize [![Build Status](https://travis-ci.org/riverrun/openmaize.svg?branch=master)](https://travis-ci.org/riverrun/openmaize) [![Deps Status](https://beta.hexfaktor.org/badge/all/github/riverrun/openmaize.svg)](https://beta.hexfaktor.org/github/riverrun/openmaize)
 
-Authentication library for Elixir
+Authentication library for Plug-based applications in Elixir
 
 ## Upgrading to the newest version
 
@@ -63,17 +63,17 @@ modules, and then add the following lines to the config file:
     config :openmaize,
       hash_name: :encrypted_password
 
-Make sure that you have a `role` defined in your user model.
-
 Some of the functions in the Authorize module depend on a `role` being
 set for each user. If you are not using roles, you will need to edit
 these functions before use.
 
-## Features
+## Openmaize plugs
 
   * Authentication
     * Openmaize.Authenticate - plug to authenticate users, using sessions.
     * Openmaize.Login - plug to handle login POST requests.
+    * Openmaize.OnetimePass - plug to handle one-time password POST requests.
+    * Openmaize.Remember - plug to check for a `remember me` cookie.
   * Email confirmation and password resetting
     * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
     * Openmaize.ResetPassword - verify the token that was sent to the user by email,

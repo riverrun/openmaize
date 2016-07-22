@@ -1,6 +1,6 @@
 defmodule Openmaize do
   @moduledoc """
-  Openmaize is an authentication library for Elixir.
+  Openmaize is an authentication library for Plug-based applications in Elixir.
 
   Before you use Openmaize, you need to make sure that you have a module
   that implements the Openmaize.Database behaviour. If you are using Ecto,
@@ -24,17 +24,17 @@ defmodule Openmaize do
       config :openmaize,
         hash_name: :encrypted_password
 
-  Make sure that you have a `role` defined in your user model.
-
   Some of the functions in the Authorize module depend on a `role` being
   set for each user. If you are not using roles, you will need to edit
   these functions before use.
 
-  ## Openmaize features
+  ## Openmaize plugs
 
     * Authentication
       * Openmaize.Authenticate - authenticate the user, using sessions.
       * Openmaize.Login - handle login POST requests.
+      * Openmaize.OnetimePass - plug to handle one-time password POST requests.
+      * Openmaize.Remember - plug to check for a `remember me` cookie.
     * Email confirmation and password resetting
       * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
       * Openmaize.ResetPassword - verify the token that was sent to the user by email,

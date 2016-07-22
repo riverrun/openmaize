@@ -1,6 +1,6 @@
 defmodule Openmaize.ResetPassword do
   @moduledoc """
-  Authenticate a user when resetting the password.
+  Confirm a user's email address and reset the password.
 
   ## Options
 

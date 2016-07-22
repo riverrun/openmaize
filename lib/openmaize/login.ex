@@ -58,13 +58,22 @@ defmodule Openmaize.Login do
   If the login is successful and `otp_required: true` is not in the
   user model, the user will be added to the `conn.private.openmaize_user`
   value. You can then use the information in the user model to add
-  the user to the session, or to send the user a token.
-
-  If `otp_required: true` is in the user model, `conn.private.openmaize_otpdata`
-  will be set to the user id.
+  the user to the session.
 
   If the login is unsuccessful, an error message will be added to
   `conn.private.openmaize_error`.
+
+  ## Two factor authentication
+
+  If `otp_required: true` is in the user model and if the login is
+  successful, `conn.private.openmaize_otpdata` will be set to the
+  user id.
+
+  ## User email confirmation
+
+  Before checking the password, the user struct will be checked for a
+  `confirmed_at` value. If it is set to nil, an error message will be
+  added to `conn.private.openmaize_error`.
   """
   def call(_, {nil, _}) do
     raise ArgumentError, "You need to set the db_module value for Openmaize.Login"
