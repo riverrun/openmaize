@@ -27,7 +27,7 @@ defmodule Openmaize.Authenticate do
   end
 
   @doc """
-  Authenticate the current user using sessions.
+  Authenticate the current user.
   """
   def call(_, nil) do
     raise ArgumentError, "You need to set the db_module value for Openmaize.Authenticate"

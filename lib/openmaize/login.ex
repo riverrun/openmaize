@@ -12,10 +12,6 @@ defmodule Openmaize.Login do
       * this can also be a function which checks the user input and returns an atom
         * see the Openmaize.Login.Name module for some example functions
 
-  ## Remember me
-
-  ADD LENGTH TO CONFIG
-
   ## Examples with Phoenix
 
   Replace MyApp with the name of your application in the examples below.
@@ -48,7 +44,7 @@ defmodule Openmaize.Login do
 
   @behaviour Plug
 
-  import Openmaize.Login.Base
+  import Plug.Conn
   alias Openmaize.Config
 
   def init(opts) do
@@ -60,10 +56,15 @@ defmodule Openmaize.Login do
   Handle the login POST request.
 
   If the login is successful and `otp_required: true` is not in the
-  user model, the user will be added to the session.
+  user model, the user will be added to the `conn.private.openmaize_user`
+  value. You can then use the information in the user model to add
+  the user to the session, or to send the user a token.
 
-  If `otp_required: true` is in the user model, `conn.private.openmaize_otp_required`
-  will be set to true, but no token will be issued yet.
+  If `otp_required: true` is in the user model, `conn.private.openmaize_otpdata`
+  will be set to the user id.
+
+  If the login is unsuccessful, an error message will be added to
+  `conn.private.openmaize_error`.
   """
   def call(_, {nil, _}) do
     raise ArgumentError, "You need to set the db_module value for Openmaize.Login"
@@ -80,4 +81,25 @@ defmodule Openmaize.Login do
     {uniq, Map.get(user_params, to_string(uniq)), password}
   end
   defp get_params(user_params, uniq_func), do: uniq_func.(user_params)
+
+  defp check_pass(nil, _, _), do: Config.crypto_mod.dummy_checkpw
+  defp check_pass(%{confirmed_at: nil}, _, _),
+    do: {:error, "You have to confirm your email address before continuing."}
+  defp check_pass(user, password, hash_name) do
+    %{^hash_name => hash} = user
+    Config.crypto_mod.checkpw(password, hash) and {:ok, user}
+  end
+
+  defp handle_auth({:ok, %{id: id, otp_required: true}}, conn) do
+    put_private(conn, :openmaize_otpdata, id)
+  end
+  defp handle_auth({:ok, user}, conn) do
+    put_private(conn, :openmaize_user, user)
+  end
+  defp handle_auth({:error, message}, conn) do
+    put_private(conn, :openmaize_error, message)
+  end
+  defp handle_auth(_, conn) do
+    put_private(conn, :openmaize_error, "Invalid credentials")
+  end
 end

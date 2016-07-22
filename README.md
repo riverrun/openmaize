@@ -74,7 +74,6 @@ these functions before use.
   * Authentication
     * Openmaize.Authenticate - plug to authenticate users, using sessions.
     * Openmaize.Login - plug to handle login POST requests.
-    * Openmaize.Logout - plug to handle logout requests.
   * Email confirmation and password resetting
     * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
     * Openmaize.ResetPassword - verify the token that was sent to the user by email,
@@ -83,9 +82,6 @@ these functions before use.
 See the relevant module documentation for more details.
 
 ## Using with Phoenix
-
-You can generate an example Authorize module and / or a Confirm module
-by running the command `mix openmaize.gen.phoenixauth`.
 
 There is an example of Openmaize being used with Phoenix at
 [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).

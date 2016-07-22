@@ -22,7 +22,10 @@ defmodule Openmaize.OnetimePassTest do
   test "check hotp with default options" do
     user = %{"hotp" => "816065", "id" => "5"}
     conn = call(user, {EctoDB, []})
-    assert conn.private.openmaize_user == %{id: 5, role: "user", last: 2}
+    %{id: id, role: role, last: last} = conn.private[:openmaize_user]
+    assert id == 5
+    assert role == "user"
+    assert last == 2
     refute conn.private[:openmaize_error]
     fail = %{"hotp" => "816066", "id" => "5"}
     conn = call(fail, {EctoDB, []})
@@ -32,7 +35,10 @@ defmodule Openmaize.OnetimePassTest do
   test "check hotp with last option" do
     user = %{"hotp" => "088239", "id" => "5"}
     conn = call(user, {EctoDB, [last: 18]})
-    assert conn.private.openmaize_user == %{id: 5, role: "user", last: 19}
+    %{id: id, role: role, last: last} = conn.private[:openmaize_user]
+    assert id == 5
+    assert role == "user"
+    assert last == 19
     assert conn.private[:openmaize_user]
     refute conn.private[:openmaize_error]
     fail = %{"hotp" => "088238", "id" => "5"}

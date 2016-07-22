@@ -35,8 +35,6 @@ defmodule Openmaize do
     * Authentication
       * Openmaize.Authenticate - authenticate the user, using sessions.
       * Openmaize.Login - handle login POST requests.
-      * Openmaize.Logout - handle logout requests.
-
     * Email confirmation and password resetting
       * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
       * Openmaize.ResetPassword - verify the token that was sent to the user by email,
@@ -47,9 +45,6 @@ defmodule Openmaize do
   For configuration, see the documentation for Openmaize.Config.
 
   ## Using with Phoenix
-
-  You can generate an example Authorize module and / or a Confirm module
-  by running the command `mix openmaize.gen.phoenixauth`.
 
   There is an example of Openmaize being used with Phoenix at
   [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).

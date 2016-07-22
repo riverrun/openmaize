@@ -29,7 +29,7 @@ defmodule Openmaize.ConfirmEmailTest do
   end
 
   test "init function" do
-    assert ConfirmEmail.init([]) == {nil, {120, :email, nil}}
+    assert ConfirmEmail.init([]) == {nil, {60, :email, nil}}
   end
 
   test "confirmation succeeds for valid token" do

@@ -17,13 +17,17 @@ defmodule Openmaize.LoginTest do
   test "login succeeds with username" do
     opts = {EctoDB, :username}
     conn = call("ray", "h4rd2gU3$$", "username", opts)
-    assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
+    %{id: id, role: role} = conn.private[:openmaize_user]
+    assert id == 4
+    assert role == "user"
   end
 
   test "login succeeds with email" do
     opts = {EctoDB, :email}
     conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
-    assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
+    %{id: id, role: role} = conn.private[:openmaize_user]
+    assert id == 4
+    assert role == "user"
   end
 
   test "login fails when crypto mod changes" do
@@ -50,25 +54,33 @@ defmodule Openmaize.LoginTest do
   test "multiple possible unique ids - email for email_username func" do
     opts = {EctoDB, &Name.email_username/1}
     conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
-    assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
+    %{id: id, role: role} = conn.private[:openmaize_user]
+    assert id == 4
+    assert role == "user"
   end
 
   test "multiple possible unique ids - username for email_username func" do
     opts = {EctoDB, &Name.email_username/1}
     conn = call("ray", "h4rd2gU3$$", "email", opts)
-    assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
+    %{id: id, role: role} = conn.private[:openmaize_user]
+    assert id == 4
+    assert role == "user"
   end
 
   test "multiple possible unique ids - phone for phone_username func" do
     opts = {EctoDB, &Name.phone_username/1}
     conn = call("081555555", "h4rd2gU3$$", "phone", opts)
-    assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
+    %{id: id, role: role} = conn.private[:openmaize_user]
+    assert id == 4
+    assert role == "user"
   end
 
   test "multiple possible unique ids - username for phone_username func" do
     opts = {EctoDB, &Name.phone_username/1}
     conn = call("ray", "h4rd2gU3$$", "phone", opts)
-    assert conn.private[:openmaize_user] == %{id: 4, role: "user"}
+    %{id: id, role: role} = conn.private[:openmaize_user]
+    assert id == 4
+    assert role == "user"
   end
 
   test "fail login with multiple possible unique ids - phone for phone_username func" do

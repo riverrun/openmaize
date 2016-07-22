@@ -1,5 +1,6 @@
 defmodule <%= base %>.Authorize do
 
+  import OpenmaizeJWT.Plug
   import Plug.Conn
   import Phoenix.Controller
 
@@ -119,8 +120,7 @@ defmodule <%= base %>.Authorize do
 
   Add the following line to the controller which handles login:
 
-      plug Openmaize.Login, [db_module: <%= base %>.OpenmaizeEcto,
-        storage: nil] when action in [:login_user]
+      plug Openmaize.Login, [db_module: <%= base %>.OpenmaizeEcto] when action in [:login_user]
 
   and then call `handle_login` from the `login_user` function:
 
@@ -131,14 +131,15 @@ defmodule <%= base %>.Authorize do
   def handle_login(%Plug.Conn{private: %{openmaize_error: _message}} = conn, _params) do
     unauthenticated conn
   end
-  def handle_login(%Plug.Conn{private: %{openmaize_user: _user}} = conn, _params) do
-    send_resp conn
+  def handle_login(%Plug.Conn{private: %{openmaize_user: user}} = conn, _params) do
+    add_token(conn, user, :username) |> send_resp
   end
 
   @doc """
   Logout and send the user a message.
   """
   def handle_logout(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    render(conn, <%= base %>.UserView, "info.json", %{info: message})
+    logout_user(conn)
+    |> render(<%= base %>.UserView, "info.json", %{info: message})
   end
 end
