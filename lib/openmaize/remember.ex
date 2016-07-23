@@ -22,15 +22,16 @@ defmodule Openmaize.Remember do
 
   If the check is successful, the user will be added to the current
   session and to the current_user.
+
+  If the check is unsuccessful, an error message will be sent to
+  `conn.private.openmaize_error`.
   """
   def call(%Plug.Conn{req_cookies: %{"remember_me" => remember}} = conn, db_module) do
     if conn.assigns[:current_user] do
       conn
     else
-      case verify_cookie(remember, conn.secret_key_base, Config.remember_salt) do
-        {:ok, user_id} -> db_module.find_user_byid(user_id) |> handle_auth(conn)
-        _ -> put_private(conn, :openmaize_error, "Invalid cookie")
-      end
+      valid_cookie?(remember, conn.secret_key_base, Config.remember_salt)
+      |> verify_cookie(conn, db_module)
     end
   end
   def call(conn, _), do: conn
@@ -38,23 +39,30 @@ defmodule Openmaize.Remember do
   @doc """
   Sign cookie and add it to the conn.
 
-  The `max_age` is set to 604_800 seconds (7 days).
+  The `max_age` is set to 604_800 seconds (7 days) by default.
   """
-  def add_cookie(conn, content) do
+  def add_cookie(conn, data, max_age \\ 604_800) do
     key = conn.secret_key_base |> KeyGenerator.generate(Config.remember_salt)
-    cookie = MessageVerifier.sign(content, key)
-    put_resp_cookie(conn, "remember_me", cookie, [http_only: true, max_age: 604_800])
+    cookie = MessageVerifier.sign(data, key)
+    put_resp_cookie(conn, "remember_me", cookie, [http_only: true, max_age: max_age])
   end
 
-  defp verify_cookie(_, _, nil) do
+  defp valid_cookie?(_, _, nil) do
     raise ArgumentError, "You need to set the `remember_salt` config value"
   end
-  defp verify_cookie(_, secret, _) when byte_size(secret) < 64 do
+  defp valid_cookie?(_, secret, _) when byte_size(secret) < 64 do
     raise ArgumentError, "The secret must be 64 bytes or longer"
   end
-  defp verify_cookie(remember, secret, salt) do
+  defp valid_cookie?(remember, secret, salt) do
     key = secret |> KeyGenerator.generate(salt)
     MessageVerifier.verify(remember, key)
+  end
+
+  defp verify_cookie({:ok, user_id}, conn, db_module) do
+    db_module.find_user_byid(user_id) |> handle_auth(conn)
+  end
+  defp verify_cookie(_, conn, _) do
+    put_private(conn, :openmaize_error, "Invalid cookie")
   end
 
   defp handle_auth(nil, conn) do
