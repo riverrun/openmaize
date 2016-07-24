@@ -9,6 +9,8 @@ defmodule <%= base %>.AuthorizeTest do
 
   # In this example setup, `conn` is the connection for an unauthenticated
   # user, and `user_conn` is for an authenticated user (with an id of 3)
+  # You will need a similar setup in some of your other controller files,
+  # if your tests involve the use of sessions
   setup %{conn: conn} do
     conn = conn |> bypass_through(<%= base %>.Router, :browser) |> get("/")
     user_conn = conn |> put_session(:user_id, 3) |> send_resp(:ok, "/")

@@ -161,6 +161,13 @@ defmodule <%= base %>.Authorize do
   def handle_login(%Plug.Conn{private: %{openmaize_otpdata: id}} = conn, _) do
     render conn, "twofa.html", id: id
   end
+  def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role, remember: true}}} = conn,
+   %{"user" => %{"remember_me" => "true"}}) do
+    conn
+    |> Openmaize.Remember.add_cookie(id)
+    |> put_flash(:info, "You have been logged in")
+    |> redirect(to: @redirects[role])
+  end
   def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role}}} = conn, _params) do
     conn
     |> put_session(:user_id, id)
@@ -170,9 +177,12 @@ defmodule <%= base %>.Authorize do
 
   @doc """
   Logout and redirect to the home page.
+
+  This example also deletes the remember_me cookie if it is present.
   """
   def handle_logout(conn, _params) do
     configure_session(conn, drop: true)
+    |> Openmaize.Remember.delete_rem_cookie
     |> put_flash(:info, "You have been logged out")
     |> redirect(to: "/")
   end

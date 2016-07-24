@@ -41,10 +41,21 @@ defmodule Openmaize.Remember do
 
   The `max_age` is set to 604_800 seconds (7 days) by default.
   """
-  def add_cookie(conn, data, max_age \\ 604_800) do
-    key = conn.secret_key_base |> KeyGenerator.generate(Config.remember_salt)
+  def add_cookie(conn, data, max_age \\ 604_800)
+  def add_cookie(conn, data, max_age) when is_binary(data) do
+    salt = Config.remember_salt ||
+      raise ArgumentError, "You need to set the `remember_salt` config value"
+    key = KeyGenerator.generate(conn.secret_key_base, salt)
     cookie = MessageVerifier.sign(data, key)
     put_resp_cookie(conn, "remember_me", cookie, [http_only: true, max_age: max_age])
+  end
+  def add_cookie(conn, data, max_age), do: add_cookie(conn, to_string(data), max_age)
+
+  @doc """
+  Delete the remember_me cookie.
+  """
+  def delete_rem_cookie(conn) do
+    register_before_send(conn, &delete_resp_cookie(&1, "remember_me"))
   end
 
   defp valid_cookie?(_, _, nil) do

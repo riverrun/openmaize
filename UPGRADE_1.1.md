@@ -14,10 +14,15 @@ Add db_module to Openmaize.Authenticate call - in `web/router.ex` file
 If you want to have a `remember me` functionality in your app, you
 need to add `plug Openmaize.Remember, db_module: MyApp.OpenmaizeEcto`
 to the pipeline in `web/router.ex`. Make sure that you run this
-function after Openmaize.Authenticate.
+function after Openmaize.Authenticate. You will also need to set
+a remember_salt value in the openmaize config. See the documentation
+for the Openmaize.Remember module for more information.
 
 The Openmaize.Login and Openmaize.OnetimePass plugs now have fewer
 options.
+
+
+
 
 The `authorize.ex` and `authorize_test.exs` files need to be regenerated
 (might need to change the name of the action function in the controller
