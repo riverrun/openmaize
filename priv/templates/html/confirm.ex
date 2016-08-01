@@ -51,8 +51,9 @@ defmodule <%= base %>.Confirm do
   end
   def handle_reset(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
     conn
-    |> put_flash(:info, message)
     |> configure_session(drop: true)
+    |> Openmaize.Remember.delete_rem_cookie
+    |> put_flash(:info, message)
     |> redirect(to: "/login")
   end
 end

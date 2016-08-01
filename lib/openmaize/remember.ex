@@ -58,6 +58,18 @@ defmodule Openmaize.Remember do
     register_before_send(conn, &delete_resp_cookie(&1, "remember_me"))
   end
 
+  @doc """
+  Generate a signing salt for use with this module.
+
+  After running gen_salt, add the following lines to your config:
+
+      config :openmaize,
+        remember_salt: "generated salt"
+  """
+  def gen_salt do
+    :crypto.strong_rand_bytes(12) |> Base.encode64
+  end
+
   defp valid_cookie?(_, _, nil) do
     raise ArgumentError, "You need to set the `remember_salt` config value"
   end
