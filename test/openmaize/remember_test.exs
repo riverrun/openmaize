@@ -29,7 +29,7 @@ defmodule Openmaize.RememberTest do
   end
 
   test "error message is sent when the cookie is invalid", %{conn: conn} do
-    invalid = "MQ==##R2qbEDO7u26nYKPV7lfNdHaGqCM="
+    invalid = "MQ==##s-asfcHMQ834XtMWcNiVjQbSdZs="
     conn = put_resp_cookie(conn, "remember_me", invalid,
      [http_only: true, max_age: 604_800])
     newconn = conn(:get, "/")
@@ -61,7 +61,7 @@ defmodule Openmaize.RememberTest do
   test "add cookie", %{conn: conn} do
     remember = conn.resp_cookies["remember_me"]
     assert remember.max_age == 604_800
-    assert remember.value == "MQ==##R2qbEDO7u26NYKPV7lfNdHaGqCM="
+    assert remember.value == "MQ==##s-asfcHMQ834XtMWCNiVjQbSdZs="
   end
 
 end

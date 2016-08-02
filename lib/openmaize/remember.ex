@@ -66,15 +66,20 @@ defmodule Openmaize.Remember do
       config :openmaize,
         remember_salt: "generated salt"
   """
-  def gen_salt do
-    :crypto.strong_rand_bytes(12) |> Base.encode64
+  def gen_salt(length \\ 16)
+  def gen_salt(length) when length > 15 do
+    :crypto.strong_rand_bytes(length) |> Base.encode64 |> binary_part(0, length)
+  end
+  def gen_salt(_) do
+    raise ArgumentError, "The salt should be 16 bytes or longer"
   end
 
-  defp valid_cookie?(_, _, nil) do
-    raise ArgumentError, "You need to set the `remember_salt` config value"
+  defp valid_cookie?(_, _, salt) when is_nil(salt) or byte_size(salt) < 16 do
+    raise ArgumentError, "You need to set the `remember_salt` config value" <>
+    " to a value that is 16 bytes or longer"
   end
-  defp valid_cookie?(_, secret, _) when byte_size(secret) < 64 do
-    raise ArgumentError, "The secret must be 64 bytes or longer"
+  defp valid_cookie?(_, secret, _) when is_nil(secret) or byte_size(secret) < 64 do
+    raise ArgumentError, "The secret should be 64 bytes or longer"
   end
   defp valid_cookie?(remember, secret, salt) do
     key = secret |> KeyGenerator.generate(salt)
