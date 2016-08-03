@@ -55,7 +55,7 @@ run the following command:
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
 
-## Migrating from Devise
+## Migrating from [Devise](https://github.com/plataformatec/devise)
 
 Follow the above instructions for generating database and authorization
 modules, and then add the following lines to the config file:
