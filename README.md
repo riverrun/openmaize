@@ -1,11 +1,11 @@
 # Openmaize [![Build Status](https://travis-ci.org/riverrun/openmaize.svg?branch=master)](https://travis-ci.org/riverrun/openmaize) [![Deps Status](https://beta.hexfaktor.org/badge/all/github/riverrun/openmaize.svg)](https://beta.hexfaktor.org/github/riverrun/openmaize)
 
-Authentication library for Elixir
+Authentication library for Plug-based applications in Elixir
 
 ## Upgrading to the newest version
 
-There have been a few changes in the newest versions, 1.0.0-beta.
-Please check the `UPGRADE_1.0.md` guide in this directory for details.
+There have been a few changes in the newest versions, 1.0.0.
+Please check the `UPGRADE_1.1.md` guide in this directory for details.
 
 ## Goals
 
@@ -25,8 +25,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   defp deps do
-    [{:openmaize, "~> 1.0"},
-    {:openmaize_jwt, "~> 0.12"}]
+    [{:openmaize, "~> 1.1"}]
   end
   ```
 
@@ -34,7 +33,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   def application do
-    [applications: [:logger, :openmaize, :openmaize_jwt]]
+    [applications: [:logger, :openmaize]]
   end
   ```
 
@@ -56,7 +55,7 @@ run the following command:
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
 
-## Migrating from Devise
+## Migrating from [Devise](https://github.com/plataformatec/devise)
 
 Follow the above instructions for generating database and authorization
 modules, and then add the following lines to the config file:
@@ -68,12 +67,13 @@ Some of the functions in the Authorize module depend on a `role` being
 set for each user. If you are not using roles, you will need to edit
 these functions before use.
 
-## Features
+## Openmaize plugs
 
   * Authentication
-    * Openmaize.Authenticate - plug to authenticate users, using JSON Web Tokens.
+    * Openmaize.Authenticate - plug to authenticate users, using sessions.
     * Openmaize.Login - plug to handle login POST requests.
-    * Openmaize.Logout - plug to handle logout requests.
+    * Openmaize.OnetimePass - plug to handle one-time password POST requests.
+    * Openmaize.Remember - plug to check for a `remember me` cookie.
   * Email confirmation and password resetting
     * Openmaize.ConfirmEmail - verify the token that was sent to the user by email.
     * Openmaize.ResetPassword - verify the token that was sent to the user by email,
@@ -82,9 +82,6 @@ these functions before use.
 See the relevant module documentation for more details.
 
 ## Using with Phoenix
-
-You can generate an example Authorize module and / or a Confirm module
-by running the command `mix openmaize.gen.phoenixauth`.
 
 There is an example of Openmaize being used with Phoenix at
 [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).

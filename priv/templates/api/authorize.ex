@@ -1,8 +1,8 @@
 defmodule <%= base %>.Authorize do
 
+  import OpenmaizeJWT.Plug
   import Plug.Conn
   import Phoenix.Controller
-  #alias <%= base %>.{Repo, User}
 
   @doc """
   Custom action that can be used to override the `action` function in any
@@ -10,14 +10,6 @@ defmodule <%= base %>.Authorize do
 
   This function checks for a `current_user` value. If there is no current_user,
   the `unauthenticated` function is called.
-
-  ## The current_user struct
-
-  This function produces a `current_user` with just the data from the JSON
-  Web Token. If you want the `current_user` to contain all the data about
-  the user from the database, uncomment the line `alias <%= base %>.{Repo, User}`
-  at the top of this module and the line `user = Repo.get(User, current_user.id)`
-  in this function.
 
   ## Examples
 
@@ -37,7 +29,6 @@ defmodule <%= base %>.Authorize do
   end
   def authorize_action(%Plug.Conn{assigns: %{current_user: current_user},
     params: params} = conn, module) do
-    #current_user = Repo.get(User, current_user.id)
     apply(module, action_name(conn), [conn, params, current_user])
   end
 
@@ -50,14 +41,6 @@ defmodule <%= base %>.Authorize do
   there is no current_user, the `unauthenticated` function is called, and
   if the user's role is not in the list of allowed roles, the `unauthorized`
   function is called.
-
-  ## The current_user struct
-
-  This function produces a `current_user` with just the data from the JSON
-  Web Token. If you want the `current_user` to contain all the data about
-  the user from the database, uncomment the line `alias <%= base %>.{Repo, User}`
-  at the top of this module and the line `user = Repo.get(User, current_user.id)`
-  in this function.
 
   ## Examples
 
@@ -78,7 +61,6 @@ defmodule <%= base %>.Authorize do
   def authorize_action_role(%Plug.Conn{assigns: %{current_user: current_user},
     params: params} = conn, roles, module) do
     if current_user.role in roles do
-      #current_user = Repo.get(User, current_user.id)
       apply(module, action_name(conn), [conn, params, current_user])
     else
       unauthorized conn, current_user
@@ -138,8 +120,7 @@ defmodule <%= base %>.Authorize do
 
   Add the following line to the controller which handles login:
 
-      plug Openmaize.Login, [db_module: <%= base %>.OpenmaizeEcto,
-        storage: nil] when action in [:login_user]
+      plug Openmaize.Login, [db_module: <%= base %>.OpenmaizeEcto] when action in [:login_user]
 
   and then call `handle_login` from the `login_user` function:
 
@@ -150,23 +131,15 @@ defmodule <%= base %>.Authorize do
   def handle_login(%Plug.Conn{private: %{openmaize_error: _message}} = conn, _params) do
     unauthenticated conn
   end
-  def handle_login(%Plug.Conn{private: %{openmaize_user: _user}} = conn, _params) do
-    send_resp conn
+  def handle_login(%Plug.Conn{private: %{openmaize_user: user}} = conn, _params) do
+    add_token(conn, user, :username) |> send_resp
   end
 
   @doc """
   Logout and send the user a message.
-
-  ## Examples
-
-  Add the following line to the controller which handles logout:
-
-      plug Openmaize.Logout when action in [:logout]
-
-  and then call `handle_logout` from the `logout` function in the
-  controller.
   """
   def handle_logout(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    render(conn, <%= base %>.UserView, "info.json", %{info: message})
+    logout_user(conn)
+    |> render(<%= base %>.UserView, "info.json", %{info: message})
   end
 end

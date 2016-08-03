@@ -22,6 +22,6 @@ defmodule Mix.Openmaize do
   Returns the module base name based on the configuration value.
   """
   def base_name do
-    Mix.Project.config |> Keyword.fetch!(:app) |> to_string |> Mix.Utils.camelize
+    Mix.Project.config |> Keyword.fetch!(:app) |> to_string |> Macro.camelize
   end
 end

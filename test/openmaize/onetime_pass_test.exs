@@ -4,7 +4,6 @@ defmodule Openmaize.OnetimePassTest do
 
   alias Comeonin.Otp
   alias Openmaize.{EctoDB, OnetimePass}
-  alias OpenmaizeJWT.{Tools, Verify}
 
   def get_count do
     {megasecs, secs, _} = :os.timestamp()
@@ -12,64 +11,53 @@ defmodule Openmaize.OnetimePassTest do
   end
 
   def call(user, opts) do
-    conn(:post, "/twofactor", %{"user" => user}) |> OnetimePass.call(opts)
+    conn(:post, "/twofactor", %{"user" => user})
+    |> OnetimePass.call(opts)
   end
 
   test "init function" do
-    assert OnetimePass.init([]) == {nil, {&OpenmaizeJWT.Plug.add_token/5, []}}
+    assert OnetimePass.init([]) == {nil, []}
   end
 
   test "check hotp with default options" do
-    user = %{"hotp" => "816065", "storage" => "cookie", "uniq" => "username", "id" => "5"}
-    conn = call(user, {EctoDB, {&OpenmaizeJWT.Plug.add_token/5, []}})
-    assert conn.resp_cookies["access_token"]
-    assert conn.private[:openmaize_info] == 2
+    user = %{"hotp" => "816065", "id" => "5"}
+    conn = call(user, {EctoDB, []})
+    %{id: id, role: role, last: last} = conn.private[:openmaize_user]
+    assert id == 5
+    assert role == "user"
+    assert last == 2
     refute conn.private[:openmaize_error]
-    fail = %{"hotp" => "816066", "storage" => "cookie", "uniq" => "username",
-     "id" => "5", "override_exp" => nil}
-    conn = call(fail, {EctoDB, {&OpenmaizeJWT.Plug.add_token/5, []}})
-    refute conn.resp_cookies["access_token"]
+    fail = %{"hotp" => "816066", "id" => "5"}
+    conn = call(fail, {EctoDB, []})
     assert conn.private[:openmaize_error]
   end
 
   test "check hotp with last option" do
-    user = %{"hotp" => "088239", "storage" => "cookie", "uniq" => "username", "id" => "5"}
-    conn = call(user, {EctoDB, {&OpenmaizeJWT.Plug.add_token/5, [last: 18]}})
-    assert conn.resp_cookies["access_token"]
-    assert conn.private[:openmaize_info] == 19
+    user = %{"hotp" => "088239", "id" => "5"}
+    conn = call(user, {EctoDB, [last: 18]})
+    %{id: id, role: role, last: last} = conn.private[:openmaize_user]
+    assert id == 5
+    assert role == "user"
+    assert last == 19
+    assert conn.private[:openmaize_user]
     refute conn.private[:openmaize_error]
-    fail = %{"hotp" => "088238", "storage" => "cookie", "uniq" => "username",
-     "id" => "5", "override_exp" => nil}
-    conn = call(fail, {EctoDB, {&OpenmaizeJWT.Plug.add_token/5, [last: 18]}})
-    refute conn.resp_cookies["access_token"]
+    fail = %{"hotp" => "088238", "id" => "5"}
+    conn = call(fail, {EctoDB, [last: 18]})
     assert conn.private[:openmaize_error]
   end
 
   test "check totp with default options" do
     token = Otp.gen_totp("MFRGGZDFMZTWQ2LK")
-    user = %{"totp" => token, "storage" => "cookie", "uniq" => "email",
-     "id" => "5", "override_exp" => nil}
-    conn = call(user, {EctoDB, {&OpenmaizeJWT.Plug.add_token/5, []}})
-    assert conn.resp_cookies["access_token"]
-    assert conn.private[:openmaize_info]
+    user = %{"totp" => token, "id" => "5"}
+    conn = call(user, {EctoDB, []})
+    assert conn.private[:openmaize_user]
     refute conn.private[:openmaize_error]
   end
 
-  test "check totp and override default token validity" do
-    token = Otp.gen_totp("MFRGGZDFMZTWQ2LK")
-    user = %{"totp" => token, "storage" => "cookie", "uniq" => "email",
-     "id" => "5", "override_exp" => "10080"}
-    conn = call(user, {EctoDB, {&OpenmaizeJWT.Plug.add_token/5, []}})
-    token = conn.resp_cookies["access_token"]
-    assert token.max_age == 604_800
-    {:ok, %{exp: exp}} = Verify.verify_token token.value
-    assert exp - Tools.current_time > 500_000_000
-  end
-
   test "raises error if no db_module is set" do
-    user = %{"hotp" => "816065", "storage" => "cookie", "uniq" => "username", "id" => "5"}
+    user = %{"hotp" => "816065", "id" => "5"}
     assert_raise ArgumentError, "You need to set the db_module value for Openmaize.OnetimePass", fn ->
-      call(user, {nil, {&OpenmaizeJWT.Plug.add_token/5, []}})
+      call(user, {nil, []})
     end
   end
 

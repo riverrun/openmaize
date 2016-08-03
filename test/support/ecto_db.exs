@@ -1,16 +1,13 @@
 defmodule Openmaize.EctoDB do
 
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
   alias Openmaize.{TestRepo, TestUser}
   alias Openmaize.{Config, Password}
 
   @behaviour Openmaize.Database
 
   def find_user(user_id, uniq) do
-    from(u in TestUser,
-        where: field(u, ^uniq) == ^user_id,
-        select: u)
-    |> TestRepo.one
+    TestRepo.get_by(TestUser, [{uniq, user_id}])
   end
 
   def find_user_byid(id) do

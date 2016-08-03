@@ -2,7 +2,6 @@ defmodule <%= base %>.Authorize do
 
   import Plug.Conn
   import Phoenix.Controller
-  #alias <%= base %>.{Repo, User}
 
   @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}
 
@@ -12,14 +11,6 @@ defmodule <%= base %>.Authorize do
 
   This function checks for a `current_user` value. If there is no current_user,
   the `unauthenticated` function is called.
-
-  ## The current_user struct
-
-  This function produces a `current_user` with just the data from the JSON
-  Web Token. If you want the `current_user` to contain all the data about
-  the user from the database, uncomment the line `alias <%= base %>.{Repo, User}`
-  at the top of this module and the line `user = Repo.get(User, current_user.id)`
-  in this function.
 
   ## Examples
 
@@ -39,7 +30,6 @@ defmodule <%= base %>.Authorize do
   end
   def authorize_action(%Plug.Conn{assigns: %{current_user: current_user},
     params: params} = conn, module) do
-    #current_user = Repo.get(User, current_user.id)
     apply(module, action_name(conn), [conn, params, current_user])
   end
 
@@ -52,14 +42,6 @@ defmodule <%= base %>.Authorize do
   there is no current_user, the `unauthenticated` function is called, and
   if the user's role is not in the list of allowed roles, the `unauthorized`
   function is called.
-
-  ## The current_user struct
-
-  This function produces a `current_user` with just the data from the JSON
-  Web Token. If you want the `current_user` to contain all the data about
-  the user from the database, uncomment the line `alias <%= base %>.{Repo, User}`
-  at the top of this module and the line `user = Repo.get(User, current_user.id)`
-  in this function.
 
   ## Examples
 
@@ -80,7 +62,6 @@ defmodule <%= base %>.Authorize do
   def authorize_action_role(%Plug.Conn{assigns: %{current_user: current_user},
     params: params} = conn, roles, module) do
     if current_user.role in roles do
-      #current_user = Repo.get(User, current_user.id)
       apply(module, action_name(conn), [conn, params, current_user])
     else
       unauthorized conn, current_user
@@ -177,12 +158,19 @@ defmodule <%= base %>.Authorize do
   def handle_login(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
     unauthenticated conn, message
   end
-  def handle_login(%Plug.Conn{private: %{openmaize_otpdata:
-     {storage, uniq, id, _}}} = conn, _) do
-    render conn, "twofa.html", storage: storage, uniq: uniq, id: id
+  def handle_login(%Plug.Conn{private: %{openmaize_otpdata: id}} = conn, _) do
+    render conn, "twofa.html", id: id
   end
-  def handle_login(%Plug.Conn{private: %{openmaize_user: %{role: role}}} = conn, _params) do
+  def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role, remember: true}}} = conn,
+   %{"user" => %{"remember_me" => "true"}}) do
     conn
+    |> Openmaize.Remember.add_cookie(id)
+    |> put_flash(:info, "You have been logged in")
+    |> redirect(to: @redirects[role])
+  end
+  def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role}}} = conn, _params) do
+    conn
+    |> put_session(:user_id, id)
     |> put_flash(:info, "You have been logged in")
     |> redirect(to: @redirects[role])
   end
@@ -190,16 +178,12 @@ defmodule <%= base %>.Authorize do
   @doc """
   Logout and redirect to the home page.
 
-  ## Examples
-
-  Add the following line to the controller which handles logout:
-
-      plug Openmaize.Logout when action in [:logout]
-
-  and then call `handle_logout` from the `logout` function in the
-  controller.
+  This example also deletes the remember_me cookie if it is present.
   """
-  def handle_logout(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    conn |> put_flash(:info, message) |> redirect(to: "/")
+  def handle_logout(conn, _params) do
+    configure_session(conn, drop: true)
+    |> Openmaize.Remember.delete_rem_cookie
+    |> put_flash(:info, "You have been logged out")
+    |> redirect(to: "/")
   end
 end

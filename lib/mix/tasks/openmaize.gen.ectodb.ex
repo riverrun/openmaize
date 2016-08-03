@@ -34,8 +34,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
           plug Openmaize.Login, [db_module: ${mod_name}.OpenmaizeEcto,
             unique_id: :email] when action in [:login_user]
 
-      See the documentation for Openmaize.Config and OpenmaizeJWT.Config
-      for further details on how to configure Openmaize.
+      See the documentation for Openmaize.Config for further details
+      on how to configure Openmaize.
       """
     else
       Mix.shell.info """
