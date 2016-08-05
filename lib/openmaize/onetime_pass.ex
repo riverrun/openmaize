@@ -63,7 +63,7 @@ defmodule Openmaize.OnetimePass do
   end
   def call(%Plug.Conn{params: %{"user" => %{"id" => id} = user_params}} = conn,
    {db_module, opts}) do
-    db_module.find_user_byid(id)
+    db_module.find_user_by_id(id)
     |> check_key(user_params, opts)
     |> handle_auth(conn)
   end

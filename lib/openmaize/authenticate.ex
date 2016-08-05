@@ -38,7 +38,7 @@ defmodule Openmaize.Authenticate do
 
   defp get_user(nil, conn, _), do: assign(conn, :current_user, nil)
   defp get_user(id, conn, db_module) do
-    db_module.find_user_byid(id) |> set_current_user(conn)
+    db_module.find_user_by_id(id) |> set_current_user(conn)
   end
 
   defp set_current_user(nil, conn), do: assign(conn, :current_user, nil)

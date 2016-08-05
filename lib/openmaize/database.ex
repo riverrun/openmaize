@@ -30,7 +30,7 @@ defmodule Openmaize.Database do
 
   This function returns a user struct.
   """
-  @callback find_user_byid(String.t | Integer) :: struct
+  @callback find_user_by_id(String.t | Integer) :: struct
 
   @doc """
   Update the database with the time when the email address was confirmed.

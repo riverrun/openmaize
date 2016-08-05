@@ -43,6 +43,7 @@ defmodule <%= base %>.Confirm do
     render(conn, <%= base %>.ErrorView, "error.json", %{error: message})
   end
   def handle_reset(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    render(conn, <%= base %>.UserView, "info.json", %{info: message})
+    logout_user(conn)
+    |> render(<%= base %>.UserView, "info.json", %{info: message})
   end
 end

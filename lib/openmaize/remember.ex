@@ -87,7 +87,7 @@ defmodule Openmaize.Remember do
   end
 
   defp verify_cookie({:ok, user_id}, conn, db_module) do
-    db_module.find_user_byid(user_id) |> handle_auth(conn)
+    db_module.find_user_by_id(user_id) |> handle_auth(conn)
   end
   defp verify_cookie(_, conn, _) do
     put_private(conn, :openmaize_error, "Invalid cookie")

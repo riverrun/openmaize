@@ -10,7 +10,7 @@ defmodule Openmaize.EctoDB do
     TestRepo.get_by(TestUser, [{uniq, user_id}])
   end
 
-  def find_user_byid(id) do
+  def find_user_by_id(id) do
     TestRepo.get(TestUser, id)
   end
 
