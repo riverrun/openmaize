@@ -22,15 +22,15 @@ defmodule <%= base %>.AuthorizeTest do
   end
 
   test "login succeeds" do
-    # Remove the Repo.get_by line if you are not using email confirmation
-    Repo.get_by(User, %{email: "tony@mail.com"}) |> user_confirmed
+    # Uncomment the Repo.get_by line if you are using email confirmation
+    #Repo.get_by(User, %{email: "tony@mail.com"}) |> user_confirmed
     conn = post build_conn(), "/api/login", user: @valid_attrs
     assert response(conn, 200)
   end
 
   test "login fails" do
-    # Remove the Repo.get_by line if you are not using email confirmation
-    Repo.get_by(User, %{email: "reg@mail.com"}) |> user_confirmed
+    # Uncomment the Repo.get_by line if you are using email confirmation
+    #Repo.get_by(User, %{email: "reg@mail.com"}) |> user_confirmed
     conn = post build_conn(), "/api/login", user: @invalid_attrs
     assert response(conn, 401)
   end
