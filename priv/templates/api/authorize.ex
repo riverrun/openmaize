@@ -1,6 +1,7 @@
 defmodule <%= base %>.Authorize do
   @moduledoc """
-  Login and logout, and examples of user authorization, with OpenmaizeJWT.
+  Module to handle login and logout, and provide examples of user
+  authorization, with OpenmaizeJWT.
 
   This module provides the `handle_login` and `handle_logout` functions
   to help with logging users in and out.

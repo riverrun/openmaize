@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   There is one option:
 
-    * api - provide functions for an api
+    * api - provide functions for an api, using OpenmaizeJWT and JSON Web Tokens
       * the default is false
 
   ## Examples
@@ -54,9 +54,9 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     if :ok in oks do
       Mix.shell.info """
 
-      Please check the generated files. Certain details in them, such as
-      paths, user details, roles, etc., will most likely need to be
-      changed.
+      Please check the generated files. You might need to uncomment certain
+      lines and / or change certain details, such as paths, user details,
+      roles, etc.
 
       Before you use Openmaize, you need to install a module which implements
       the Openmaize.Database behaviour. If you are using Ecto, you can generate a

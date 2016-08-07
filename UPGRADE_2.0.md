@@ -1,8 +1,8 @@
-# Upgrading to version 1.1
+# Upgrading to version 2.0
 
 Add the following to mix.exs and run `mix deps.update openmaize`:
 
-    {:openmaize, "~> 1.1"}
+    {:openmaize, "~> 2.0"}
 
 ## Using sessions for authentication instead of JWTs
 
@@ -18,16 +18,6 @@ In the `web/router.ex` file, add the `db_module` option to Openmaize.Authenticat
 
     plug Openmaize.Authenticate, db_module: MyApp.OpenmaizeEcto
 
-### Remember me
-
-In the `web/router.ex` file, add the following line after the
-call to Openmaize.Authenticate:
-
-    plug Openmaize.Remember, db_module: MyApp.OpenmaizeEcto
-
-You will also need to set a `remember_salt` value in the openmaize config.
-See the documentation for `Openmaize.Remember.gen_salt` for more information.
-
 ### Openmaize.Login and Openmaize.OnetimePass
 
 These plugs now have fewer options.
@@ -41,6 +31,16 @@ also has options for the one-time passwords
 
 The `handle_logout` function in the Authorize module can handle the
 process of logging out.
+
+### Remember me
+
+In the `web/router.ex` file, add the following line after the
+call to Openmaize.Authenticate:
+
+    plug Openmaize.Remember, db_module: MyApp.OpenmaizeEcto
+
+You will also need to set a `remember_salt` value in the openmaize config.
+See the documentation for `Openmaize.Remember.gen_salt` for more information.
 
 ### Changes to the Authorize and Confirm module templates
 
