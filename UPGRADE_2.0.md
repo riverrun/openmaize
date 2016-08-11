@@ -42,6 +42,11 @@ call to Openmaize.Authenticate:
 You will also need to set a `remember_salt` value in the openmaize config.
 See the documentation for `Openmaize.Remember.gen_salt` for more information.
 
+### Change to the database module
+
+In the Openmaize.Database behaviour and the MyApp.OpenmaizeEcto module,
+the `find_user_byid` function has been renamed to `find_user_by_id`.
+
 ### Changes to the Authorize and Confirm module templates
 
 The following changes have been made to the examples in the Authorize
