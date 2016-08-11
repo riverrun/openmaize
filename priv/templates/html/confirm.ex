@@ -32,6 +32,9 @@ defmodule <%= base %>.Confirm do
   user will be redirected to the login page. If there is an error, the
   reset password form will be rerendered with the email and key.
 
+  If you are using `remember me` functionality, uncomment the
+  `Openmaize.Remember.delete_rem_cookie` line.
+
   ## Examples
 
   Add the following line to the controller file:
@@ -52,7 +55,7 @@ defmodule <%= base %>.Confirm do
   def handle_reset(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
     conn
     |> configure_session(drop: true)
-    #|> Openmaize.Remember.delete_rem_cookie # uncomment this line if you are using `remember me`
+    #|> Openmaize.Remember.delete_rem_cookie
     |> put_flash(:info, message)
     |> redirect(to: "/login")
   end

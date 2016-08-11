@@ -112,4 +112,5 @@ and Confirm modules and tests:
   ```
 
 There are several other changes to the Authorize test. For more information,
-see the example app at [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
+see the files in the `priv/templates/html` directory and / or the example app at
+[Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).

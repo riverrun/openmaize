@@ -121,14 +121,22 @@ defmodule <%= base %>.Authorize do
 
   @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}
 
+  @doc """
+  Handle login using Openmaize.
+
+  If you are using two-factor authentication, uncomment the first commented
+  out section - the one that includes `render conn, "twofa.html", id: id`.
+
+  If you are using `remember me` functionality, uncomment the second section.
+  """
   def handle_login(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
     unauthenticated conn, message
   end
   #def handle_login(%Plug.Conn{private: %{openmaize_otpdata: id}} = conn, _) do
-    #render conn, "twofa.html", id: id # uncomment this function if you are using two-factor authentication
+    #render conn, "twofa.html", id: id
   #end
   #def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role, remember: true}}} = conn,
-   #%{"user" => %{"remember_me" => "true"}}) do # uncomment this function if you are using `remember me`
+   #%{"user" => %{"remember_me" => "true"}}) do
     #conn
     #|> Openmaize.Remember.add_cookie(id)
     #|> put_flash(:info, "You have been logged in")
@@ -141,9 +149,15 @@ defmodule <%= base %>.Authorize do
     |> redirect(to: @redirects[role])
   end
 
+  @doc """
+  Handle logout using Openmaize.
+
+  If you are using `remember me` functionality, uncomment the
+  `Openmaize.Remember.delete_rem_cookie` line.
+  """
   def handle_logout(conn, _params) do
     configure_session(conn, drop: true)
-    #|> Openmaize.Remember.delete_rem_cookie # uncomment this line if you are using `remember me`
+    #|> Openmaize.Remember.delete_rem_cookie
     |> put_flash(:info, "You have been logged out")
     |> redirect(to: "/")
   end
