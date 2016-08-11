@@ -9,7 +9,7 @@ process.
 ## Features
 
 * handles login / logout
-* authenticates users using JSON Web Tokens
+* authenticates users using sessions
 * provides excellent documentation
 * is framework-agnostic
 * is lightweight

@@ -5,11 +5,11 @@ defmodule <%= base %>.OpenmaizeEctoTest do
   alias <%= base %>.{OpenmaizeEcto, Repo, User}
 
   test "easy password results in an error being added to the changeset" do
-    user = %{email: "bill@mail.com", username: "bill", role: "user", password: "easytoguess",
+    user = %{email: "bill@mail.com", username: "bill", role: "user", password: "123456",
              phone: "081655555", confirmed_at: Ecto.DateTime.utc}
     {:error, changeset} = %User{} |> User.auth_changeset(user) |> Repo.insert
     errors = changeset.errors[:password] |> elem(0)
-    assert errors =~ "password should contain at least one number"
+    assert errors =~ "password is too short"
   end
 
   test "add_confirm_token" do

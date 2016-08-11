@@ -3,6 +3,9 @@ defmodule Openmaize.Password do
   Check the password is valid, and optionally, check the password is
   strong enough.
 
+  The functions in this module can be called directly, and they are
+  also used by the Openmaize.ResetPassword plug.
+
   To perform the password strength checks, you need to have NotQwerty123
   installed.
 

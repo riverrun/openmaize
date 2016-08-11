@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.0
+
+* Changes
+    * Now using sessions (provided by Plug) for authentication, instead of JSON Web Tokens
+        * Authentication using JSON Web Tokens will be handled by OpenmaizeJWT, a separate library
+    * Changed default expiry time for the ConfirmEmail and ResetPassword modules to one hour
+    * Changed how `remember_me` is implemented
+
 ## v1.0.0
 
 * Enhancements

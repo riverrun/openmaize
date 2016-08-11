@@ -28,7 +28,7 @@ defmodule Openmaize.ResetPasswordTest do
   end
 
   test "init function" do
-    assert ResetPassword.init([]) == {nil, {120, :email, nil}}
+    assert ResetPassword.init([]) == {nil, {60, :email, nil}}
   end
 
   test "reset password succeeds" do

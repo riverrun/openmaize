@@ -8,17 +8,6 @@ defmodule Openmaize.Database do
 
       mix openmaize.gen.ectodb
 
-  ## Creating a custom module
-
-  If you are going to create a custom module, note that the following
-  functions are called by other modules in Openmaize:
-
-    * `find_user` - used in Openmaize.Login and Openmaize.ConfirmEmail
-    * `find_user_byid` - used in Openmaize.OnetimePass
-    * `user_confirmed` - used in Openmaize.ConfirmEmail
-    * `password_reset` - used in Openmaize.ResetPassword
-    * `check_time` - used in Openmaize.ConfirmEmail and Openmaize.ResetPassword
-
   """
 
   @doc """
@@ -41,7 +30,7 @@ defmodule Openmaize.Database do
 
   This function returns a user struct.
   """
-  @callback find_user_byid(String.t | Integer) :: struct
+  @callback find_user_by_id(String.t | Integer) :: struct
 
   @doc """
   Update the database with the time when the email address was confirmed.

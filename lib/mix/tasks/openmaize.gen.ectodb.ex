@@ -29,13 +29,13 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
       When using the Openmaize.Login, Openmaize.ConfirmEmail,
       Openmaize.ResetPassword, and Openmaize.OnetimePass plugs, add
       `db_module: #{mod_name}.OpenmaizeEcto` to the optional arguments,
-      like the example below:
+      like the example below (the default for unique_id is username):
 
-          plug Openmaize.Login, [db_module: ${mod_name}.OpenmaizeEcto,
+          plug Openmaize.Login, [db_module: #{mod_name}.OpenmaizeEcto,
             unique_id: :email] when action in [:login_user]
 
-      See the documentation for Openmaize.Config and OpenmaizeJWT.Config
-      for further details on how to configure Openmaize.
+      See the documentation for Openmaize.Config for further details
+      on how to configure Openmaize.
       """
     else
       Mix.shell.info """

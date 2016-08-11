@@ -10,6 +10,7 @@ defmodule Openmaize.Config do
   | crypto_mod         | module       | Comeonin.Bcrypt  |
   | hash_name          | atom         | :password_hash   |
   | password_strength  | keyword list | []               |
+  | remember_salt      | string       | N/A              |
 
   ## Examples
 
@@ -75,5 +76,12 @@ defmodule Openmaize.Config do
   """
   def password_strength do
     Application.get_env(:openmaize, :password_strength, [])
+  end
+
+  @doc """
+  Salt to be used when signing and verifying the `remember me` cookie.
+  """
+  def remember_salt do
+    Application.get_env(:openmaize, :remember_salt)
   end
 end
