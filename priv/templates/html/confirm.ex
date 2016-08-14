@@ -11,8 +11,7 @@ defmodule <%= base %>.Confirm do
 
   Add the following line to the controller file:
 
-      plug Openmaize.ConfirmEmail, [db_module: <%= base %>.OpenmaizeEcto,
-        mail_function: &Mailer.receipt_confirm/1] when action in [:confirm]
+      plug Openmaize.ConfirmEmail, [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm]
 
   and then call `handle_confirm` from the `confirm` function in the controller.
 
@@ -39,8 +38,7 @@ defmodule <%= base %>.Confirm do
 
   Add the following line to the controller file:
 
-      plug Openmaize.ResetPassword, [db_module: <%= base %>.OpenmaizeEcto,
-        mail_function: &Mailer.receipt_confirm/1] when action in [:reset_password]
+      plug Openmaize.ResetPassword, [mail_function: &Mailer.receipt_confirm/1] when action in [:reset_password]
 
   and then call `handle_reset` from the `reset_password` function in the controller.
 

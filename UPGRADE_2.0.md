@@ -12,12 +12,6 @@ the `:openmaize_jwt` dependency.
 If you want to use JWTs, you will need to use OpenmaizeJWT, which will
 then install Openmaize as a dependency.
 
-### Openmaize.Authenticate
-
-In the `web/router.ex` file, add the `db_module` option to Openmaize.Authenticate:
-
-    plug Openmaize.Authenticate, db_module: MyApp.OpenmaizeEcto
-
 ### Openmaize.Login and Openmaize.OnetimePass
 
 These plugs now have fewer options.
@@ -37,7 +31,7 @@ process of logging out.
 In the `web/router.ex` file, add the following line after the
 call to Openmaize.Authenticate:
 
-    plug Openmaize.Remember, db_module: MyApp.OpenmaizeEcto
+    plug Openmaize.Remember
 
 You will also need to set a `remember_salt` value in the openmaize config.
 See the documentation for `Openmaize.Remember.gen_salt` for more information.
