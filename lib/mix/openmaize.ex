@@ -17,11 +17,4 @@ defmodule Mix.Openmaize do
       Mix.Generator.create_file target, contents
     end
   end
-
-  @doc """
-  Returns the module base name based on the configuration value.
-  """
-  def base_name do
-    Mix.Project.config |> Keyword.fetch!(:app) |> to_string |> Macro.camelize
-  end
 end

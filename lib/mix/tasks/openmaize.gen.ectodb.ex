@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
 
   @doc false
   def run(_) do
-    mod_name = Mix.Openmaize.base_name
+    mod_name = Openmaize.Utils.base_name
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates", "database"]
 
     files = [{"openmaize_ecto.ex", "web/models/openmaize_ecto.ex"},

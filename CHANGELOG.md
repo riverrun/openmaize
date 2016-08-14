@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.1
+
+* Changes
+    * Added default value for `db_module` (used in several plugs)
+
 ## v2.0.0
 
 * Changes

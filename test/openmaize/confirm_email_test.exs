@@ -29,7 +29,7 @@ defmodule Openmaize.ConfirmEmailTest do
   end
 
   test "init function" do
-    assert ConfirmEmail.init([]) == {nil, {60, :email, nil}}
+    assert ConfirmEmail.init([]) == {Openmaize.OpenmaizeEcto, {60, :email, nil}}
   end
 
   test "confirmation succeeds for valid token" do
@@ -78,12 +78,6 @@ defmodule Openmaize.ConfirmEmailTest do
     {key, link} = ConfirmEmail.gen_token_link("fred", :username)
     assert link =~ "username=fred&key="
     assert :binary.match(link, [key]) == {18, 32}
-  end
-
-  test "raises error if no db_module is set" do
-    assert_raise ArgumentError, "You need to set the db_module value for Openmaize.ConfirmEmail", fn ->
-      call_confirm(@valid_link, {nil, {120, :email, nil}})
-    end
   end
 
 end

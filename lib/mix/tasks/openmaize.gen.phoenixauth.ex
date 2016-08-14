@@ -32,7 +32,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     switches = [api: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
 
-    mod_name = Mix.Openmaize.base_name
+    mod_name = Openmaize.Utils.base_name
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 

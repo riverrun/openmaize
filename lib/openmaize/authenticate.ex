@@ -23,15 +23,12 @@ defmodule Openmaize.Authenticate do
   @behaviour Plug
 
   def init(opts) do
-    Keyword.get opts, :db_module
+    Keyword.get opts, :db_module, Openmaize.Utils.default_db
   end
 
   @doc """
   Authenticate the current user.
   """
-  def call(_, nil) do
-    raise ArgumentError, "You need to set the db_module value for Openmaize.Authenticate"
-  end
   def call(conn, db_module) do
     get_session(conn, :user_id) |> get_user(conn, db_module)
   end

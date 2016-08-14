@@ -17,7 +17,7 @@ defmodule Openmaize.RememberTest do
   end
 
   test "init function" do
-    assert Remember.init([]) == nil
+    assert Remember.init([]) == Openmaize.OpenmaizeEcto
   end
 
   test "call remember with default options", %{newconn: newconn} do

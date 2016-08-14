@@ -49,7 +49,7 @@ defmodule Openmaize.OnetimePass do
   alias Comeonin.Otp
 
   def init(opts) do
-    Keyword.pop opts, :db_module
+    Keyword.pop opts, :db_module, Openmaize.Utils.default_db
   end
 
   @doc """
@@ -58,9 +58,6 @@ defmodule Openmaize.OnetimePass do
   If the one-time password check is successful, the user will be added
   to the session.
   """
-  def call(_, {nil, _}) do
-    raise ArgumentError, "You need to set the db_module value for Openmaize.OnetimePass"
-  end
   def call(%Plug.Conn{params: %{"user" => %{"id" => id} = user_params}} = conn,
    {db_module, opts}) do
     db_module.find_user_by_id(id)

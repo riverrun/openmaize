@@ -16,7 +16,7 @@ defmodule Openmaize.OnetimePassTest do
   end
 
   test "init function" do
-    assert OnetimePass.init([]) == {nil, []}
+    assert OnetimePass.init([]) == {Openmaize.OpenmaizeEcto, []}
   end
 
   test "check hotp with default options" do
@@ -52,13 +52,6 @@ defmodule Openmaize.OnetimePassTest do
     conn = call(user, {EctoDB, []})
     assert conn.private[:openmaize_user]
     refute conn.private[:openmaize_error]
-  end
-
-  test "raises error if no db_module is set" do
-    user = %{"hotp" => "816065", "id" => "5"}
-    assert_raise ArgumentError, "You need to set the db_module value for Openmaize.OnetimePass", fn ->
-      call(user, {nil, []})
-    end
   end
 
 end

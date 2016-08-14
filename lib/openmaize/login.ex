@@ -48,7 +48,7 @@ defmodule Openmaize.Login do
   alias Openmaize.Config
 
   def init(opts) do
-    {Keyword.get(opts, :db_module),
+    {Keyword.get(opts, :db_module, Openmaize.Utils.default_db),
      Keyword.get(opts, :unique_id, :username)}
   end
 
@@ -75,9 +75,6 @@ defmodule Openmaize.Login do
   `confirmed_at` value. If it is set to nil, an error message will be
   added to `conn.private.openmaize_error`.
   """
-  def call(_, {nil, _}) do
-    raise ArgumentError, "You need to set the db_module value for Openmaize.Login"
-  end
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
    {db_module, uniq_id}) do
     {uniq, user_id, password} = get_params(user_params, uniq_id)

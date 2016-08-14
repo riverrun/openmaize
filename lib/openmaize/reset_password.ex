@@ -46,7 +46,7 @@ defmodule Openmaize.ResetPassword do
   @behaviour Plug
 
   def init(opts) do
-    {Keyword.get(opts, :db_module),
+    {Keyword.get(opts, :db_module, Openmaize.Utils.default_db),
      {Keyword.get(opts, :key_expires_after, 60),
       Keyword.get(opts, :unique_id, :email),
       Keyword.get(opts, :mail_function)}}
@@ -54,9 +54,6 @@ defmodule Openmaize.ResetPassword do
 
   @doc """
   """
-  def call(_, {nil, _}) do
-    raise ArgumentError, "You need to set the db_module value for Openmaize.ResetPassword"
-  end
   def call(%Plug.Conn{params: %{"user" =>
      %{"key" => key, "password" => password} = user_params}} = conn, opts)
   when byte_size(key) == 32 do

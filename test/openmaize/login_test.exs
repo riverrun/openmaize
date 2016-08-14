@@ -11,7 +11,7 @@ defmodule Openmaize.LoginTest do
   end
 
   test "init function" do
-    assert Login.init([]) == {nil, :username}
+    assert Login.init([]) == {Openmaize.OpenmaizeEcto, :username}
   end
 
   test "login succeeds with username" do
@@ -93,13 +93,6 @@ defmodule Openmaize.LoginTest do
     opts = {EctoDB, &Name.phone_username/1}
     conn = call("rav", "h4rd2gU3$$", "phone", opts)
     assert conn.private[:openmaize_error]
-  end
-
-  test "raises error if no db_module is set" do
-    opts = {nil, :email}
-    assert_raise ArgumentError, "You need to set the db_module value for Openmaize.Login", fn ->
-      call("ray@mail.com", "h4rd2gU3$$", "email", opts)
-    end
   end
 
 end

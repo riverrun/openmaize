@@ -13,7 +13,7 @@ defmodule Openmaize.Remember do
   alias Plug.Crypto.{KeyGenerator, MessageVerifier}
 
   def init(opts) do
-    Keyword.get opts, :db_module
+    Keyword.get opts, :db_module, Openmaize.Utils.default_db
   end
 
   @doc """
