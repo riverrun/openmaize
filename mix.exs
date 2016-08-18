@@ -24,13 +24,13 @@ defmodule Openmaize.Mixfile do
 
   defp deps do
     [{:cowboy, "~> 1.0"},
-     {:plug, "~> 1.1"},
+     {:plug, "~> 1.2"},
      {:comeonin, "~> 2.5"},
      {:ecto, "~> 2.0", optional: true},
      {:postgrex, "~> 0.11", optional: true},
      {:not_qwerty123, "~> 1.2", optional: true},
-     {:earmark, "~> 0.2", only: :dev},
-     {:ex_doc,  "~> 0.12", only: :dev}]
+     {:earmark, "~> 1.0", only: :dev},
+     {:ex_doc,  "~> 0.13", only: :dev}]
   end
 
   defp package do
