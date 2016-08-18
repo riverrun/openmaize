@@ -53,7 +53,7 @@ defmodule <%= base %>.Authorize do
 
   In your controller file, import <%= base %>.Authorize and add:
 
-      def action(conn, _), do: auth_action conn, __MODULE__
+      def action(conn, _), do: auth_action_id conn, __MODULE__
 
   A custom `action` function that checks the user role.
 
@@ -73,7 +73,7 @@ defmodule <%= base %>.Authorize do
 
   In your controller file, import <%= base %>.Authorize and add:
 
-      def action(conn, _), do: auth_action conn, ["admin", "user"], __MODULE__
+      def action(conn, _), do: auth_action_role conn, ["admin", "user"], __MODULE__
 
   ## Example plugs
 
