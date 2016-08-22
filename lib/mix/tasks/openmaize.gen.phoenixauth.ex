@@ -33,19 +33,24 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
 
     mod_name = Openmaize.Utils.base_name
+    confirm = Mix.shell.yes?("\nAdd email confirmation?")
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 
     auth_files = [{"authorize.ex", "web/controllers/authorize.ex"},
+     {"page_controller.ex", "web/controllers/page_controller.ex"},
+     {"user_controller.ex", "web/controllers/user_controller.ex"},
+     {"login.html.eex", "web/templates/page/login.html.eex"},
      {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
-    files = if Mix.shell.yes?("\nAdd modules for email confirmation?") do
+
+    files = if confirm do
       auth_files ++ [{"confirm.ex", "web/controllers/confirm.ex"},
        {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
     else
       auth_files
     end
 
-    Mix.Openmaize.copy_files(srcdir, files, mod_name)
+    Mix.Openmaize.copy_files(srcdir, files, mod_name, confirm)
     |> instructions()
   end
 

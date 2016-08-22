@@ -2,7 +2,9 @@ defmodule <%= base %>.AuthorizeTest do
   use <%= base %>.ConnCase
 
   import <%= base %>.OpenmaizeEcto
-  alias <%= base %>.{Repo, User}
+  <%= if confirm do %>
+    alias <%= base %>.{Repo, User}
+  <% end %>
 
   @valid_attrs %{email: "tony@mail.com", password: "mangoes&g0oseberries"}
   @invalid_attrs %{email: "tony@mail.com", password: "maaaangoes&g00zeberries"}
@@ -19,15 +21,17 @@ defmodule <%= base %>.AuthorizeTest do
   end
 
   test "login succeeds", %{conn: conn} do
-    # Uncomment the Repo.get_by line if you are using email confirmation
-    #Repo.get_by(User, %{email: "tony@mail.com"}) |> user_confirmed
+    <%= if confirm do %>
+      Repo.get_by(User, %{email: "tony@mail.com"}) |> user_confirmed
+    <% end %>
     conn = post conn, "/login", user: @valid_attrs
     assert redirected_to(conn) == "/users"
   end
 
   test "login fails", %{conn: conn} do
-    # Uncomment the Repo.get_by line if you are using email confirmation
-    #Repo.get_by(User, %{email: "reg@mail.com"}) |> user_confirmed
+    <%= if confirm do %>
+      Repo.get_by(User, %{email: "reg@mail.com"}) |> user_confirmed
+    <% end %>
     conn = post conn, "/login", user: @invalid_attrs
     assert redirected_to(conn) == "/login"
   end
