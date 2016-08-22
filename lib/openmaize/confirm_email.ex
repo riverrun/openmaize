@@ -36,8 +36,6 @@ defmodule Openmaize.ConfirmEmail do
       Keyword.get(opts, :mail_function)}}
   end
 
-  @doc """
-  """
   def call(%Plug.Conn{params: %{"key" => key} = user_params} = conn, opts)
   when byte_size(key) == 32 do
     check_user_key(conn, user_params, key, :nopassword, opts)
