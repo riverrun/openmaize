@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
     files = [{"openmaize_ecto.ex", "web/models/openmaize_ecto.ex"},
      {"openmaize_ecto_test.exs", "test/models/openmaize_ecto_test.exs"}]
 
-    Mix.Openmaize.copy_files(srcdir, files, mod_name)
+    Mix.Openmaize.copy_files(srcdir, files, mod_name, false)
     |> instructions
   end
 

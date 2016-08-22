@@ -17,10 +17,4 @@ defmodule Mix.Openmaize do
       Mix.Generator.create_file target, contents
     end
   end
-
-  @doc """
-  Add string to already existing file.
-  """
-  def add_string(srcdir, files, mod_name) do
-  end
 end
