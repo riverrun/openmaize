@@ -121,6 +121,18 @@ defmodule <%= base %>.Authorize do
 
   @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}
 
+  def auth_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do
+    unauthenticated conn
+  end
+  def auth_action_role(%Plug.Conn{assigns: %{current_user: current_user},
+    params: params} = conn, roles, module) do
+    if current_user.role in roles do
+      apply(module, action_name(conn), [conn, params, current_user])
+    else
+      unauthorized conn, current_user
+    end
+  end
+
   @doc """
   Handle login using Openmaize.
 
