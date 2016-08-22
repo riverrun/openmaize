@@ -27,6 +27,16 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   the `tests/controllers` directory.
   """
 
+  @auth [{"authorize.ex", "web/controllers/authorize.ex"},
+       {"page_controller.ex", "web/controllers/page_controller.ex"},
+       {"user_controller.ex", "web/controllers/user_controller.ex"},
+       {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
+
+  @confirm [{"confirm.ex", "web/controllers/confirm.ex"},
+       {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
+
+  @html [{"login.html.eex", "web/templates/page/login.html.eex"}]
+
   @doc false
   def run(args) do
     switches = [api: :boolean]
@@ -37,18 +47,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 
-    auth_files = [{"authorize.ex", "web/controllers/authorize.ex"},
-     {"page_controller.ex", "web/controllers/page_controller.ex"},
-     {"user_controller.ex", "web/controllers/user_controller.ex"},
-     {"login.html.eex", "web/templates/page/login.html.eex"},
-     {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
-
-    files = if confirm do
-      auth_files ++ [{"confirm.ex", "web/controllers/confirm.ex"},
-       {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
-    else
-      auth_files
-    end
+    files = if opts[:api], do: @auth, else: @auth ++ @html
+    files = if confirm, do: files ++ @confirm, else: files
 
     Mix.Openmaize.copy_files(srcdir, files, mod_name, confirm)
     |> instructions()
@@ -56,7 +56,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   @doc false
   def instructions(oks) do
-    if :ok in oks do
+    if :ok in oks do # need more info about additions to web/models/user.ex and web/router.ex
       Mix.shell.info """
 
       Please check the generated files. You might need to uncomment certain
