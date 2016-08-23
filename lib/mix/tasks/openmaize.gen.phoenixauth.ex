@@ -34,27 +34,30 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   """
 
   @auth [{"authorize.ex", "web/controllers/authorize.ex"},
-       {"page_controller.ex", "web/controllers/page_controller.ex"},
+       {"authorize_test.exs", "test/controllers/authorize_test.exs"},
        {"user_controller.ex", "web/controllers/user_controller.ex"},
-       {"authorize_test.exs", "test/controllers/authorize_test.exs"}]
+       {"router.ex", "web/router.ex"}]
 
   @confirm [{"confirm.ex", "web/controllers/confirm.ex"},
        {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
+
+  @html [{"page_controller.ex", "web/controllers/page_controller.ex"}]
 
   @doc false
   def run(args) do
     switches = [api: :boolean, ecto: :boolean, roles: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
-    IO.inspect opts
 
     base = Openmaize.Utils.base_name
-    confirm = Mix.shell.yes?("\nDo you want to add email confirmation?")
+    confirm = Mix.shell.yes?("\nDo you want to add support for email confirmation and resetting passwords?")
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 
     files = if confirm, do: @auth ++ @confirm, else: @auth
+    files = if opts[:api], do: files, else: files ++ @html
 
-    if opts[:ecto], do: Mix.Task.run "openmaize.gen.ectodb", []
+    ectodb_opts = if confirm, do: ["--confirm"|args], else: ["--no-confirm"|args]
+    if opts[:ecto] != false, do: Mix.Task.run "openmaize.gen.ectodb", ectodb_opts
 
     Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: confirm, roles: opts[:roles])
     |> instructions()
@@ -62,21 +65,15 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   @doc false
   def instructions(oks) do
-    if :ok in oks do # need more info about additions to web/models/user.ex and web/router.ex
+    if :ok in oks do
       Mix.shell.info """
 
       Please check the generated files. You might need to uncomment certain
       lines and / or change certain details, such as paths, user details,
       roles, etc.
 
-      Before you use Openmaize, you need to install a module which implements
-      the Openmaize.Database behaviour. If you are using Ecto, you can generate a
-      template for this by running the following command:
-
-          mix openmaize.gen.ectodb # run this directly from this module
-
-      You may also need to configure Openmaize. See the documentation for
-      Openmaize.Config for details.
+      Before you use Openmaize, you need to configure Openmaize.
+      See the documentation for Openmaize.Config for details.
       """
     else
       Mix.shell.info """

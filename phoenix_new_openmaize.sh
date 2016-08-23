@@ -13,15 +13,11 @@ mix ecto.create
 
 # create user model - with templates and controller
 mix phoenix.gen.html User users username:string password:string password_hash:string
-# add `resources "/users", UserController` to web/router.ex
-# add `field :password, :string, virtual: true` after running the above command
+# add `resources "/users", UserController` to web/router.ex - login and logout routes as well
+
+# add openmaize to deps and applications
+# generate authorization files
+mix openmaize.gen.phoenixauth
 
 # run migration
 mix ecto.migrate
-
-#add openmaize to deps and applications
-
-mix openmaize.gen.phoenixauth # login.html.eex build failed, undefined function form_for/4
-mix openmaize.gen.ectodb
-
-#now need further edits to web/models/user.ex - add `OpenmaizeEcto.add_password_hash`, etc.
