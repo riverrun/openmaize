@@ -119,6 +119,7 @@ defmodule <%= base %>.Authorize do
   import Plug.Conn
   import Phoenix.Controller
 
+<%= if roles do %>
   @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}
 
   def auth_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do
@@ -132,7 +133,14 @@ defmodule <%= base %>.Authorize do
       unauthorized conn, current_user
     end
   end
-
+<% else %>
+  def auth_action(%Plug.Conn{assigns: %{current_user: nil}} = conn, _) do
+    unauthenticated conn
+  end
+  def auth_action(%Plug.Conn{assigns: %{current_user: current_user}} = conn, _) do
+    apply(module, action_name(conn), [conn, params, current_user])
+  end
+<% end %>
   @doc """
   Handle login using Openmaize.
 
@@ -152,13 +160,23 @@ defmodule <%= base %>.Authorize do
     #conn
     #|> Openmaize.Remember.add_cookie(id)
     #|> put_flash(:info, "You have been logged in")
+<%= if roles do %>
     #|> redirect(to: @redirects[role])
   #end
   def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role}}} = conn, _params) do
+<% else %>
+    #|> redirect(to: "/users")
+  #end
+  def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id}}} = conn, _params) do
+<% end %>
     conn
     |> put_session(:user_id, id)
     |> put_flash(:info, "You have been logged in")
+<%= if roles do %>
     |> redirect(to: @redirects[role])
+<% else %>
+    |> redirect(to: "/users")
+<% end %>
   end
 
   @doc """
@@ -184,7 +202,11 @@ defmodule <%= base %>.Authorize do
   def unauthorized(conn, current_user, message \\ "You are not authorized to view this page") do
     conn
     |> put_flash(:error, message)
+<%= if roles do %>
     |> redirect(to: @redirects[current_user.role])
+<% else %>
+    |> redirect(to: "/users")
+<% end %>
     |> halt
   end
 end

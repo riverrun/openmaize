@@ -4,7 +4,11 @@ defmodule <%= base %>.UserController do
   import <%= base %>.Authorize
   alias <%= base %>.User
 
+<%= if roles do %>
   def action(conn, _), do: auth_action_role conn, ["admin", "user"], __MODULE__
+<% else %>
+  def action(conn, _), do: auth_action conn, __MODULE__
+<% end %>
 
   def index(conn, _params, user) do
     users = Repo.all(User)
