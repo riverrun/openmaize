@@ -2,14 +2,12 @@ defmodule <%= base %>.PageController do
   use <%= base %>.Web, :controller
 
   import <%= base %>.Authorize
-  alias <%= base %>.User
-<%= if confirm do %>
+  alias <%= base %>.User<%= if confirm do %>
   alias Welcome.{Mailer, User}
 
   plug Openmaize.ConfirmEmail, [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm]
-  plug Openmaize.ResetPassword, [mail_function: &Mailer.receipt_confirm/1] when action in [:reset_password]
+  plug Openmaize.ResetPassword, [mail_function: &Mailer.receipt_confirm/1] when action in [:reset_password]<% end %>
 
-<% end %>
   plug Openmaize.Login when action in [:login_user]
   #plug Openmaize.Login, [unique_id: :email] when action in [:login_user]
 
@@ -27,8 +25,7 @@ defmodule <%= base %>.PageController do
 
   def logout(conn, params) do
     handle_logout conn, params
-  end
-<%= if confirm do %>
+  end<%= if confirm do %>
 
   def confirm(conn, params) do
     handle_confirm conn, params
@@ -59,6 +56,5 @@ defmodule <%= base %>.PageController do
 
   def reset_password(conn, params) do
     handle_reset conn, params
-  end
-<% end %>
+  end<% end %>
 end
