@@ -6,15 +6,21 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   ## Options
 
-  There is one option:
+  There are three options:
 
     * api - provide functions for an api, using OpenmaizeJWT and JSON Web Tokens
+      * the default is false
+    * ecto - use ecto for database interaction
+      * the default is true
+    * roles - whether to add roles to the authorize functions
       * the default is false
 
   ## Examples
 
   In the root directory of your project, run the following command
-  (add the `--api` option if your app is for an api):
+  (add the `--api` option if your app is for an api, add the `--no-ecto`
+  option if you are not using ecto, and add the `--roles` option if you
+  are using roles):
 
       mix openmaize.gen.phoenixauth
 
@@ -35,22 +41,22 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   @confirm [{"confirm.ex", "web/controllers/confirm.ex"},
        {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
 
-  @html [{"login.html.eex", "web/templates/page/login.html.eex"}]
-
   @doc false
   def run(args) do
-    switches = [api: :boolean]
+    switches = [api: :boolean, ecto: :boolean, roles: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
+    IO.inspect opts
 
-    mod_name = Openmaize.Utils.base_name
-    confirm = Mix.shell.yes?("\nAdd email confirmation?")
+    base = Openmaize.Utils.base_name
+    confirm = Mix.shell.yes?("\nDo you want to add email confirmation?")
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 
-    files = if opts[:api], do: @auth, else: @auth ++ @html
-    files = if confirm, do: files ++ @confirm, else: files
+    files = if confirm, do: @auth ++ @confirm, else: @auth
 
-    Mix.Openmaize.copy_files(srcdir, files, mod_name, confirm)
+    if opts[:ecto], do: Mix.Task.run "openmaize.gen.ectodb", []
+
+    Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: confirm, roles: opts[:roles])
     |> instructions()
   end
 
@@ -67,7 +73,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       the Openmaize.Database behaviour. If you are using Ecto, you can generate a
       template for this by running the following command:
 
-          mix openmaize.gen.ectodb
+          mix openmaize.gen.ectodb # run this directly from this module
 
       You may also need to configure Openmaize. See the documentation for
       Openmaize.Config for details.
