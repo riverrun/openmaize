@@ -13,7 +13,7 @@ defmodule <%= base %>.Confirm do
 
       plug Openmaize.ConfirmEmail, [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm]
 
-  and then call `handle_confirm` from the `confirm` function in the controller.
+  and then call 'handle_confirm' from the 'confirm' function in the controller.
 
   See the documentation for Openmaize.ConfirmEmail for more information.
   """
@@ -33,7 +33,7 @@ defmodule <%= base %>.Confirm do
 
       plug Openmaize.ResetPassword, [mail_function: &Mailer.receipt_confirm/1] when action in [:reset_password]
 
-  and then call `handle_reset` from the `reset_password` function in the controller.
+  and then call 'handle_reset' from the 'reset_password' function in the controller.
 
   See the documentation for Openmaize.ResetPassword for more information.
   """

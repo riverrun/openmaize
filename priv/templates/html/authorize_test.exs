@@ -7,8 +7,8 @@ defmodule <%= base %>.AuthorizeTest do
   @valid_attrs %{email: "tony@mail.com", password: "mangoes&g0oseberries"}
   @invalid_attrs %{email: "tony@mail.com", password: "maaaangoes&g00zeberries"}
 
-  # In this example setup, `conn` is the connection for an unauthenticated
-  # user, and `user_conn` is for an authenticated user (with an id of 3)
+  # In this example setup, 'conn' is the connection for an unauthenticated
+  # user, and 'user_conn' is for an authenticated user (with an id of 3)
   # You will need a similar setup in some of your other controller files,
   # if your tests involve the use of sessions
   setup %{conn: conn} do
