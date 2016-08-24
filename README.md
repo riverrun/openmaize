@@ -4,8 +4,7 @@ Authentication library for Plug-based applications in Elixir
 
 ## Upgrading to the newest version
 
-There have been a few changes in the newest version, 2.0.0.
-Please check the `UPGRADE_2.0.md` guide in this directory for details.
+Please check the `UPGRADE_2.1.md` guide in this directory for details.
 
 ## Goals
 
@@ -25,7 +24,7 @@ tested with the Phoenix Web Framework.
 
   ```elixir
   defp deps do
-    [{:openmaize, "~> 2.0"}]
+    [{:openmaize, "~> 2.1"}]
   end
   ```
 

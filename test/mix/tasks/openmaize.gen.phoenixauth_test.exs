@@ -14,18 +14,26 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       send self(), {:mix_shell_input, :yes?, false}
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run []
 
-      assert_file "web/controllers/authorize.ex"
       assert_file "test/controllers/authorize_test.exs"
       assert_file "web/models/openmaize_ecto.ex"
       refute_file "web/controllers/confirm.ex"
       refute_file "test/controllers/confirm_test.exs"
 
+      assert_file "web/controllers/authorize.ex", fn file ->
+        #refute file =~ "def auth_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do"
+        refute file =~ "redirect(to: @redirects[current_user.role])"
+        assert file =~ "redirect(to: \"/users\")"
+      end
+
       assert_file "web/controllers/page_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:login_user]"
+        refute file =~ "def confirm(conn, params) do"
+        refute file =~ "def reset(conn, %{\"email\" => email, \"key\" => key}) do"
       end
 
       assert_file "web/controllers/user_controller.ex", fn file ->
         assert file =~ "def action(conn, _), do: auth_action conn, __MODULE__"
+        refute file =~ "def action(conn, _), do: auth_action_role conn, [\"admin\", \"user\"], __MODULE__"
       end
 
       assert_file "web/router.ex", fn file ->
@@ -87,6 +95,8 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
       assert_file "web/controllers/page_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:login_user]"
+        assert file =~ "def confirm(conn, params) do"
+        assert file =~ "def reset(conn, %{\"email\" => email, \"key\" => key}) do"
       end
 
       assert_file "web/controllers/user_controller.ex", fn file ->
@@ -101,11 +111,18 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       send self(), {:mix_shell_input, :yes?, false}
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--roles"]
 
+      assert_file "web/controllers/authorize.ex", fn file ->
+        assert file =~ "def auth_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do"
+        assert file =~ "redirect(to: @redirects[current_user.role])"
+        refute file =~ "redirect(to: \"/users\")"
+      end
+
       assert_file "web/controllers/page_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:login_user]"
       end
 
       assert_file "web/controllers/user_controller.ex", fn file ->
+        refute file =~ "def action(conn, _), do: auth_action conn, __MODULE__"
         assert file =~ "def action(conn, _), do: auth_action_role conn, [\"admin\", \"user\"], __MODULE__"
       end
 
