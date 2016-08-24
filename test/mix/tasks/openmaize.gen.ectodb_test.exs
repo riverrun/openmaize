@@ -38,8 +38,8 @@ defmodule Mix.Tasks.Openmaize.Gen.EctodbTest do
       assert_file "test/models/openmaize_ecto_test.exs"
 
       assert_file "web/models/user.ex", fn file ->
+        assert file =~ "OpenmaizeEcto.add_password_hash(params)"
         assert file =~ "OpenmaizeEcto.add_confirm_token(key)"
-        assert file =~ "def reset_changeset(model, params, key) do"
       end
     end
   end

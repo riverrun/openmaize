@@ -18,11 +18,9 @@ defmodule <%= base %>.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/login", PageController, :login, as: :login
-    post "/login", PageController, :login_user, as: :login
-    delete "/logout", PageController, :logout, as: :logout
 
     resources "/users", UserController
+    resources "/sessions", SessionController, only: [:new, :create, :delete]
   end
 
 end
