@@ -12,6 +12,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   There are three options:
 
+    * unique_id - the name you use to identify the user in the database
+      * the default is :username
     * api - provide functions for an api, using OpenmaizeJWT and JSON Web Tokens
       * the default is false
     * ecto - use ecto for database interaction
@@ -33,40 +35,34 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   This command will create an Authorize module in the `web/controllers`
   directory and tests in the `test/controllers` directory.
-
-  You will be asked if you want to add modules for email confirmation
-  and password resetting, and if you reply yes, there will be a Confirm
-  module created in the `web/controllers` directory and tests added to
-  the `tests/controllers` directory.
   """
 
   @auth [{"authorize.ex", "web/controllers/authorize.ex"},
-       {"authorize_test.exs", "test/controllers/authorize_test.exs"},
-       {"user_controller.ex", "web/controllers/user_controller.ex"},
-       {"router.ex", "web/router.ex"}]
+   {"user_controller.ex", "web/controllers/user_controller.ex"},
+   {"router.ex", "web/router.ex"}]
 
-  @confirm [{"confirm.ex", "web/controllers/confirm.ex"},
-       {"confirm_test.exs", "test/controllers/confirm_test.exs"}]
-
-  @html [{"page_controller.ex", "web/controllers/page_controller.ex"}]
+  @html [{"session_controller.ex", "web/controllers/session_controller.ex"},
+   {"session_controller_test.exs", "test/controllers/session_controller_test.exs"},
+   {"session_view.ex", "web/views/session_view.ex"},
+   {"new.html.eex", "web/templates/session/new.html.eex"}]
 
   @doc false
   def run(args) do
-    switches = [api: :boolean, ecto: :boolean, roles: :boolean]
+    switches = [unique_id: :string, api: :boolean, ecto: :boolean, roles: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
 
     base = Openmaize.Utils.base_name
-    confirm = Mix.shell.yes?("\nDo you want to add support for email confirmation and resetting passwords?")
+    confirm = Mix.shell.yes?("\nDo you want to add support for email confirmation?")
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 
-    files = if confirm, do: @auth ++ @confirm, else: @auth
-    files = if opts[:api], do: files, else: files ++ @html
+    files = if opts[:api], do: @auth, else: @auth ++ @html
 
     ectodb_opts = if confirm, do: ["--confirm"|args], else: ["--no-confirm"|args]
     if opts[:ecto] != false, do: Mix.Task.run "openmaize.gen.ectodb", ectodb_opts
 
-    Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: confirm, roles: opts[:roles])
+    Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: confirm,
+     roles: opts[:roles], unique_id: get_unique_id(opts[:unique_id]))
     |> instructions()
   end
 
@@ -89,4 +85,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       """
     end
   end
+
+  defp get_unique_id(unique_id) when is_atom(unique_id), do: unique_id
+  defp get_unique_id(unique_id) when is_binary(unique_id), do: String.to_atom unique_id
+  defp get_unique_id(_), do: :username
 end

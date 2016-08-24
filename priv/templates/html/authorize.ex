@@ -24,51 +24,6 @@ defmodule <%= base %>.Authorize do
     apply(module, action_name(conn), [conn, params, current_user])
   end<% end %>
 
-  @doc """
-  Handle login using Openmaize.
-
-  If you are using two-factor authentication, uncomment the first commented
-  out section - the one that includes 'render conn, "twofa.html", id: id'.
-
-  If you are using 'remember me' functionality, uncomment the second section.
-  """
-  def handle_login(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
-    unauthenticated conn, message
-  end
-  #def handle_login(%Plug.Conn{private: %{openmaize_otpdata: id}} = conn, _) do
-    #render conn, "twofa.html", id: id
-  #end
-  #def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role, remember: true}}} = conn,
-   #%{"user" => %{"remember_me" => "true"}}) do
-    #conn
-    #|> Openmaize.Remember.add_cookie(id)
-    #|> put_flash(:info, "You have been logged in")<%= if roles do %>
-    #|> redirect(to: @redirects[role])
-  #end
-  def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role}}} = conn, _params) do<% else %>
-    #|> redirect(to: "/users")
-  #end
-  def handle_login(%Plug.Conn{private: %{openmaize_user: %{id: id}}} = conn, _params) do<% end %>
-    conn
-    |> put_session(:user_id, id)
-    |> put_flash(:info, "You have been logged in")<%= if roles do %>
-    |> redirect(to: @redirects[role])<% else %>
-    |> redirect(to: "/users")<% end %>
-  end
-
-  @doc """
-  Handle logout using Openmaize.
-
-  If you are using 'remember me' functionality, uncomment the
-  'Openmaize.Remember.delete_rem_cookie' line.
-  """
-  def handle_logout(conn, _params) do
-    configure_session(conn, drop: true)
-    #|> Openmaize.Remember.delete_rem_cookie
-    |> put_flash(:info, "You have been logged out")
-    |> redirect(to: "/")
-  end
-
   def unauthenticated(conn, message \\ "You need to log in to view this page") do
     conn
     |> put_flash(:error, message)

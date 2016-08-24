@@ -14,21 +14,18 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       send self(), {:mix_shell_input, :yes?, false}
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run []
 
-      assert_file "test/controllers/authorize_test.exs"
       assert_file "web/models/openmaize_ecto.ex"
-      refute_file "web/controllers/confirm.ex"
-      refute_file "test/controllers/confirm_test.exs"
+      assert_file "web/templates/session/new.html.eex"
 
       assert_file "web/controllers/authorize.ex", fn file ->
-        #refute file =~ "def auth_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do"
+        refute file =~ "def auth_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do"
         refute file =~ "redirect(to: @redirects[current_user.role])"
         assert file =~ "redirect(to: \"/users\")"
       end
 
-      assert_file "web/controllers/page_controller.ex", fn file ->
-        assert file =~ "plug Openmaize.Login when action in [:login_user]"
-        refute file =~ "def confirm(conn, params) do"
-        refute file =~ "def reset(conn, %{\"email\" => email, \"key\" => key}) do"
+      assert_file "web/controllers/session_controller.ex", fn file ->
+        assert file =~ "plug Openmaize.Login when action in [:create]"
+        refute file =~ "def confirm_email(%Plug.Conn{private: %{openmaize_error: message}}"
       end
 
       assert_file "web/controllers/user_controller.ex", fn file ->
@@ -39,7 +36,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       assert_file "web/router.ex", fn file ->
         assert file =~ "defmodule Openmaize.Router"
         assert file =~ "plug Openmaize.Authenticate"
-        assert file =~ ~s(delete "/logout", PageController, :logout, as: :logout)
+        assert file =~ ~s(resources "/sessions", SessionController)
         assert file =~ ~s(resources "/users", UserController)
       end
 
@@ -54,10 +51,8 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--api"]
 
       assert_file "web/controllers/authorize.ex"
-      assert_file "test/controllers/authorize_test.exs"
       assert_file "web/models/openmaize_ecto.ex"
-      refute_file "web/controllers/confirm.ex"
-      refute_file "test/controllers/confirm_test.exs"
+      refute_file "web/templates/session/new.html.eex"
 
       assert_file "web/controllers/user_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:login]"
@@ -82,21 +77,17 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
     end
   end
 
-  test "generates confirm files" do
-    in_tmp "generates confirm files", fn ->
+  test "generates confirm functionality" do
+    in_tmp "generates confirm functionality", fn ->
       send self(), {:mix_shell_input, :yes?, true}
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run []
 
       assert_file "web/controllers/authorize.ex"
-      assert_file "test/controllers/authorize_test.exs"
       assert_file "web/models/openmaize_ecto.ex"
-      assert_file "web/controllers/confirm.ex"
-      assert_file "test/controllers/confirm_test.exs"
 
-      assert_file "web/controllers/page_controller.ex", fn file ->
-        assert file =~ "plug Openmaize.Login when action in [:login_user]"
-        assert file =~ "def confirm(conn, params) do"
-        assert file =~ "def reset(conn, %{\"email\" => email, \"key\" => key}) do"
+      assert_file "web/controllers/session_controller.ex", fn file ->
+        assert file =~ "plug Openmaize.Login when action in [:create]"
+        assert file =~ "def confirm_email(%Plug.Conn{private: %{openmaize_error: message}}"
       end
 
       assert_file "web/controllers/user_controller.ex", fn file ->
@@ -117,8 +108,8 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
         refute file =~ "redirect(to: \"/users\")"
       end
 
-      assert_file "web/controllers/page_controller.ex", fn file ->
-        assert file =~ "plug Openmaize.Login when action in [:login_user]"
+      assert_file "web/controllers/session_controller.ex", fn file ->
+        assert file =~ "plug Openmaize.Login when action in [:create]"
       end
 
       assert_file "web/controllers/user_controller.ex", fn file ->

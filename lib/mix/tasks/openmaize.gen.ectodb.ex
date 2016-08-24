@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
 
   There are two options:
 
-    * confirm - add support for email confirmation and resetting passwords
+    * confirm - add support for email confirmation
       * the default is false
     * roles - whether to add roles to the authorize functions
       * the default is false
@@ -61,25 +61,27 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
     |> changeset(params)
     |> <%= base %>.OpenmaizeEcto.add_password_hash(params)<%= if confirm do %>
     |> <%= base %>.OpenmaizeEcto.add_confirm_token(key)
-  end
-
-  def reset_changeset(model, params, key) do
-    model
-    |> cast(params, ~w(email), [])
-    |> <%= base %>.OpenmaizeEcto.add_reset_token(key)<% end %>
-  end
+  end<% end %>
 end
 """, base: base, confirm: opts[:confirm]
-    File.read(path) |> edit_file(path, opts[:roles], "end\n", replace)
+    File.read(path) |> edit_file(path, opts, "end\n", replace)
   end
 
-  defp edit_file({:ok, str}, path, roles, match, replace) do
-    schema_edit = if roles do
-      ":password, :string, virtual: true\n    field :role, :string\n"
-    else
-      ":password, :string, virtual: true\n"
-    end
-    newstr = String.replace(str, ":password, :string\n", schema_edit)
+  defp edit_file({:ok, str}, path, opts, match, replace) do
+    schema_match = "\n\n    timestamps()\n"
+    pass = "\n    field :password, :string, virtual: true"
+    role_edit = "\n    field :role, :string"
+    conf_edit = """
+
+    field :confirmed_at, Ecto.DateTime
+    field :confirmation_token, :string
+    field :confirmation_sent_at, Ecto.DateTime
+    """
+
+    schema_edit = if opts[:roles], do: pass <> role_edit, else: pass
+    schema_edit = if opts[:confirm], do: schema_edit <> conf_edit, else: schema_edit
+
+    newstr = String.replace(str, schema_match, schema_edit <> schema_match)
               |> String.replace_suffix(match, replace)
     File.write(path, newstr)
   end
