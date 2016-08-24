@@ -4,6 +4,10 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   @moduledoc """
   Create modules for authorization and, optionally, email confirmation.
 
+  Warning - the following files are overwritten: web/controllers/page_controller.ex,
+  web/controllers/user_controller.ex, web/router.ex and web/models/user.ex.
+  You will be given the option not to overwrite when you run the command.
+
   ## Options
 
   There are three options:
@@ -16,6 +20,9 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       * the default is false
 
   ## Examples
+
+  Run this command after running `mix phoenix.gen.html` or
+  `mix phoenix.gen.json`.
 
   In the root directory of your project, run the following command
   (add the `--api` option if your app is for an api, add the `--no-ecto`

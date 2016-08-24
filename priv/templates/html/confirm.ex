@@ -13,7 +13,7 @@ defmodule <%= base %>.Confirm do
 
       plug Openmaize.ConfirmEmail, [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm]
 
-  and then call `handle_confirm` from the `confirm` function in the controller.
+  and then call 'handle_confirm' from the 'confirm' function in the controller.
 
   See the documentation for Openmaize.ConfirmEmail for more information.
   """
@@ -31,8 +31,8 @@ defmodule <%= base %>.Confirm do
   user will be redirected to the login page. If there is an error, the
   reset password form will be rerendered with the email and key.
 
-  If you are using `remember me` functionality, uncomment the
-  `Openmaize.Remember.delete_rem_cookie` line.
+  If you are using 'remember me' functionality, uncomment the
+  'Openmaize.Remember.delete_rem_cookie' line.
 
   ## Examples
 
@@ -40,7 +40,7 @@ defmodule <%= base %>.Confirm do
 
       plug Openmaize.ResetPassword, [mail_function: &Mailer.receipt_confirm/1] when action in [:reset_password]
 
-  and then call `handle_reset` from the `reset_password` function in the controller.
+  and then call 'handle_reset' from the 'reset_password' function in the controller.
 
   See the documentation for Openmaize.ResetPassword for more information.
   """
