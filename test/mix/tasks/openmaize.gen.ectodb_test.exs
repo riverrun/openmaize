@@ -51,7 +51,6 @@ defmodule Mix.Tasks.Openmaize.Gen.EctodbTest do
       Mix.Tasks.Openmaize.Gen.Ectodb.run ["--roles"]
 
       assert_file "web/models/user.ex", fn file ->
-        IO.inspect file
         assert file =~ ":password, :string, virtual: true"
         assert file =~ "field :role, :string"
       end

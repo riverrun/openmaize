@@ -1,7 +1,9 @@
 # Changelog
 
-## v2.0.1
+## v2.1.0
 
+* Enhancements
+    * Mix generators create more files, make more changes, and are smarter
 * Changes
     * Added default value for `db_module` (used in several plugs)
 
