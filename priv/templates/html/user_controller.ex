@@ -6,12 +6,12 @@ defmodule <%= base %>.UserController do
 
   def action(conn, _), do: auth_action conn, __MODULE__
 
-  def index(conn, _params, user) do
+  def index(conn, _params, _user) do
     users = Repo.all(User)
     render(conn, "index.html", users: users)
   end
 
-  def new(conn, _params, user) do
+  def new(conn, _params, _user) do
     changeset = User.changeset(%User{})
     render(conn, "new.html", changeset: changeset)
   end
@@ -21,34 +21,34 @@ defmodule <%= base %>.UserController do
 
     case Repo.insert(changeset) do
       {:ok, _user} ->
-        info_go conn, "User created successfully", user_path(conn, :index)
+        auth_info conn, "User created successfully", user_path(conn, :index)
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
   end
 
-  def show(conn, %{"id" => id}, user) do
+  def show(conn, _params, user) do
     render(conn, "show.html", user: user)
   end
 
-  def edit(conn, %{"id" => id}, user) do
+  def edit(conn, _params, user) do
     changeset = User.changeset(user)
     render(conn, "edit.html", user: user, changeset: changeset)
   end
 
-  def update(conn, %{"id" => id, "user" => user_params}, user) do
+  def update(conn, %{"user" => user_params}, user) do
     changeset = User.changeset(user, user_params)
 
     case Repo.update(changeset) do
       {:ok, user} ->
-        info_go conn, "User updated successfully", user_path(conn, :show, user)
+        auth_info conn, "User updated successfully", user_path(conn, :show, user)
       {:error, changeset} ->
         render(conn, "edit.html", user: user, changeset: changeset)
     end
   end
 
-  def delete(conn, %{"id" => id}, user) do
+  def delete(conn, _params, user) do
     Repo.delete!(user)
-    info_go conn, "User deleted successfully", user_path(conn, :index)
+    auth_info conn, "User deleted successfully", user_path(conn, :index)
   end
 end

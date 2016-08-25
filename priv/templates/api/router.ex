@@ -9,7 +9,9 @@ defmodule <%= base %>.Router do
   scope "/api", <%= base %> do
     pipe_through :api
 
-    post "/login", UserController, :login
     resources "/users", UserController
+    resources "/sessions", SessionController, only: [:create, :delete]<%= if confirm do %>
+    get "/sessions/confirm_email", SessionController, :confirm_email
+    resources "/password_resets", PasswordResetController, only: [:create, :update]<% end %>
   end
 end

@@ -1,6 +1,7 @@
 defmodule <%= base %>.PasswordResetController do
   use <%= base %>.Web, :controller
 
+  import <%= base %>.Authorize
   alias <%= base %>.{Mailer, User}
 
   plug Openmaize.ResetPassword,
@@ -17,7 +18,7 @@ defmodule <%= base %>.PasswordResetController do
     case Repo.update(changeset) do
       {:ok, _user} ->
         Mailer.ask_reset(email, link)
-        info_go conn, "Check your inbox for instructions on how to reset your password.", user_path(conn, :index)
+        auth_info conn, "Check your inbox for instructions on how to reset your password.", user_path(conn, :index)
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -34,6 +35,6 @@ defmodule <%= base %>.PasswordResetController do
     |> render("edit.html", email: email, key: key)
   end
   def update(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    configure_session(conn, drop: true) |> info_go(message, session_path(conn, :new))
+    configure_session(conn, drop: true) |> auth_info(message, session_path(conn, :new))
   end
 end
