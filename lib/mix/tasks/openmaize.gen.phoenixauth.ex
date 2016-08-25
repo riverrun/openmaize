@@ -34,11 +34,12 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   directory and tests in the `test/controllers` directory.
   """
 
-  @auth [{"authorize.ex", "web/controllers/authorize.ex"},
+  @auth [{"session_controller.ex", "web/controllers/session_controller.ex"},
    {"user_controller.ex", "web/controllers/user_controller.ex"},
    {"router.ex", "web/router.ex"}]
 
-  @html [{"session_controller.ex", "web/controllers/session_controller.ex"},
+  @html [{"authorize.ex", "web/controllers/authorize.ex"},
+   {"user_helper.exs", "test/support/user_helper.exs"},
    {"session_controller_test.exs", "test/controllers/session_controller_test.exs"},
    {"session_view.ex", "web/views/session_view.ex"},
    {"session_new.html.eex", "web/templates/session/new.html.eex"}]

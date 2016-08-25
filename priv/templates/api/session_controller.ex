@@ -1,6 +1,7 @@
 defmodule <%= base %>.SessionController do
   use <%= base %>.Web, :controller
 
+  import OpenmaizeJWT.Plug
   import <%= base %>.Authorize<%= if confirm do %>
   alias <%= base %>.Mailer
 
@@ -10,27 +11,22 @@ defmodule <%= base %>.SessionController do
   plug Openmaize.Login when action in [:create]
   #plug Openmaize.Login, [unique_id: :email] when action in [:create]
 
-  def new(conn, _params) do
-    render conn, "new.html"
-  end
-
   def create(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
-    auth_error conn, message, session_path(conn, :new)
+    render(conn, <%= base %>.ErrorView, "401.json", [])
   end
-  def create(%Plug.Conn{private: %{openmaize_user: %{id: id}}} = conn, _params) do
-    put_session(conn, :user_id, id)
-    |> auth_info("You have been logged in", user_path(conn, :index))
+  def create(%Plug.Conn{private: %{openmaize_user: user}} = conn, _params) do
+    add_token(conn, user, :username) |> send_resp
   end
 
   def delete(conn, _params) do
-    configure_session(conn, drop: true)
-    |> auth_info("You have been logged out", session_path(conn, :new))
+    logout_user(conn)
+    |> render(<%= base %>.UserView, "info.json", %{info: message})
   end<%= if confirm do %>
 
   def confirm_email(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
-    auth_error conn, message, session_path(conn, :new)
+    render(conn, <%= base %>.ErrorView, "error.json", %{error: message})
   end
   def confirm_email(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    auth_info conn, message, session_path(conn, :new)
+    render(conn, <%= base %>.UserView, "info.json", %{info: message})
   end<% end %>
 end

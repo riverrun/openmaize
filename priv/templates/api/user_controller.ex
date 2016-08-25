@@ -1,23 +1,11 @@
 defmodule <%= base %>.UserController do
   use <%= base %>.Web, :controller
 
-  import <%= base %>.Authorize
   alias <%= base %>.User
-
-  plug Openmaize.Login when action in [:login]
-  #plug Openmaize.Login, [unique_id: :email] when action in [:login_user]
 
   def index(conn, _params) do
     users = Repo.all(User)
     render(conn, "index.json", users: users)
-  end
-
-  def login(conn, params) do
-    handle_login conn, params
-  end
-
-  def logout(conn, params) do
-    handle_logout conn, params
   end
 
   def create(conn, %{"user" => user_params}) do

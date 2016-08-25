@@ -42,19 +42,15 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
     in_tmp "generates default api resource", fn ->
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--api"]
 
-      assert_file "web/controllers/authorize.ex"
+      assert_file "web/controllers/user_controller.ex"
       assert_file "web/models/openmaize_ecto.ex"
       refute_file "web/templates/session/new.html.eex"
-
-      assert_file "web/controllers/user_controller.ex", fn file ->
-        assert file =~ "plug Openmaize.Login when action in [:login]"
-      end
 
       assert_file "web/router.ex", fn file ->
         assert file =~ "defmodule Openmaize.Router"
         assert file =~ "plug OpenmaizeJWT.Authenticate"
         assert file =~ "pipe_through :api"
-        assert file =~ ~s(post "/login", UserController, :login)
+        assert file =~ ~s(resources "/sessions", SessionController)
       end
     end
   end
