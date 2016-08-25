@@ -4,8 +4,8 @@ defmodule <%= base %>.SessionControllerTest do
   import <%= base %>.OpenmaizeEcto<%= if confirm do %>
   alias <%= base %>.{Repo, User}
 
-  @valid_confirm "email=gladys%40mail.com&key=pu9-VNdgE8V9qZo19rlcg3KUNjpxuixg"
-  @invalid_confirm "email=gladys%40mail.com&key=pu9-VNdgE8V9QzO19RLCG3KUNjpxuixg"<% end %>
+  @valid_link "email=gladys%40mail.com&key=pu9-VNdgE8V9qZo19rlcg3KUNjpxuixg"
+  @invalid_link "email=gladys%40mail.com&key=pu9-VNdgE8V9QzO19RLCG3KUNjpxuixg"<% end %>
 
   @valid_attrs %{email: "tony@mail.com", password: "mangoes&g0oseberries"}
   @invalid_attrs %{email: "tony@mail.com", password: "maaaangoes&g00zeberries"}
@@ -32,18 +32,18 @@ defmodule <%= base %>.SessionControllerTest do
   test "logout succeeds", %{user_conn: user_conn} do
     conn = delete user_conn, "/logout"
     assert redirected_to(conn) == "/"
-  end
+  end<%= if confirm do %>
 
-  test "confirmation succeeds for correct key" do
-    conn = build_conn() |> get("/confirm_email?" <> @valid_confirm)
+  test "confirmation succeeds for correct key", %{conn: conn} do
+    conn = get(conn, "/confirm_email?" <> @valid_link)
     assert conn.private.phoenix_flash["info"] =~ "successfully confirmed"
     assert redirected_to(conn) == "/login"
   end
 
-  test "confirmation fails for incorrect key" do
-    conn = build_conn() |> get("/confirm_email?" <> @invalid_confirm)
+  test "confirmation fails for incorrect key", %{conn: conn} do
+    conn = get(conn, "/confirm_email?" <> @invalid_link)
     assert conn.private.phoenix_flash["error"] =~ "failed"
     assert redirected_to(conn) == "/login"
-  end
+  end<% end %>
 
 end

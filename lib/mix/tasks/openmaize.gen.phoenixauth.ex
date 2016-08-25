@@ -12,8 +12,6 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   There are three options:
 
-    * unique_id - the name you use to identify the user in the database
-      * the default is :username
     * api - provide functions for an api, using OpenmaizeJWT and JSON Web Tokens
       * the default is false
     * ecto - use ecto for database interaction
@@ -44,25 +42,31 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   @html [{"session_controller.ex", "web/controllers/session_controller.ex"},
    {"session_controller_test.exs", "test/controllers/session_controller_test.exs"},
    {"session_view.ex", "web/views/session_view.ex"},
-   {"new.html.eex", "web/templates/session/new.html.eex"}]
+   {"session_new.html.eex", "web/templates/session/new.html.eex"}]
+
+  @confirm [{"password_reset_controller.ex", "web/controllers/password_reset_controller.ex"},
+   {"password_reset_controller_test.exs", "test/controllers/password_reset_controller_test.exs"},
+   {"password_reset_view.ex", "web/views/password_reset_view.ex"},
+   {"password_reset_new.html.eex", "web/templates/password_reset/new.html.eex"},
+   {"password_reset_edit.html.eex", "web/templates/password_reset/edit.html.eex"}]
 
   @doc false
   def run(args) do
-    switches = [unique_id: :string, api: :boolean, ecto: :boolean, roles: :boolean]
+    switches = [api: :boolean, ecto: :boolean, roles: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
 
     base = Openmaize.Utils.base_name
-    confirm = Mix.shell.yes?("\nDo you want to add support for email confirmation?")
+    confirm = Mix.shell.yes?("\nDo you want to add support for email confirmation and password resets?")
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 
-    files = if opts[:api], do: @auth, else: @auth ++ @html
+    files = if confirm, do: @auth ++ @confirm, else: @auth
+    files = if opts[:api], do: files, else: files ++ @html
 
     ectodb_opts = if confirm, do: ["--confirm"|args], else: ["--no-confirm"|args]
     if opts[:ecto] != false, do: Mix.Task.run "openmaize.gen.ectodb", ectodb_opts
 
-    Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: confirm,
-     roles: opts[:roles], unique_id: get_unique_id(opts[:unique_id]))
+    Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: confirm, roles: opts[:roles])
     |> instructions()
   end
 
@@ -85,8 +89,4 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       """
     end
   end
-
-  defp get_unique_id(unique_id) when is_atom(unique_id), do: unique_id
-  defp get_unique_id(unique_id) when is_binary(unique_id), do: String.to_atom unique_id
-  defp get_unique_id(_), do: :username
 end
