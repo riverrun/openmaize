@@ -6,9 +6,7 @@ defmodule <%= base %>.SessionController do
 
   plug Openmaize.ConfirmEmail,
     [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm_email]<% else %>
-  alias <%= base %>.User<% end %><%= if roles do %>
-
-  @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}<% end %>
+  alias <%= base %>.User<% end %>
 
   plug Openmaize.Login when action in [:create]
   #plug Openmaize.Login, [unique_id: :email] when action in [:create]
@@ -18,27 +16,21 @@ defmodule <%= base %>.SessionController do
   end
 
   def create(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
-    unauthenticated conn, message
-  end<%= if roles do %>
-  def create(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role}}} = conn, _params) do<% else %>
-  def create(%Plug.Conn{private: %{openmaize_user: %{id: id}}} = conn, _params) do<% end %>
-    conn
-    |> put_session(:user_id, id)
-    |> put_flash(:info, "You have been logged in")<%= if roles do %>
-    |> redirect(to: @redirects[role])<% else %>
-    |> redirect(to: "/users")<% end %>
+    err_go conn, message, session_path(conn, :new)
+  end
+  def create(%Plug.Conn{private: %{openmaize_user: %{id: id}}} = conn, _params) do
+    put_session(conn, :user_id, id)
+    |> info_go("You have been logged in", user_path(conn, :index))
   end
 
   def delete(conn, params) do
-    configure_session(conn, drop: true)
-    |> put_flash(:info, "You have been logged out")
-    |> redirect(to: "/")
+    configure_session(conn, drop: true) |> info_go(message, session_path(conn, :new))
   end<%= if confirm do %>
 
   def confirm_email(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
-    unauthenticated conn, message
+    err_go conn, message, session_path(conn, :new)
   end
   def confirm_email(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    conn |> put_flash(:info, message) |> redirect(to: "/login")
+    info_go conn, message, session_path(conn, :new)
   end<% end %>
 end

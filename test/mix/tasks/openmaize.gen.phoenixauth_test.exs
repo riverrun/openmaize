@@ -11,17 +11,11 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates default html resource" do
     in_tmp "generates default html resource", fn ->
-      send self(), {:mix_shell_input, :yes?, false}
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run []
 
+      assert_file "web/controllers/authorize.ex"
       assert_file "web/models/openmaize_ecto.ex"
       assert_file "web/templates/session/new.html.eex"
-
-      assert_file "web/controllers/authorize.ex", fn file ->
-        refute file =~ "def auth_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do"
-        refute file =~ "redirect(to: @redirects[current_user.role])"
-        assert file =~ "redirect(to: \"/users\")"
-      end
 
       assert_file "web/controllers/session_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:create]"
@@ -30,7 +24,6 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
       assert_file "web/controllers/user_controller.ex", fn file ->
         assert file =~ "def action(conn, _), do: auth_action conn, __MODULE__"
-        refute file =~ "def action(conn, _), do: auth_action_role conn, [\"admin\", \"user\"], __MODULE__"
       end
 
       assert_file "web/router.ex", fn file ->
@@ -47,7 +40,6 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates default api resource" do
     in_tmp "generates default api resource", fn ->
-      send self(), {:mix_shell_input, :yes?, false}
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--api"]
 
       assert_file "web/controllers/authorize.ex"
@@ -69,7 +61,6 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "can generate resource without ecto" do
     in_tmp "can generate resource without ecto", fn ->
-      send self(), {:mix_shell_input, :yes?, false}
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--no-ecto"]
 
       assert_file "web/controllers/authorize.ex"
@@ -79,8 +70,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates confirm functionality" do
     in_tmp "generates confirm functionality", fn ->
-      send self(), {:mix_shell_input, :yes?, true}
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run []
+      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--confirm"]
 
       assert_file "web/controllers/authorize.ex"
       assert_file "web/models/openmaize_ecto.ex"
@@ -94,29 +84,11 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
         assert file =~ "def action(conn, _), do: auth_action conn, __MODULE__"
       end
 
-    end
-  end
-
-  test "generates modules with roles" do
-    in_tmp "generates modules with roles", fn ->
-      send self(), {:mix_shell_input, :yes?, false}
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--roles"]
-
-      assert_file "web/controllers/authorize.ex", fn file ->
-        assert file =~ "def auth_action_role(%Plug.Conn{assigns: %{current_user: nil}} = conn, _, _) do"
-        assert file =~ "redirect(to: @redirects[current_user.role])"
-        refute file =~ "redirect(to: \"/users\")"
+      assert_file "web/router.ex", fn file ->
+        assert file =~ ~s(resources "/sessions", SessionController)
+        assert file =~ ~s(get "/sessions/confirm_email", SessionController)
+        assert file =~ ~s(resources "/password_resets", PasswordResetController)
       end
-
-      assert_file "web/controllers/session_controller.ex", fn file ->
-        assert file =~ "plug Openmaize.Login when action in [:create]"
-      end
-
-      assert_file "web/controllers/user_controller.ex", fn file ->
-        refute file =~ "def action(conn, _), do: auth_action conn, __MODULE__"
-        assert file =~ "def action(conn, _), do: auth_action_role conn, [\"admin\", \"user\"], __MODULE__"
-      end
-
     end
   end
 
