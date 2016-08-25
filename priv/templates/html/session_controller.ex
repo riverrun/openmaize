@@ -5,7 +5,7 @@ defmodule <%= base %>.SessionController do
   alias <%= base %>.{Mailer, User}
 
   plug Openmaize.ConfirmEmail,
-    [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm]<% else %>
+    [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm_email]<% else %>
   alias <%= base %>.User<% end %><%= if roles do %>
 
   @redirects %{"admin" => "/admin", "user" => "/users", nil => "/"}<% end %>
@@ -19,20 +19,8 @@ defmodule <%= base %>.SessionController do
 
   def create(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
     unauthenticated conn, message
-  end
-  #def create(%Plug.Conn{private: %{openmaize_otpdata: id}} = conn, _) do
-    #render conn, "twofa.html", id: id
-  #end
-  #def create(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role, remember: true}}} = conn,
-   #%{"user" => %{"remember_me" => "true"}}) do
-    #conn
-    #|> Openmaize.Remember.add_cookie(id)
-    #|> put_flash(:info, "You have been logged in")<%= if roles do %>
-    #|> redirect(to: @redirects[role])
-  #end
+  end<%= if roles do %>
   def create(%Plug.Conn{private: %{openmaize_user: %{id: id, role: role}}} = conn, _params) do<% else %>
-    #|> redirect(to: "/users")
-  #end
   def create(%Plug.Conn{private: %{openmaize_user: %{id: id}}} = conn, _params) do<% end %>
     conn
     |> put_session(:user_id, id)
@@ -43,7 +31,6 @@ defmodule <%= base %>.SessionController do
 
   def delete(conn, params) do
     configure_session(conn, drop: true)
-    #|> Openmaize.Remember.delete_rem_cookie
     |> put_flash(:info, "You have been logged out")
     |> redirect(to: "/")
   end<%= if confirm do %>
