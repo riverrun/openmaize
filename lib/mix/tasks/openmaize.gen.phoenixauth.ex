@@ -12,12 +12,12 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   There are three options:
 
+    * confirm - add functions for email confirmation and password resets
+      * the default is false
     * api - provide functions for an api, using OpenmaizeJWT and JSON Web Tokens
       * the default is false
     * ecto - use ecto for database interaction
       * the default is true
-    * roles - whether to add roles to the authorize functions
-      * the default is false
 
   ## Examples
 
@@ -25,9 +25,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   `mix phoenix.gen.json`.
 
   In the root directory of your project, run the following command
-  (add the `--api` option if your app is for an api, add the `--no-ecto`
-  option if you are not using ecto, and add the `--roles` option if you
-  are using roles):
+  (add the `--api` option if your app is for an api and / or the `--no-ecto`
+  option if you are not using ecto):
 
       mix openmaize.gen.phoenixauth
 
@@ -52,21 +51,19 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   @doc false
   def run(args) do
-    switches = [api: :boolean, ecto: :boolean, roles: :boolean]
+    switches = [confirm: :boolean, api: :boolean, ecto: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
 
     base = Openmaize.Utils.base_name
-    confirm = Mix.shell.yes?("\nDo you want to add support for email confirmation and password resets?")
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates",
      opts[:api] && "api" || "html"]
 
-    files = if confirm, do: @auth ++ @confirm, else: @auth
+    files = if opts[:confirm], do: @auth ++ @confirm, else: @auth
     files = if opts[:api], do: files, else: files ++ @html
 
-    ectodb_opts = if confirm, do: ["--confirm"|args], else: ["--no-confirm"|args]
-    if opts[:ecto] != false, do: Mix.Task.run "openmaize.gen.ectodb", ectodb_opts
+    if opts[:ecto] != false, do: Mix.Task.run "openmaize.gen.ectodb", []
 
-    Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: confirm, roles: opts[:roles])
+    Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: opts[:confirm])
     |> instructions()
   end
 
@@ -76,8 +73,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       Mix.shell.info """
 
       Please check the generated files. You might need to uncomment certain
-      lines and / or change certain details, such as paths, user details,
-      roles, etc.
+      lines and / or change certain details, such as paths, user details.
 
       Before you use Openmaize, you need to configure Openmaize.
       See the documentation for Openmaize.Config for details.

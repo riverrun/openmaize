@@ -17,9 +17,7 @@ defmodule <%= base %>.PasswordResetController do
     case Repo.update(changeset) do
       {:ok, _user} ->
         Mailer.ask_reset(email, link)
-        conn
-        |> put_flash(:info, "Check your inbox for instructions on how to reset your password.")
-        |> redirect(to: page_path(conn, :index))
+        info_go conn, "Check your inbox for instructions on how to reset your password.", user_path(conn, :index)
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -33,12 +31,9 @@ defmodule <%= base %>.PasswordResetController do
    %{"user" => %{"email" => email, "key" => key}}) do
     conn
     |> put_flash(:error, message)
-    |> render("reset_form.html", email: email, key: key)
+    |> render("edit.html", email: email, key: key)
   end
   def update(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    conn
-    |> configure_session(drop: true)
-    |> put_flash(:info, message)
-    |> redirect(to: "/login")
+    configure_session(conn, drop: true) |> info_go(message, session_path(conn, :new))
   end
 end

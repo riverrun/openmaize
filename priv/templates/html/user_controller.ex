@@ -2,11 +2,9 @@ defmodule <%= base %>.UserController do
   use <%= base %>.Web, :controller
 
   import <%= base %>.Authorize
-  alias <%= base %>.User<%= if roles do %>
+  alias <%= base %>.User
 
-  def action(conn, _), do: auth_action_role conn, ["admin", "user"], __MODULE__<% else %>
-
-  def action(conn, _), do: auth_action conn, __MODULE__<% end %>
+  def action(conn, _), do: auth_action conn, __MODULE__
 
   def index(conn, _params, user) do
     users = Repo.all(User)
@@ -23,9 +21,7 @@ defmodule <%= base %>.UserController do
 
     case Repo.insert(changeset) do
       {:ok, _user} ->
-        conn
-        |> put_flash(:info, "User created successfully.")
-        |> redirect(to: user_path(conn, :index))
+        info_go conn, "User created successfully", user_path(conn, :index)
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -45,9 +41,7 @@ defmodule <%= base %>.UserController do
 
     case Repo.update(changeset) do
       {:ok, user} ->
-        conn
-        |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: user_path(conn, :show, user))
+        info_go conn, "User updated successfully", user_path(conn, :show, user)
       {:error, changeset} ->
         render(conn, "edit.html", user: user, changeset: changeset)
     end
@@ -55,9 +49,6 @@ defmodule <%= base %>.UserController do
 
   def delete(conn, %{"id" => id}, user) do
     Repo.delete!(user)
-
-    conn
-    |> put_flash(:info, "User deleted successfully.")
-    |> redirect(to: user_path(conn, :index))
+    info_go conn, "User deleted successfully", user_path(conn, :index)
   end
 end
