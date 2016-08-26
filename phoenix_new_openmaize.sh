@@ -13,9 +13,11 @@ mix ecto.create
 
 # create user model - with templates and controller
 # basic
-mix phoenix.gen.html User users username:string password_hash:string
+#mix phoenix.gen.html User users username:string password_hash:string
 # with confirmation
-mix phoenix.gen.html User users username:string email:string password_hash:string confirmed_at:datetime confirmation_token:string confirmation_sent_at:datetime reset_token:string reset_sent_at:datetime
+mix phoenix.gen.html User users username:string email:string password_hash:string \
+    confirmed_at:datetime confirmation_token:string confirmation_sent_at:datetime \
+    reset_token:string reset_sent_at:datetime
 # add `field :password, :string, virtual: true` to the user model
 # add `auth_changeset` and `reset_changeset` to the user model
 
@@ -25,7 +27,7 @@ mix openmaize.gen.phoenixauth
 # add `Code.require_file("support/user_helper.exs", __DIR__)` to test/test_helper.exs
 
 # run migration
-mix ecto.migrate
+#mix ecto.migrate
 
 # replace `password_hash` in the tests / templates with `password`
 
