@@ -54,8 +54,9 @@ defmodule Openmaize.Password do
   else
 
     def valid_password?(password, opts) when is_binary(password) do
-      String.length(password) >= Keyword.get(opts, :min_length, 8) and
-      {:ok, password} || {:error, "The password is too short"}
+      min_length = Keyword.get(opts, :min_length, 8)
+      String.length(password) >= min_length and
+        {:ok, password} || {:error, "The password is too short. At least #{min_length} characters."}
     end
     def valid_password?(_, _), do: {:error, "The password should be a string"}
 
