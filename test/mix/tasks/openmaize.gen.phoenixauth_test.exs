@@ -23,7 +23,8 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       end
 
       assert_file "web/controllers/user_controller.ex", fn file ->
-        assert file =~ "def action(conn, _), do: auth_action conn, __MODULE__"
+        assert file =~ "plug :user_check when action in [:index, :show]"
+        assert file =~ "plug :id_check when action in [:edit, :update, :delete]"
       end
 
       assert_file "web/router.ex", fn file ->
@@ -77,7 +78,8 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       end
 
       assert_file "web/controllers/user_controller.ex", fn file ->
-        assert file =~ "def action(conn, _), do: auth_action conn, __MODULE__"
+        assert file =~ "plug :user_check when action in [:index, :show]"
+        assert file =~ "plug :id_check when action in [:edit, :update, :delete]"
       end
 
       assert_file "web/router.ex", fn file ->

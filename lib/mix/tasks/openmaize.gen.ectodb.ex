@@ -13,8 +13,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
     base = Openmaize.Utils.base_name
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates", "database"]
 
-    files = [{"openmaize_ecto.ex", "web/models/openmaize_ecto.ex"},
-     {"openmaize_ecto_test.exs", "test/models/openmaize_ecto_test.exs"}]
+    files = [{:eex, "openmaize_ecto.ex", "web/models/openmaize_ecto.ex"},
+     {:eex, "openmaize_ecto_test.exs", "test/models/openmaize_ecto_test.exs"}]
 
     Mix.Openmaize.copy_files(srcdir, files, base: base)
     |> instructions

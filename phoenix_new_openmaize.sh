@@ -24,7 +24,6 @@ mix phoenix.gen.html User users username:string email:string password_hash:strin
 # add openmaize to deps and applications
 # generate authorization files
 mix openmaize.gen.phoenixauth
-# add `Code.require_file("support/user_helper.exs", __DIR__)` to test/test_helper.exs
 
 # run migration
 #mix ecto.migrate

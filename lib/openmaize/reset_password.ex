@@ -51,6 +51,11 @@ defmodule Openmaize.ResetPassword do
       Keyword.get(opts, :mail_function)}}
   end
 
+  def call(%Plug.Conn{params: %{"password_reset" =>
+     %{"key" => key, "password" => password} = user_params}} = conn, opts)
+  when byte_size(key) == 32 do
+    check_user_key(conn, user_params, key, password, opts)
+  end
   def call(%Plug.Conn{params: %{"user" =>
      %{"key" => key, "password" => password} = user_params}} = conn, opts)
   when byte_size(key) == 32 do
