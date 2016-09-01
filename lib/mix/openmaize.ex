@@ -12,8 +12,11 @@ defmodule Mix.Openmaize do
   Copy templates to the main app.
   """
   def copy_files(srcdir, files, opts) do
-    for {source, target} <- files do
-      contents = EEx.eval_file Path.join(srcdir, source), opts
+    for {format, source, target} <- files do
+      contents = case format do
+        :text -> File.read!(Path.join(srcdir, source))
+        :eex  -> EEx.eval_file(Path.join(srcdir, source), opts)
+      end
       Mix.Generator.create_file target, contents
     end
   end
