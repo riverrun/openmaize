@@ -1,3 +1,3 @@
-defmodule Alibaba.UserView do
-  use Alibaba.Web, :view
+defmodule <%= base %>.UserView do
+  use <%= base %>.Web, :view
 end
