@@ -3,7 +3,7 @@ defmodule <%= base %>.UserController do
 
 <%= if not api do %>
   import <%= base %>.Authorize<% end %><%= if confirm do %>
-  alias Alibaba.{Mailer, User}
+  alias <%= base %>.{Mailer, User}
   alias Openmaize.ConfirmEmail<% else %>
   alias <%= base %>.User<% end %>
 

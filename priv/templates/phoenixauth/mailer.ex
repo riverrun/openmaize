@@ -1,4 +1,4 @@
-defmodule Alibaba.Mailer do
+defmodule <%= base %>.Mailer do
   @moduledoc """
   A dummy module for sending emails.
   """

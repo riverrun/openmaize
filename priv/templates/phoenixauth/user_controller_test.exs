@@ -1,13 +1,13 @@
-defmodule Alibaba.UserControllerTest do
-  use Alibaba.ConnCase
+defmodule <%= base %>.UserControllerTest do
+  use <%= base %>.ConnCase
 
-  alias Alibaba.User
+  alias <%= base %>.User
 
   @valid_attrs %{username: "bill", email: "bill@mail.com", password: "^hEsdg*F899"}
   @invalid_attrs %{email: "albert@mail.com", password: "password"}
 
   setup %{conn: conn} = config do
-    conn = conn |> bypass_through(Alibaba.Router, :browser) |> get("/")
+    conn = conn |> bypass_through(<%= base %>.Router, :browser) |> get("/")
 
     if username = config[:login] do
       user = add_user_confirmed(username)
