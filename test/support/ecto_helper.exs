@@ -33,8 +33,14 @@ defmodule UsersMigration do
       add :otp_required, :boolean
       add :otp_secret, :string
     end
-
     create unique_index :users, [:email]
+
+    create table(:old_otp_tokens) do
+      add :token, :string
+      add :user_id, references(:users, on_delete: :nothing)
+    end
+    create index :old_otp_tokens, [:user_id]
+
   end
 end
 
@@ -84,3 +90,22 @@ defmodule Openmaize.TestUser do
     |> Openmaize.EctoDB.add_confirm_token(key)
   end
 end
+
+
+defmodule Openmaize.TestOldOtpToken do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  schema "old_otp_tokens" do
+    field :user_id, :integer #belongs_to :user, Openmaize.TestUser
+    field :token, :string
+  end
+
+  def changeset(model, params \\ :empty) do
+    model
+    |> cast(params, [:user_id, :token ])
+    |> validate_required([:user_id, :token])
+  end
+end
+
+

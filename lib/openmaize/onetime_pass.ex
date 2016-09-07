@@ -40,12 +40,37 @@ defmodule Openmaize.OnetimePass do
 
       plug Openmaize.OnetimePass, [token_length: 8] when action in [:login_twofa]
 
+
+Support for enable/disable multiple logins with the same OTP
+
+  * Why
+    OTP Tokens shouldn't be never used again after their first validation, to prevent security holes. 
+    If a TOTP token is allowed to be used multiple times during it's lifetime, a man-in-the-middle 
+    attacker could use the eavesdropped token at the same time with the legitimate user, 
+    gaining access to the service but without the user nor the administrator can notice the fact.
+    An OTP already used should be rejected, and the user alerted with an informative message saying 
+    to wait for the next token before entering again. The service administrator could 
+    log all the multiple attempts, and point out those access with the same token 
+    but coming from different IP.
+  
+  * How does it address the problem
+    It adds a new item named :allow_multiple_otp_logins to the configuration file. 
+    When its value is false (default), the database is checked every time the user try 
+    to login with a valid OTP token. If the OTP token is already present in the database, 
+    the token is rejected and the login will fail. 
+    Instead if the valid token was never used before, it is stored in the database, 
+    and the login will succeed.
+  
+  * Side effects
+    The database is updated every time a token is valid and never used before.
+
   """
 
   @behaviour Plug
 
   import Plug.Conn
   alias Comeonin.Otp
+  alias Openmaize.Config
 
   def init(opts) do
     Keyword.pop opts, :db_module, Openmaize.Utils.default_db
@@ -61,6 +86,7 @@ defmodule Openmaize.OnetimePass do
    {db_module, opts}) do
     db_module.find_user_by_id(id)
     |> check_key(user_params, opts)
+    |> handle_store_token(user_params, db_module, Config.allow_multiple_otp_logins)
     |> handle_auth(conn)
   end
 
@@ -70,6 +96,56 @@ defmodule Openmaize.OnetimePass do
   defp check_key(user, %{"totp" => totp}, opts) do
     {user, Otp.check_totp(totp, user.otp_secret, opts)}
   end
+
+
+
+
+  @doc """
+  Prevent the reuse of the totp token, when Config.allow_multiple_otp_logins is set to false.
+  If the totp token is used for the first time, the token is stored 
+  in the database, else return failure.
+  """
+  def handle_store_token({user, last}, %{"id" =>  user_id, "totp" => otp}, db_module, allow_multiple_otp_logins) do
+    do_handle_store_token({user, last}, %{id: user_id, otp: otp}, db_module, allow_multiple_otp_logins)
+  end
+  @doc """
+  The one-time password check (Otp.check_totp) failed, so doesn't store the token
+  """
+  def handle_store_token({user, false}, %{"id" =>  _user_id, "totp" => _otp}, _db_module, _ ) do
+    {user, false}
+  end
+
+  @doc """
+  Prevent the reuse of the totp token, when Config.allow_multiple_otp_logins is set to false.
+  If the hotp token is used for the first time, the token is stored 
+  in the database, else return failure.
+  """
+  def handle_store_token({user, last}, %{"id" =>  user_id, "hotp" => otp}, db_module, allow_multiple_otp_logins) do
+    do_handle_store_token({user, last}, %{id: user_id, otp: otp}, db_module, allow_multiple_otp_logins)
+  end
+  @doc """
+  The one-time password check (Otp.check_totp) failed, so doesn't store the token
+  """
+  def handle_store_token({user, false}, %{"id" =>  _user_id, "hotp" => _hotp}, _db_module, _ ) do
+    {user, false}
+  end
+
+  defp do_handle_store_token({user, last}, %{:id =>  user_id, :otp => otp}, db_module, allow_multiple_otp_logins) when allow_multiple_otp_logins == false do 
+    case db_module.old_otp_token?(user_id, otp) do
+      :is_new ->
+        # never used before, store it in the database
+        db_module.add_token_to_old_tokens(user_id, otp)
+        {user, last}
+      :is_old ->
+        # already in the database
+        {user, false}
+    end
+  end
+  defp do_handle_store_token({user, last}, %{:id =>  _user_id, :otp => _otp}, _db_module, allow_multiple_otp_logins) when allow_multiple_otp_logins == true do
+    {user, last}
+  end
+
+
 
   defp handle_auth({_, false}, conn) do
     put_private(conn, :openmaize_error, "Invalid credentials")

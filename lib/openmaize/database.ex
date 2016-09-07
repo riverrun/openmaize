@@ -64,4 +64,25 @@ defmodule Openmaize.Database do
   """
   @callback check_time(Integer | nil, Integer) :: boolean
 
+
+  @doc """
+  This function check if an otp token is already stored in the database 
+  for a certain user id.
+
+  The first argument is the user id, the second argument is the otp token.
+
+  This function return :is_new if the token is not present in the database,
+  or :is_old if the token is already present in the database. 
+  """
+  @callback old_otp_token?(Integer, String.t) :: :is_new | :is_old
+
+
+  @doc """
+  Add the otp token to the database. 
+
+  The first argument is the user id, the second argument is the token.
+  """
+  @callback add_token_to_old_tokens(Integer, String.t) :: {:ok} | {:error}
+
+
 end
