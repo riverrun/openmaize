@@ -36,11 +36,12 @@ defmodule Openmaize.Confirm.Base do
   end
 
   defp check_key(_, nil, _, _, _), do: false
-  defp check_key(user, db_module, key, valid_secs, :nopassword) do
+  defp check_key(%{confirmed_at: nil} = user, db_module, key, valid_secs, :nopassword) do
     db_module.check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
     db_module.user_confirmed(user)
   end
+  defp check_key(_, _, _, _, :nopassword), do: {:error, "User account already confirmed"}
   defp check_key(user, db_module, key, valid_secs, password) do
     db_module.check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and

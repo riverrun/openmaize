@@ -68,6 +68,13 @@ defmodule Openmaize.ConfirmEmailTest do
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
+  test "confirmation fails for already confirmed account" do
+    call_confirm(@valid_link, {EctoDB, {120, :email, nil}})
+    conn = call_confirm(@valid_link, {EctoDB, {120, :email, nil}})
+    assert user_confirmed()
+    assert conn.private.openmaize_error =~ "User account already confirmed"
+  end
+
   test "gen_token_link" do
     {key, link} = ConfirmEmail.gen_token_link("fred@mail.com")
     assert link =~ "email=fred%40mail.com&key="
