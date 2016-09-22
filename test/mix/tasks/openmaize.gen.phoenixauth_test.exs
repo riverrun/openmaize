@@ -39,23 +39,6 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
     end
   end
 
-  test "generates default api resource" do
-    in_tmp "generates default api resource", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--api"]
-
-      assert_file "web/controllers/user_controller.ex"
-      assert_file "web/models/openmaize_ecto.ex"
-      refute_file "web/templates/session/new.html.eex"
-
-      assert_file "web/router.ex", fn file ->
-        assert file =~ "defmodule Openmaize.Router"
-        assert file =~ "plug OpenmaizeJWT.Authenticate"
-        assert file =~ "pipe_through :api"
-        assert file =~ ~s(resources "/sessions", SessionController)
-      end
-    end
-  end
-
   test "can generate resource without ecto" do
     in_tmp "can generate resource without ecto", fn ->
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--no-ecto"]
@@ -69,6 +52,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
     in_tmp "generates confirm functionality", fn ->
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--confirm"]
 
+      assert_file "lib/openmaize/mailer.ex"
       assert_file "web/controllers/authorize.ex"
       assert_file "web/models/openmaize_ecto.ex"
 
