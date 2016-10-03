@@ -1,6 +1,8 @@
 defmodule <%= base %>.PasswordResetControllerTest do
   use <%= base %>.ConnCase
 
+  import <%= base %>.TestHelpers
+
   @valid_attrs %{email: "gladys@mail.com", password: "^hEsdg*F899",
     key: "pu9-VNdgE8V9qZo19rlcg3KUNjpxuixg"}
   @invalid_attrs %{email: "gladys@mail.com",  password: "^hEsdg*F899",
@@ -28,7 +30,7 @@ defmodule <%= base %>.PasswordResetControllerTest do
 
   test "reset password fails for invalid password", %{conn: conn, user: user} do
     conn = put(conn, password_reset_path(conn, :update, user), password_reset: @invalid_pass)
-    assert conn.private.phoenix_flash["error"] =~ "Confirmation for gladys@mail.com failed"
+    assert conn.private.phoenix_flash["error"] =~ "password is too short"
   end
 
 end

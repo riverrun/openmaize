@@ -1,6 +1,7 @@
 defmodule <%= base %>.UserControllerTest do
   use <%= base %>.ConnCase
 
+  import <%= base %>.TestHelpers
   alias <%= base %>.User
 
   @valid_attrs %{username: "bill", email: "bill@mail.com", password: "^hEsdg*F899"}
@@ -85,7 +86,7 @@ defmodule <%= base %>.UserControllerTest do
   end
 
   @tag login: "reg"
-  test "cannot delete other user", %{conn: conn, user: user, other: other} do
+  test "cannot delete other user", %{conn: conn, other: other} do
     conn = delete conn, user_path(conn, :delete, other)
     assert redirected_to(conn) == user_path(conn, :index)
     assert Repo.get(User, other.id)

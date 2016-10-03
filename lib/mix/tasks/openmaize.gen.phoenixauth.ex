@@ -39,7 +39,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       {:eex, "session_controller_test.exs", "test/controllers/session_controller_test.exs"},
       {:eex, "session_view.ex", "web/views/session_view.ex"},
       {:eex, "user_controller.ex", "web/controllers/user_controller.ex"},
-      {:eex, "user_controller_test.exs", "web/controllers/user_controller_test.exs"},
+      {:eex, "user_controller_test.exs", "test/controllers/user_controller_test.exs"},
       {:eex, "user_view.ex", "web/views/user_view.ex"},
       {:eex, "test_helpers.ex", "test/support/test_helpers.ex"},
       {:eex, "user_migration.exs", "priv/repo/migrations/#{timestamp()}_create_user.exs"},

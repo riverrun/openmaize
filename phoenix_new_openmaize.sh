@@ -11,22 +11,15 @@ sed -i 's/password: "postgres"/password: System.get_env("POSTGRES_PASS")/g' conf
 # create the database
 mix ecto.create
 
-# create user model - with templates and controller
-# basic
-#mix phoenix.gen.html User users username:string password_hash:string
-# with confirmation
-mix phoenix.gen.html User users username:string email:string password_hash:string \
-    confirmed_at:datetime confirmation_token:string confirmation_sent_at:datetime \
-    reset_token:string reset_sent_at:datetime
-# add `field :password, :string, virtual: true` to the user model
-# add `auth_changeset` and `reset_changeset` to the user model
-
 # add openmaize to deps and applications
-# generate authorization files
+# generate authorization and user model files
+# add `--confirm` option if you want email confirmation / password resetting
+# add `--no-ecto` option if you are not using ecto
 mix openmaize.gen.phoenixauth
+#mix openmaize.gen.phoenixauth --confirm
 
 # run migration
-#mix ecto.migrate
+mix ecto.migrate
 
-# replace `password_hash` in the tests / templates with `password`
-
+# run tests
+mix test

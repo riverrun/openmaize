@@ -1,7 +1,7 @@
 defmodule <%= base %>.SessionControllerTest do
   use <%= base %>.ConnCase
 
-  import <%= base %>.OpenmaizeEcto<%= if confirm do %>
+  import <%= base %>.TestHelpers<%= if confirm do %>
 
   @valid_link "email=arthur%40mail.com&key=pu9-VNdgE8V9qZo19rlcg3KUNjpxuixg"
   @invalid_link "email=arthur%40mail.com&key=pu9-VNdgE8V9QzO19RLCG3KUNjpxuixg"<% end %>
@@ -42,7 +42,7 @@ defmodule <%= base %>.SessionControllerTest do
   end
 
   test "confirmation succeeds for correct key", %{conn: conn} do
-    email = "arthur%40mail.com"
+    email = "arthur@mail.com"
     key = "pu9-VNdgE8V9qZo19rlcg3KUNjpxuixg"
     conn = get(conn, session_path(conn, :confirm_email, email: email, key: key))
     assert conn.private.phoenix_flash["info"] =~ "successfully confirmed"
@@ -50,7 +50,7 @@ defmodule <%= base %>.SessionControllerTest do
   end
 
   test "confirmation fails for incorrect key", %{conn: conn} do
-    email = "arthur%40mail.com"
+    email = "arthur@mail.com"
     key = "pu9-VNdgE8V9QzO19RLCG3KUNjpxuixg"
     conn = get(conn, session_path(conn, :confirm_email, email: email, key: key))
     assert conn.private.phoenix_flash["error"] =~ "failed"
