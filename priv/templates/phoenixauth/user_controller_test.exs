@@ -40,7 +40,7 @@ defmodule <%= base %>.UserControllerTest do
   test "creates resource and redirects when data is valid", %{conn: conn} do
     conn = post conn, user_path(conn, :create), user: @valid_attrs
     assert redirected_to(conn) == user_path(conn, :index)
-    assert Repo.get_by(User, @valid_attrs)
+    assert Repo.get_by(User, %{email: "bill@mail.com"})
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
