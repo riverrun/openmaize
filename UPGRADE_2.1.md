@@ -4,7 +4,8 @@ Add the following to mix.exs and run `mix deps.update openmaize`:
 
     {:openmaize, "~> 2.1"}
 
-The main change is that the mix generators are now more powerful.
+The main change is that the mix generators are now more powerful,
+so setting up new projects should be a lot easier.
 
 # Additional note about upgrading to version 2.0.2
 

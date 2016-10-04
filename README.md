@@ -22,49 +22,51 @@ tested with the Phoenix Web Framework.
 
 1. Add openmaize to your `mix.exs` dependencies
 
-  ```elixir
-  defp deps do
-    [{:openmaize, "~> 2.1"}]
-  end
-  ```
+    ```elixir
+    defp deps do
+      [{:openmaize, "~> 2.1"}]
+    end
+    ```
 
 2. List `:openmaize` as an application dependency
 
-  ```elixir
-  def application do
-    [applications: [:logger, :openmaize]]
-  end
-  ```
+    ```elixir
+    def application do
+      [applications: [:logger, :openmaize]]
+    end
+    ```
 
 3. Run `mix do deps.get, compile`
 
 ## Use
 
-Before you use Openmaize, you need to make sure that you have a module
-that implements the Openmaize.Database behaviour. If you are using Ecto,
-you can generate the necessary files by running the following command:
+To set up user authorization in a new Phoenix app, run the following command:
 
-    mix openmaize.gen.ectodb
-
-To generate modules to handle authorization, and optionally email confirmation,
-run the following command:
-
+    ```elixir
     mix openmaize.gen.phoenixauth
+    ```
+
+See the `phoenix_new_openmaize.md` file for details about all the available
+options.
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
 
+There is an example of Openmaize being used with Phoenix at
+[Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
+
 ## Migrating from Devise
 
-Follow the above instructions for generating database and authorization
-modules, and then add the following lines to the config file:
+After running the command `mix openmaize.gen.phoenixauth`, add the
+following lines to the config file:
 
+    ```elixir
     config :openmaize,
       hash_name: :encrypted_password
+    ```
 
-Some of the functions in the Authorize module depend on a `role` being
-set for each user. If you are not using roles, you will need to edit
-these functions before use.
+You might also need to add `unique_id: :email` to the Openmaize.Login
+call - see the documentation for Openmaize.Login for more details.
 
 ## Openmaize plugs
 
@@ -79,11 +81,6 @@ these functions before use.
     but this time so that the user's password can be reset.
 
 See the relevant module documentation for more details.
-
-## Using with Phoenix
-
-There is an example of Openmaize being used with Phoenix at
-[Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
 
 ### License
 
