@@ -42,9 +42,7 @@ tested with the Phoenix Web Framework.
 
 To set up user authorization in a new Phoenix app, run the following command:
 
-    ```elixir
     mix openmaize.gen.phoenixauth
-    ```
 
 See the `phoenix_new_openmaize.md` file for details about all the available
 options.
@@ -60,10 +58,8 @@ There is an example of Openmaize being used with Phoenix at
 After running the command `mix openmaize.gen.phoenixauth`, add the
 following lines to the config file:
 
-    ```elixir
     config :openmaize,
       hash_name: :encrypted_password
-    ```
 
 You might also need to add `unique_id: :email` to the Openmaize.Login
 call - see the documentation for Openmaize.Login for more details.

@@ -4,10 +4,8 @@
 
 Run the following commands:
 
-    ```elixir
     mix phoenix.new alibaba
     cd alibaba
-    ```
 
 ## Edit the database configuration
 
@@ -21,9 +19,7 @@ If you have `sed` installed, you can do this by running the following commands:
 
 ## Create the database
 
-    ```elixir
     mix ecto.create
-    ```
 
 ## Add openmaize to deps and applications
 
@@ -49,30 +45,23 @@ If you have `sed` installed, you can do this by running the following commands:
 
 For a basic setup, run the following command:
 
-    ```elixir
     mix openmaize.gen.phoenixauth
-    ```
 
 If you want to add email confirmation and password resetting, add
 the `--confirm` option:
 
-    ```elixir
     mix openmaize.gen.phoenixauth --confirm
-    ```
+
 There is also a `no-ecto` option if you are not using ecto and a
 `no-html` option if you do not want to generate any html files.
 
 ## Run the database migration
 
-    ```elixir
     mix ecto.migrate
-    ```
 
 ## Customize the Phoenix app and run tests
 
-    ```elixir
     mix test
-    ```
 
 You might need to run the `MIX_ENV=test mix ecto.drop` command if you
 get a "users field already exists" error (when running the tests).
