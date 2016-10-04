@@ -1,7 +1,7 @@
 defmodule Openmaize.EctoDB do
 
   import Ecto.Changeset
-  alias Openmaize.{TestRepo, TestUser}
+  alias Openmaize.{TestRepo, TestUser, TestOldOtpToken}
   alias Openmaize.{Config, Password}
 
   @behaviour Openmaize.Database
@@ -69,4 +69,23 @@ defmodule Openmaize.EctoDB do
   defp reset_update_repo({:error, message}, _user) do
     {:error, message}
   end
+
+  
+  def old_otp_token?(user_id, totp) do
+    # Try to load the record for the given user_id and token,
+    #   if it fails (nil), it means that the token is used for the first time,
+    #   else it means that the token was already used before.
+    result = TestRepo.get_by(TestOldOtpToken, user_id: user_id, token: totp)
+    case result do
+      nil -> :is_new
+      _   -> :is_old
+    end
+  end
+
+  def add_token_to_old_tokens(user_id, token) do
+    # Store the token in the database
+    TestRepo.insert!(%TestOldOtpToken{user_id: String.to_integer(user_id), token: token})
+  end
+
+
 end

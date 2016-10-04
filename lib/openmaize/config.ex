@@ -5,12 +5,13 @@ defmodule Openmaize.Config do
   The following are valid configuration items.
 
 
-  | name               | type         | default          |
-  | :----------------- | :----------- | ---------------: |
-  | crypto_mod         | module       | Comeonin.Bcrypt  |
-  | hash_name          | atom         | :password_hash   |
-  | password_strength  | keyword list | []               |
-  | remember_salt      | string       | N/A              |
+  | name                      | type         | default          |
+  | :------------------------ | :----------- | ---------------: |
+  | crypto_mod                | module       | Comeonin.Bcrypt  |
+  | hash_name                 | atom         | :password_hash   |
+  | password_strength         | keyword list | []               |
+  | remember_salt             | string       | N/A              |
+  | allow_multiple_otp_logins | boolean      | false            |
 
   ## Examples
 
@@ -21,7 +22,8 @@ defmodule Openmaize.Config do
       config :openmaize,
         crypto_mod: Comeonin.Bcrypt,
         hash_name: :encrypted_password,
-        password_strength: [min_length: 12]
+        password_strength: [min_length: 12],
+        allow_multiple_otp_logins: false
 
   """
 
@@ -83,5 +85,12 @@ defmodule Openmaize.Config do
   """
   def remember_salt do
     Application.get_env(:openmaize, :remember_salt)
+  end
+
+  @doc """
+  Allows multiple logins with the same otp when set to true (default is false)
+  """
+  def allow_multiple_otp_logins do
+    Application.get_env(:openmaize, :allow_multiple_otp_logins, false)
   end
 end

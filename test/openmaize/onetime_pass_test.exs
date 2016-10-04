@@ -54,4 +54,52 @@ defmodule Openmaize.OnetimePassTest do
     refute conn.private[:openmaize_error]
   end
 
+ test "check if multiple logins, near in time and with the same totp, will fail when the configuration parameter 'allow_multiple_otp_logins' is set to false" do
+    alias Openmaize.{TestRepo, TestUser}
+
+    # Bypass the app configuration for this test. Doesn't allow multiple logins
+    Application.put_env(:openmaize, :allow_multiple_otp_logins, false)
+
+    # Obtain the totp token for the given user id
+    # (user id 6 has been setted with 'admin' role, so the two factor authentication is mandatory)
+    id = 6
+    test_user = TestRepo.get(TestUser, id)
+    totp_token = Comeonin.Otp.gen_totp(test_user.otp_secret)
+
+    # Setup user params for the twofactor post call
+    user = %{"id" => Integer.to_string(id), "totp" => totp_token}
+    
+    # Try first two factor login (will succeed)
+    conn = call(user, {EctoDB, []})
+    assert conn.private[:openmaize_user]
+
+    # Try the second two factor login with the same totp as before (will fail)
+    conn = call(user, {EctoDB, []})
+    refute conn.private[:openmaize_error] != "Invalid credentials"
+ end
+
+  test "check if multiple logins, near in time and with the same totp, will succeed when the configuration parameter 'allow_multiple_otp_logins' is set to true" do
+    alias Openmaize.{TestRepo, TestUser}
+
+    # Bypass the app configuration for this test. Allow multiple logins
+    Application.put_env(:openmaize, :allow_multiple_otp_logins, true)
+
+    # Obtain the totp token for the given user id
+    # (user id 6 has been setted with 'admin' role, so the two factor authentication is mandatory)
+    id = 6
+    test_user = TestRepo.get(TestUser, id)
+    totp_token = Comeonin.Otp.gen_totp(test_user.otp_secret)
+
+    # Setup user params for the twofactor post call
+    user = %{"id" => Integer.to_string(id), "totp" => totp_token}
+    
+    # Try first two factor login (will succeed)
+    conn = call(user, {EctoDB, []})
+    assert conn.private[:openmaize_user]
+
+    # Try the second two factor login with the same totp as before (will fail)
+    conn = call(user, {EctoDB, []})
+    assert conn.private[:openmaize_user]
+ end
+
 end
