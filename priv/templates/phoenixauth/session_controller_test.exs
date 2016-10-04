@@ -39,7 +39,7 @@ defmodule <%= base %>.SessionControllerTest do
     conn = conn |> put_session(:user_id, user.id) |> send_resp(:ok, "/")
     conn = delete conn, session_path(conn, :delete, user)<% end %>
     assert redirected_to(conn) == page_path(conn, :index)
-  end
+  end<%= if confirm do %>
 
   test "confirmation succeeds for correct key", %{conn: conn} do
     email = "arthur@mail.com"
@@ -55,6 +55,6 @@ defmodule <%= base %>.SessionControllerTest do
     conn = get(conn, session_path(conn, :confirm_email, email: email, key: key))
     assert conn.private.phoenix_flash["error"] =~ "failed"
     assert redirected_to(conn) == session_path(conn, :new)
-  end
+  end<% end %>
 
 end

@@ -25,9 +25,11 @@ defmodule <%= base %>.User do
     |> cast(params, [:username, :email])
     |> validate_required([:username, :email])
     |> unique_constraint(:username)
-  end
+  end<%= if confirm do %>
 
-  def auth_changeset(struct, params, key) do
+  def auth_changeset(struct, params, key) do<% else %>
+
+  def auth_changeset(struct, params) do<% end %>
     struct
     |> changeset(params)
     |> OpenmaizeEcto.add_password_hash(params)<%= if confirm do %>
