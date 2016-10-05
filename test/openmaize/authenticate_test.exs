@@ -19,7 +19,7 @@ defmodule Openmaize.AuthenticateTest do
   end
 
   test "no user found" do
-    conn = call(10)
+    conn = call(1000)
     assert conn.assigns == %{current_user: nil}
   end
 

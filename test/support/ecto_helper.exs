@@ -67,21 +67,23 @@ defmodule Openmaize.TestUser do
     field :otp_last, :integer
   end
 
-  def changeset(model, params \\ :empty) do
-    model
-    |> cast(params, ~w(email role), ~w(username phone confirmed_at otp_required otp_secret otp_last))
+  def changeset(struct, params \\ :empty) do
+    struct
+    |> cast(params, [:username, :email, :role, :phone, :confirmed_at,
+      :otp_required, :otp_secret, :otp_last])
+    |> validate_required([:email])
     |> validate_length(:email, min: 1, max: 100)
     |> unique_constraint(:email)
   end
 
-  def auth_changeset(model, params) do
-    model
+  def auth_changeset(struct, params) do
+    struct
     |> changeset(params)
     |> Openmaize.EctoDB.add_password_hash(params)
   end
 
-  def confirm_changeset(model, params, key) do
-    model
+  def confirm_changeset(struct, params, key) do
+    struct
     |> auth_changeset(params)
     |> Openmaize.EctoDB.add_confirm_token(key)
   end
