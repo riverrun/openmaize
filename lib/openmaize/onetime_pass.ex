@@ -24,7 +24,6 @@ defmodule Openmaize.OnetimePass do
         * the default is 30 (seconds)
       * window - the number of attempts, before and after the current one, allowed
         * the default is 1 (1 interval before and 1 interval after)
-        * you might need to increase this window to allow for clock skew on the server
 
   See the documentation for the Comeonin.Otp module for more details
   about generating and verifying one-time passwords.
@@ -58,14 +57,14 @@ defmodule Openmaize.OnetimePass do
   to the session.
   """
   def call(%Plug.Conn{params: %{"user" => %{"id" => id} = user_params}} = conn,
-   {db_module, opts}) do
+  {db_module, opts}) do
     db_module.find_user_by_id(id)
     |> check_key(user_params, opts)
     |> handle_auth(conn)
   end
 
   defp check_key(user, %{"hotp" => hotp}, opts) do
-    {user, Otp.check_hotp(hotp, user.otp_secret, opts)}
+    {user, Otp.check_hotp(hotp, user.otp_secret, [last: user.otp_last] ++ opts)}
   end
   defp check_key(user, %{"totp" => totp}, opts) do
     {user, Otp.check_totp(totp, user.otp_secret, opts)}
@@ -74,7 +73,11 @@ defmodule Openmaize.OnetimePass do
   defp handle_auth({_, false}, conn) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  defp handle_auth({user, last}, conn) do
-    put_private(conn, :openmaize_user, Map.put(user, :last, last))
+  defp handle_auth({%{otp_last: otp_last} = user, last}, conn)
+  when last > otp_last do
+    put_private(conn, :openmaize_user, %{user | otp_last: last})
+  end
+  defp handle_auth(_, conn) do
+    put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

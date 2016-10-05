@@ -32,6 +32,7 @@ defmodule UsersMigration do
       add :reset_sent_at, :datetime
       add :otp_required, :boolean
       add :otp_secret, :string
+      add :otp_last, :integer
     end
 
     create unique_index :users, [:email]
@@ -63,11 +64,12 @@ defmodule Openmaize.TestUser do
     field :reset_sent_at, Ecto.DateTime
     field :otp_required, :boolean
     field :otp_secret, :string
+    field :otp_last, :integer
   end
 
   def changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(email role), ~w(username phone confirmed_at otp_required otp_secret))
+    |> cast(params, ~w(email role), ~w(username phone confirmed_at otp_required otp_secret otp_last))
     |> validate_length(:email, min: 1, max: 100)
     |> unique_constraint(:email)
   end

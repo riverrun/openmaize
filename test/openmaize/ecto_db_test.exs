@@ -13,18 +13,16 @@ defmodule Openmaize.EctoDBTest do
   end
 
   test "add_confirm_token" do
-    user = Map.merge(%TestUser{},
-                     %{username: "bill", role: "user",
-                       confirmation_token: nil, confirmation_sent_at: nil})
+    user = %TestUser{username: "bill", role: "user",
+      confirmation_token: nil, confirmation_sent_at: nil}
     changeset = EctoDB.add_confirm_token(user, "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw")
     assert changeset.changes.confirmation_token
     assert changeset.changes.confirmation_sent_at
   end
 
   test "add_reset_token" do
-    user = Map.merge(%TestUser{},
-                     %{email: "reg@mail.com", username: "reg", role: "user", password: "h4rd2gU3$$",
-                       phone: "081755555", confirmed_at: Ecto.DateTime.utc})
+    user = %TestUser{email: "reg@mail.com", username: "reg", role: "user", password: "h4rd2gU3$$",
+      phone: "081755555", confirmed_at: Ecto.DateTime.utc}
     changeset = EctoDB.add_reset_token(user, "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw")
     assert changeset.changes.reset_token
     assert changeset.changes.reset_sent_at
