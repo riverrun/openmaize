@@ -4,6 +4,8 @@
 
 * Enhancements
     * Mix generators create more files, make more changes, and are smarter
+* Bug fixes
+    * Changed TOTP implementation to not allow a token to be used again
 * Changes
     * Added default value for `db_module` (used in several plugs)
 
