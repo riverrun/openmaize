@@ -55,9 +55,12 @@ There is also a `no-ecto` option if you are not using ecto and a
 
     mix ecto.setup
 
-## Customize the Phoenix app and run tests
+## Customize the Phoenix app
 
-    mix test
+If you ran the `mix openmaize.gen.phoenixauth` command with the
+`--confirm` option, you will need to edit the `lib/name_of_your_project/mailer.ex`
+file, using an email library of your choice.
 
 To see which routes are available, you can run `mix phoenix.routes`,
-and to start the server, run `mix phoenix.server`.
+and to start the server, run `mix phoenix.server`. For tests, run
+`mix test`.
