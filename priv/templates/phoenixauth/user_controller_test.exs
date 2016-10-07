@@ -10,9 +10,11 @@ defmodule <%= base %>.UserControllerTest do
   setup %{conn: conn} = config do
     conn = conn |> bypass_through(<%= base %>.Router, :browser) |> get("/")
 
-    if username = config[:login] do
+    if username = config[:login] do<%= if confirm do %>
       user = add_user_confirmed(username)
-      other = add_user_confirmed("tony")
+      other = add_user_confirmed("tony")<% else %>
+      user = add_user(username)
+      other = add_user("tony")<% end %>
 
       conn = conn |> put_session(:user_id, user.id) |> send_resp(:ok, "/")
       {:ok, %{conn: conn, user: user, other: other}}

@@ -9,14 +9,17 @@ defmodule Mix.Tasks.Openmaize.Gen.Ectodb do
   """
 
   @doc false
-  def run(_) do
+  def run(args) do
+    switches = [confirm: :boolean]
+    {opts, _argv, _} = OptionParser.parse(args, switches: switches)
+
     base = Openmaize.Utils.base_module
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"), "templates", "database"]
 
     files = [{:eex, "openmaize_ecto.ex", "web/models/openmaize_ecto.ex"},
      {:eex, "openmaize_ecto_test.exs", "test/models/openmaize_ecto_test.exs"}]
 
-    Mix.Openmaize.copy_files(srcdir, files, base: base)
+    Mix.Openmaize.copy_files(srcdir, files, base: base, confirm: opts[:confirm])
     |> instructions
   end
 

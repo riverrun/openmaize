@@ -48,7 +48,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       {:eex, "router.ex", "web/router.ex"}
     ] ++ get_html(opts[:html]) ++ get_confirm(opts[:confirm], opts[:html])
 
-    if opts[:ecto] != false, do: Mix.Task.run "openmaize.gen.ectodb", []
+    if opts[:ecto] != false, do: Mix.Task.run "openmaize.gen.ectodb", [opts]
 
     Mix.Openmaize.copy_files(srcdir, files, base: base_module(), confirm: opts[:confirm])
 

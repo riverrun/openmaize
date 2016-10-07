@@ -2,7 +2,7 @@
 
 ## Create new phoenix project
 
-Run the following commands:
+Run the following commands (replace alibaba with the name of your project):
 
     mix phoenix.new alibaba
     cd alibaba
