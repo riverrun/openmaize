@@ -71,8 +71,17 @@ defmodule Openmaize.Login do
   `confirmed_at` value. If it is set to nil, an error message will be
   added to `conn.private.openmaize_error`.
   """
+  def call(%Plug.Conn{params: %{"session" => user_params}} = conn,
+   {db_module, uniq_id}) do
+    {uniq, user_id, password} = get_params(user_params, uniq_id)
+    db_module.find_user(user_id, uniq)
+    |> check_pass(password, Config.hash_name)
+    |> handle_auth(conn)
+  end
   def call(%Plug.Conn{params: %{"user" => user_params}} = conn,
    {db_module, uniq_id}) do
+    IO.puts :stderr, "warning: setting the login form parameters to 'user' is deprecated, " <>
+      "please use 'session' instead"
     {uniq, user_id, password} = get_params(user_params, uniq_id)
     db_module.find_user(user_id, uniq)
     |> check_pass(password, Config.hash_name)

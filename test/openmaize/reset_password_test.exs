@@ -15,8 +15,8 @@ defmodule Openmaize.ResetPasswordTest do
   end
 
   def call_reset(password, opts) do
-    conn(:post, "/reset",
-         %{"user" => %{"email" => "dim@mail.com",
+    conn(:post, "/password_reset",
+         %{"password_reset" => %{"email" => "dim@mail.com",
                        "key" => "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw",
                        "password" => password}})
     |> ResetPassword.call(opts)

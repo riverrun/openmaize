@@ -6,7 +6,7 @@ defmodule Openmaize.LoginTest do
 
   def call(name, password, uniq, opts) do
     conn(:post, "/login",
-         %{"user" => %{uniq => name, "password" => password}})
+         %{"session" => %{uniq => name, "password" => password}})
     |> Login.call(opts)
   end
 

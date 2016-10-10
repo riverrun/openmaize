@@ -28,7 +28,7 @@ defmodule <%= base %>.UserController do
         Mailer.ask_confirm(email, link)<% else %>
 
   def create(conn, %{"user" => user_params}) do
-    changeset = User.changeset(%User{}, user_params)
+    changeset = User.auth_changeset(%User{}, user_params)
 
     case Repo.insert(changeset) do
       {:ok, _user} -><% end %>

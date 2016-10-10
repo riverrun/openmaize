@@ -1,6 +1,33 @@
 <h2>New user</h2>
 
-<%= render "form.html", changeset: @changeset,
-                        action: user_path(@conn, :create) %>
+<%= form_for @conn, user_path(@conn, :create), [as: :user], fn f -> %>
+  <%= if f.errors != [] do %>
+    <div class="alert alert-danger">
+      <p>Please check the errors below:</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :username, "username", class: "control-label" %>
+    <%= text_input f, :username, class: "form-control" %>
+    <%= error_tag f, :username %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :email, class: "control-label" %>
+    <%= text_input f, :email, class: "form-control" %>
+    <%= error_tag f, :email %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :password, class: "control-label" %>
+    <%= password_input f, :password, class: "form-control" %>
+    <%= error_tag f, :password %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Add user", class: "btn btn-primary" %>
+  </div>
+<% end %>
 
 <%= link "Back", to: page_path(@conn, :index) %>

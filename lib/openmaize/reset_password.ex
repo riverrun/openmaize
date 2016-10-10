@@ -59,6 +59,8 @@ defmodule Openmaize.ResetPassword do
   def call(%Plug.Conn{params: %{"user" =>
      %{"key" => key, "password" => password} = user_params}} = conn, opts)
   when byte_size(key) == 32 do
+    IO.puts :stderr, "warning: setting the reset password form parameters to 'user' is deprecated, " <>
+      "please use 'password_reset' instead"
     check_user_key(conn, user_params, key, password, opts)
   end
   def call(conn, _opts), do: invalid_link_error(conn)
