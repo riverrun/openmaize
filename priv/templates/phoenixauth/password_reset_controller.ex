@@ -11,7 +11,7 @@ defmodule <%= base %>.PasswordResetController do
     render conn, "new.html"
   end
 
-  def create(conn, %{"user" => %{"email" => email} = user_params}) do
+  def create(conn, %{"password_reset" => %{"email" => email} = user_params}) do
     {key, link} = Openmaize.ConfirmEmail.gen_token_link(email)
     changeset = User.reset_changeset(Repo.get_by(User, email: email), user_params, key)
 
