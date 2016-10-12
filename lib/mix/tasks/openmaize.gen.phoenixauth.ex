@@ -65,6 +65,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   defp get_html(false), do: []
   defp get_html(_) do
     [{:eex, "authorize.ex", "web/controllers/authorize.ex"},
+     {:text, "app.html.eex", "web/templates/layout/app.html.eex"},
+     {:text, "index.html.eex", "web/templates/page/index.html.eex"},
      {:text, "session_new.html.eex", "web/templates/session/new.html.eex"},
      {:text, "user_edit.html.eex", "web/templates/user/edit.html.eex"},
      {:text, "user_form.html.eex", "web/templates/user/form.html.eex"},

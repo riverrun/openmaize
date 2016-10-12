@@ -1,0 +1,58 @@
+<div class="jumbotron">
+  <h2>Welcome to Phoenix! - and <a href="https://github.com/elixircnx/openmaize">Openmaize</a></h2>
+  <p class="lead">An authentication library for Plug-based applications in Elixir</p>
+</div>
+
+<div class="container">
+  <h4>But first, a cautionary tale against forgetting your password</h4>
+  <p>...Ali Baba told his brother, Cassim, about the treasure in a cave and that
+  he just needed to say "Open Sesame" at the entrance to get in. This he did, but
+  once he was inside, the door to the cave suddenly shut, and Cassim realized that
+  he had forgotten the password -- and no system administrator to help him!
+  "Open Barley!" he cried, and then he shouted out names of many other grains,
+  perhaps even "Open Maize!", but all to no avail. Eventually, the robbers whose
+  treasure it was came to the cave and killed and quartered Cassim. Then they
+  hung him up at the entrance to the cave as a warning to any others careless
+  enough to forget their passwords...</p>
+  <h3>Openmaize</h3>
+  <p>Openmaize is an authentication library for Elixir. It aims to be:</p>
+  <ul>
+    <li>secure</li>
+    <li>lightweight</li>
+    <li>framework-agnostic</li>
+    <li>well-documented</li>
+  </ul>
+  <p>Openmaize depends on Plug for much of its functionality, and it uses Comeonin
+  and Plug sessions for authentication.</p>
+</div>
+
+<div class="row marketing">
+  <div class="col-lg-6">
+    <h4>Documentation</h4>
+    <ul>
+      <li>
+        <a href="http://hexdocs.pm/openmaize">Openmaize docs</a>
+      </li>
+      <li>
+        <a href="http://phoenixframework.org/docs/overview">Phoenix guides</a>
+      </li>
+      <li>
+        <a href="http://hexdocs.pm/phoenix">Phoenix docs</a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-lg-6">
+    <h4>Elixir help</h4>
+    <ul>
+      <li>
+        <a href="http://elixir-lang.org">Elixir language</a>
+      </li>
+      <li>
+        <a href="https://elixirforum.com">Elixir forum</a>
+      </li>
+      <li>
+        <a href="http://groups.google.com/group/phoenix-talk">Phoenix mailing list</a>
+      </li>
+    </ul>
+  </div>
+</div>
