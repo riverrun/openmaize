@@ -22,12 +22,12 @@ defmodule <%= base %>.SessionControllerTest do
   end
 
   test "login succeeds", %{conn: conn} do
-    conn = post conn, session_path(conn, :create), user: @valid_attrs
+    conn = post conn, session_path(conn, :create), session: @valid_attrs
     assert redirected_to(conn) == user_path(conn, :index)
   end
 
   test "login fails", %{conn: conn} do
-    conn = post conn, session_path(conn, :create), user: @invalid_attrs
+    conn = post conn, session_path(conn, :create), session: @invalid_attrs
     assert redirected_to(conn) == session_path(conn, :new)
   end<%= if confirm do %>
 
