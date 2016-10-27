@@ -2,12 +2,6 @@ defmodule Openmaize do
   @moduledoc """
   Openmaize is an authentication library for Plug-based applications in Elixir.
 
-  Before you use Openmaize, you need to make sure that you have a module
-  that implements the Openmaize.Database behaviour. If you are using Ecto,
-  you can generate the necessary files by running the following command:
-
-      mix openmaize.gen.ectodb
-
   To generate modules to handle authorization, and optionally email confirmation,
   run the following command:
 

@@ -14,7 +14,6 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run []
 
       assert_file "web/controllers/authorize.ex"
-      assert_file "web/models/openmaize_ecto.ex"
       assert_file "web/templates/session/new.html.eex"
 
       assert_file "web/controllers/session_controller.ex", fn file ->
@@ -39,22 +38,12 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
     end
   end
 
-  test "can generate resource without ecto" do
-    in_tmp "can generate resource without ecto", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--no-ecto"]
-
-      assert_file "web/controllers/authorize.ex"
-      refute_file "web/models/openmaize_ecto.ex"
-    end
-  end
-
   test "generates confirm functionality" do
     in_tmp "generates confirm functionality", fn ->
       Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--confirm"]
 
       assert_file "lib/openmaize/mailer.ex"
       assert_file "web/controllers/authorize.ex"
-      assert_file "web/models/openmaize_ecto.ex"
 
       assert_file "web/controllers/session_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:create]"

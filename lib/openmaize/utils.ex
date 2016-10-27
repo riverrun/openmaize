@@ -2,10 +2,17 @@ defmodule Openmaize.Utils do
   @moduledoc false
 
   @doc """
-  Get the default name for the db_module.
+  Get the default name for the repo.
   """
-  def default_db do
-    base_module() |> Module.concat(OpenmaizeEcto)
+  def default_repo do
+    base_module() |> Module.concat(Repo)
+  end
+
+  @doc """
+  Get the default name for the user_model.
+  """
+  def default_user_model do
+    base_module() |> Module.concat(User)
   end
 
   @doc """

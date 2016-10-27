@@ -2,13 +2,13 @@ defmodule Openmaize.AuthenticateTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.{Authenticate, EctoDB, SessionHelper}
+  alias Openmaize.{Authenticate, SessionHelper, TestRepo, TestUser}
 
   def call(id) do
     conn(:get, "/")
     |> SessionHelper.sign_conn
     |> put_session(:user_id, id)
-    |> Authenticate.call(EctoDB)
+    |> Authenticate.call({TestRepo, TestUser})
   end
 
   test "current user in session" do
@@ -28,7 +28,7 @@ defmodule Openmaize.AuthenticateTest do
     newconn = conn(:get, "/")
               |> recycle_cookies(conn)
               |> SessionHelper.sign_conn
-              |> Authenticate.call(EctoDB)
+              |> Authenticate.call({TestRepo, TestUser})
     assert newconn.assigns == %{current_user: nil}
   end
 

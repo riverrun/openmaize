@@ -13,7 +13,8 @@ defmodule Openmaize.Remember do
   alias Plug.Crypto.{KeyGenerator, MessageVerifier}
 
   def init(opts) do
-    Keyword.get opts, :db_module, Openmaize.Utils.default_db
+    {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
+    Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model)}
   end
 
   @doc """
@@ -26,12 +27,12 @@ defmodule Openmaize.Remember do
   If the check is unsuccessful, an error message will be sent to
   `conn.private.openmaize_error`.
   """
-  def call(%Plug.Conn{req_cookies: %{"remember_me" => remember}} = conn, db_module) do
+  def call(%Plug.Conn{req_cookies: %{"remember_me" => remember}} = conn, {repo, user_model}) do
     if conn.assigns[:current_user] do
       conn
     else
       valid_cookie?(remember, conn.secret_key_base, Config.remember_salt)
-      |> verify_cookie(conn, db_module)
+      |> verify_cookie(conn, repo, user_model)
     end
   end
   def call(conn, _), do: conn
@@ -86,10 +87,10 @@ defmodule Openmaize.Remember do
     MessageVerifier.verify(remember, key)
   end
 
-  defp verify_cookie({:ok, user_id}, conn, db_module) do
-    db_module.find_user_by_id(user_id) |> handle_auth(conn)
+  defp verify_cookie({:ok, user_id}, conn, repo, user_model) do
+    repo.get(user_model, user_id) |> handle_auth(conn)
   end
-  defp verify_cookie(_, conn, _) do
+  defp verify_cookie(_, conn, _, _) do
     put_private(conn, :openmaize_error, "Invalid cookie")
   end
 

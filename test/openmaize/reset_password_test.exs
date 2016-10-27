@@ -4,7 +4,7 @@ defmodule Openmaize.ResetPasswordTest do
 
   import Ecto.Changeset
   alias Comeonin.Bcrypt
-  alias Openmaize.{EctoDB, ResetPassword, TestRepo, TestUser}
+  alias Openmaize.{ResetPassword, TestRepo, TestUser}
 
   setup do
     {:ok, _user} = TestRepo.get_by(TestUser, email: "dim@mail.com")
@@ -28,19 +28,19 @@ defmodule Openmaize.ResetPasswordTest do
   end
 
   test "init function" do
-    assert ResetPassword.init([]) == {Openmaize.OpenmaizeEcto, {60, :email, nil}}
+    assert ResetPassword.init([]) == {Openmaize.Repo, Openmaize.User, {60, :email, nil}}
   end
 
   test "reset password succeeds" do
     password = "my N1pples expl0de with the light!"
-    conn = call_reset(password, {EctoDB, {120, :email, nil}})
+    conn = call_reset(password, {TestRepo, TestUser, {120, :email, nil}})
     assert password_changed(password)
     assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "reset password fails with expired token" do
     password = "C'est bon, la vie"
-    conn = call_reset(password, {EctoDB, {0, :email, nil}})
+    conn = call_reset(password, {TestRepo, TestUser, {0, :email, nil}})
     refute password_changed(password)
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
@@ -49,7 +49,7 @@ defmodule Openmaize.ResetPasswordTest do
     user = TestRepo.get_by(TestUser, email: "dim@mail.com")
     change(user, %{reset_sent_at: nil})
     |> Openmaize.TestRepo.update
-    conn = call_reset("password", {EctoDB, {120, :email, nil}})
+    conn = call_reset("password", {TestRepo, TestUser, {120, :email, nil}})
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
 

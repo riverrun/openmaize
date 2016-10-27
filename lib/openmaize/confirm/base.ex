@@ -8,6 +8,7 @@ defmodule Openmaize.Confirm.Base do
 
   import Plug.Conn
   import Comeonin.Tools
+  alias Openmaize.Database, as: DB
 
   @doc """
   Check the user key and, if necessary, the user password.
@@ -17,13 +18,12 @@ defmodule Openmaize.Confirm.Base do
   an `openmaize_error` message will be added to the conn.
   """
   def check_user_key(conn, user_params, key, password,
-   {db_module, {key_expiry, uniq, mail_func}}) do
+   {repo, user_model, {key_expiry, uniq, mail_func}}) do
     case Map.get(user_params, to_string(uniq)) do
       nil -> finalize(nil, conn, nil, mail_func)
       user_id ->
-        user_id
-        |> db_module.find_user(uniq)
-        |> check_key(db_module, key, key_expiry * 60, password)
+        repo.get_by(user_model, [{uniq, user_id}])
+        |> check_key(repo, key, key_expiry * 60, password)
         |> finalize(conn, user_id, mail_func)
     end
   end
@@ -36,16 +36,16 @@ defmodule Openmaize.Confirm.Base do
   end
 
   defp check_key(_, nil, _, _, _), do: false
-  defp check_key(%{confirmed_at: nil} = user, db_module, key, valid_secs, :nopassword) do
-    db_module.check_time(user.confirmation_sent_at, valid_secs) and
+  defp check_key(%{confirmed_at: nil} = user, repo, key, valid_secs, :nopassword) do
+    DB.check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
-    db_module.user_confirmed(user)
+    DB.user_confirmed(user, repo)
   end
   defp check_key(_, _, _, _, :nopassword), do: {:error, "User account already confirmed"}
-  defp check_key(user, db_module, key, valid_secs, password) do
-    db_module.check_time(user.reset_sent_at, valid_secs) and
+  defp check_key(user, repo, key, valid_secs, password) do
+    DB.check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and
-    db_module.password_reset(user, password)
+    DB.password_reset(user, password, repo)
   end
 
   defp finalize({:ok, user}, conn, _, mail_func) do

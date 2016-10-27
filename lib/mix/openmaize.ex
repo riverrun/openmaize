@@ -2,10 +2,8 @@ defmodule Mix.Openmaize do
   @moduledoc """
   Helper functions for the mix generators.
 
-  There are two mix generators available - `openmaize.gen.phoenixauth`
-  and `openmaize.gen.ectodb`.
-  See the documentation for Mix.Tasks.Openmaize.Gen.Phoenixauth and
-  Mix.Tasks.Openmaize.Gen.Ectodb for more information.
+  There is one mix generator available - `openmaize.gen.phoenixauth`.
+  See the documentation for Mix.Tasks.Openmaize.Gen.Phoenixauth.
   """
 
   @doc """

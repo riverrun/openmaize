@@ -12,15 +12,12 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
     * confirm - add functions for email confirmation and password resets
       * the default is false
-    * ecto - use ecto for database interaction
-      * the default is true
     * html - add html files
       * the default is false
 
   ## Examples
 
-  In the root directory of your project, run the following command
-  (add the `--no-ecto` option if you are not using ecto):
+  In the root directory of your project, run the following command:
 
       mix openmaize.gen.phoenixauth
 
@@ -28,7 +25,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   @doc false
   def run(args) do
-    switches = [confirm: :boolean, html: :boolean, ecto: :boolean]
+    switches = [confirm: :boolean, html: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
 
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"),
@@ -47,8 +44,6 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       {:eex, "user_model_test.exs", "test/models/user.exs"},
       {:eex, "router.ex", "web/router.ex"}
     ] ++ get_html(opts[:html]) ++ get_confirm(opts[:confirm], opts[:html])
-
-    if opts[:ecto] != false, do: Mix.Task.run "openmaize.gen.ectodb", [opts]
 
     Mix.Openmaize.copy_files(srcdir, files, base: base_module(), confirm: opts[:confirm])
 

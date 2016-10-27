@@ -79,12 +79,12 @@ defmodule Openmaize.TestUser do
   def auth_changeset(struct, params) do
     struct
     |> changeset(params)
-    |> Openmaize.EctoDB.add_password_hash(params)
+    |> Openmaize.Database.add_password_hash(params)
   end
 
   def confirm_changeset(struct, params, key) do
     struct
     |> auth_changeset(params)
-    |> Openmaize.EctoDB.add_confirm_token(key)
+    |> Openmaize.Database.add_confirm_token(key)
   end
 end

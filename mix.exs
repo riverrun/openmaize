@@ -1,7 +1,7 @@
 defmodule Openmaize.Mixfile do
   use Mix.Project
 
-  @version "2.1.4"
+  @version "2.2.0"
 
   @description """
   Authentication library for Elixir using Plug
@@ -25,8 +25,8 @@ defmodule Openmaize.Mixfile do
   defp deps do
     [{:cowboy, "~> 1.0"},
      {:plug, "~> 1.2"},
-     {:comeonin, "~> 2.5"},
-     {:ecto, "~> 2.0", optional: true},
+     {:comeonin, "~> 2.6"},
+     {:ecto, "~> 2.0"},
      {:postgrex, "~> 0.11", optional: true},
      {:not_qwerty123, "~> 1.2", optional: true},
      {:earmark, "~> 1.0", only: :dev},
