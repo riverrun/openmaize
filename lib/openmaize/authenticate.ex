@@ -1,6 +1,6 @@
 defmodule Openmaize.Authenticate do
   @moduledoc """
-  Authenticate the current user, using sessions.
+  Authenticate the current user, using Plug sessions.
 
   ## Options
 

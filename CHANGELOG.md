@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.2.0
+
+* Changes
+    * Moved the database functions to within Openmaize
+        * The openmaize_ecto and openmaize_ecto_test files are no longer needed and can be deleted
+    * Replaced `db_module` setting (used in several plugs) with `repo` and `user_model`
+
 ## v2.1.0
 
 * Enhancements

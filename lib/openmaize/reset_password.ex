@@ -16,29 +16,44 @@ defmodule Openmaize.ResetPassword do
       * the default is :email
     * mail_function - the emailing function that you need to define
 
-  ## Reset password form
+  ## Email function
 
-  This function is to be used with the `reset` post request. For the
-  `reset` get request, you need to render a form with the name "user",
-  using `[as: :user]` if you are using Phoenix's `form_for` function,
-  which contains values for the password, email and key (the email and
-  key should be hidden inputs).
+  Emailing the end user is the developer's responsibility. If you have
+  generated files with the `mix openmaize.gen.phoenixauth --confirm`
+  command, then you will have a template at `lib/your_project_name/mailer.ex`.
+  You need to complete this template with the mailing library of your
+  choice.
 
-  Before hashing the user's password and adding the hash to the database,
-  it is checked to make sure that it is long enough and, if you have
-  NotQwerty123 installed, not too weak.
+  This file, `mailer.ex`, uses the following functions for password resetting:
 
-  ## Examples
+    * ask_reset/2 - send an email with the link to reset the password to the user
+    * receipt_confirm/1 - send an email stating that the password has been changed
 
-  First, define a `post "/reset", SomeController, :reset_password` route
-  in the web/router.ex file. Then, add the following command to the
-  relevant controller file:
+  ## Examples with Phoenix
+
+  The easiest way to use this plug is to run the
+  `mix openmaize.gen.phoenixauth --confirm` command, which will create
+  all the files you need.
+
+  If you do not want to run the above command, you need to create the
+  following files:
+
+    * controllers/password_reset_controller.ex
+    * views/password_reset_view.ex
+    * templates/password_reset/new.html.eex
+    * templates/password_reset/edit.html.eex
+
+  In the `edit.html.eex` file, make sure that the form uses `password_reset` to
+  identify the user.
+
+  You also need to add the following command to the `web/router.ex` file:
+
+      resources "/password_resets", PasswordResetController, only: [:new, :create, :edit, :update]
+
+  Add the following command to the `password_reset_controller.ex` file:
 
       plug Openmaize.ResetPassword, [mail_function: &Mailer.send_receipt/1] when action in [:reset_password]
 
-  This command will be run when the user sends the form with the data to
-  reset the password. You will need to write a function to handle the
-  `get "/reset"` request, that is, to render the form to reset the password.
   """
 
   import Openmaize.Confirm.Base

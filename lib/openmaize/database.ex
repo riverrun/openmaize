@@ -1,5 +1,6 @@
 defmodule Openmaize.Database do
   @moduledoc """
+  Functions that are used to access the database.
   """
 
   import Ecto.Changeset

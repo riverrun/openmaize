@@ -15,16 +15,25 @@ defmodule Openmaize.Login do
 
   ## Examples with Phoenix
 
-  If you have used the `mix openmaize.gen.phoenixauth` command to generate
-  an Authorize module, the `login_user` function in the examples below
-  will simply call the `Authorize.handle_login` function.
+  The easiest way to use this plug is to run the
+  `mix openmaize.gen.phoenixauth` command, which will create
+  all the files you need.
 
-  In the `web/router.ex` file, add the following line (you can use
-  a different controller and route):
+  If you do not want to run the above command, you need to create the
+  following files:
 
-      post "/login", PageController, :login_user
+    * controllers/session_controller.ex
+    * views/session_view.ex
+    * templates/session/new.html.eex
 
-  And then in the `page_controller.ex` file, add:
+  In the `new.html.eex` file, make sure that the form uses `session` to
+  identify the user.
+
+  You also need to add the following command to the `web/router.ex` file:
+
+      resources "/sessions", SessionController, only: [:new, :create, :delete]
+
+  Add the following command to the `session_controller.ex` file:
 
       plug Openmaize.Login when action in [:login_user]
 
