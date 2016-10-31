@@ -1,7 +1,7 @@
 defmodule <%= base %>.User do
   use <%= base %>.Web, :model
 
-  alias <%= base %>.OpenmaizeEcto
+  alias Openmaize.Database, as: DB
 
   schema "users" do
     field :username, :string
@@ -32,13 +32,13 @@ defmodule <%= base %>.User do
   def auth_changeset(struct, params) do<% end %>
     struct
     |> changeset(params)
-    |> OpenmaizeEcto.add_password_hash(params)<%= if confirm do %>
-    |> OpenmaizeEcto.add_confirm_token(key)<% end %>
+    |> DB.add_password_hash(params)<%= if confirm do %>
+    |> DB.add_confirm_token(key)<% end %>
   end<%= if confirm do %>
 
   def reset_changeset(struct, params, key) do
     struct
     |> cast(params, [:email], [])
-    |> OpenmaizeEcto.add_reset_token(key)
+    |> DB.add_reset_token(key)
   end<% end %>
 end

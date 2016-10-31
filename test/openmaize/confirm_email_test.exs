@@ -3,7 +3,7 @@ defmodule Openmaize.ConfirmEmailTest do
   use Plug.Test
 
   import Ecto.Changeset
-  alias Openmaize.{ConfirmEmail, EctoDB, TestRepo, TestUser}
+  alias Openmaize.{ConfirmEmail, TestRepo, TestUser}
 
   @valid_link "email=fred%2B1%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
   @name_link "username=fred&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
@@ -29,48 +29,48 @@ defmodule Openmaize.ConfirmEmailTest do
   end
 
   test "init function" do
-    assert ConfirmEmail.init([]) == {Openmaize.OpenmaizeEcto, {60, :email, nil}}
+    assert ConfirmEmail.init([]) == {Openmaize.Repo, Openmaize.User, {60, :email, nil}}
   end
 
   test "confirmation succeeds for valid token" do
-    conn = call_confirm(@valid_link, {EctoDB, {120, :email, nil}})
+    conn = call_confirm(@valid_link, {TestRepo, TestUser, {120, :email, nil}})
     assert user_confirmed()
     assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "confirmation fails for invalid token" do
-    conn = call_confirm(@invalid_link, {EctoDB, {120, :email, nil}})
+    conn = call_confirm(@invalid_link, {TestRepo, TestUser, {120, :email, nil}})
     refute user_confirmed()
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "confirmation fails for expired token" do
-    conn = call_confirm(@valid_link, {EctoDB, {0, :email, nil}})
+    conn = call_confirm(@valid_link, {TestRepo, TestUser, {0, :email, nil}})
     refute user_confirmed()
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "invalid link error" do
-    conn = call_confirm(@incomplete_link, {EctoDB, {120, :email, nil}})
+    conn = call_confirm(@incomplete_link, {TestRepo, TestUser, {120, :email, nil}})
     refute user_confirmed()
     assert conn.private.openmaize_error =~ "Invalid link"
   end
 
   test "confirmation succeeds with different unique id" do
-    conn = call_confirm(@name_link, {EctoDB, {120, :username, nil}})
+    conn = call_confirm(@name_link, {TestRepo, TestUser, {120, :username, nil}})
     assert user_confirmed()
     assert conn.private.openmaize_info =~ "Account successfully confirmed"
   end
 
   test "confirmation fails when query fails" do
-    conn = call_confirm("key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw", {EctoDB, {120, :email, nil}})
+    conn = call_confirm("key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw", {TestRepo, TestUser, {120, :email, nil}})
     refute user_confirmed()
     assert conn.private.openmaize_error =~ "Confirmation for"
   end
 
   test "confirmation fails for already confirmed account" do
-    call_confirm(@valid_link, {EctoDB, {120, :email, nil}})
-    conn = call_confirm(@valid_link, {EctoDB, {120, :email, nil}})
+    call_confirm(@valid_link, {TestRepo, TestUser, {120, :email, nil}})
+    conn = call_confirm(@valid_link, {TestRepo, TestUser, {120, :email, nil}})
     assert user_confirmed()
     assert conn.private.openmaize_error =~ "User account already confirmed"
   end

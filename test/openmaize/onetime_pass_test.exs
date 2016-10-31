@@ -4,7 +4,7 @@ defmodule Openmaize.OnetimePassTest do
 
   import Ecto.Changeset
   alias Comeonin.Otp
-  alias Openmaize.{EctoDB, OnetimePass, TestRepo, TestUser}
+  alias Openmaize.{OnetimePass, TestRepo, TestUser}
 
   setup context do
     otp_last = context[:last] || 0
@@ -25,26 +25,26 @@ defmodule Openmaize.OnetimePassTest do
   end
 
   test "init function" do
-    assert OnetimePass.init([]) == {Openmaize.OpenmaizeEcto, []}
+    assert OnetimePass.init([]) == {Openmaize.Repo, Openmaize.User, []}
   end
 
   test "check hotp with default options" do
     user = %{"hotp" => "816065", "id" => "5"}
-    conn = call(user, {EctoDB, []})
+    conn = call(user, {TestRepo, TestUser, []})
     %{id: id, role: role, otp_last: otp_last} = conn.private[:openmaize_user]
     assert id == 5
     assert role == "user"
     assert otp_last == 2
     refute conn.private[:openmaize_error]
     fail = %{"hotp" => "816066", "id" => "5"}
-    conn = call(fail, {EctoDB, []})
+    conn = call(fail, {TestRepo, TestUser, []})
     assert conn.private[:openmaize_error]
   end
 
   @tag last: 18
   test "check hotp with updated last" do
     user = %{"hotp" => "088239", "id" => "5"}
-    conn = call(user, {EctoDB, []})
+    conn = call(user, {TestRepo, TestUser, []})
     %{id: id, role: role, otp_last: otp_last} = conn.private[:openmaize_user]
     assert id == 5
     assert role == "user"
@@ -52,14 +52,14 @@ defmodule Openmaize.OnetimePassTest do
     assert conn.private[:openmaize_user]
     refute conn.private[:openmaize_error]
     fail = %{"hotp" => "088238", "id" => "5"}
-    conn = call(fail, {EctoDB, []})
+    conn = call(fail, {TestRepo, TestUser, []})
     assert conn.private[:openmaize_error]
   end
 
   test "check totp with default options" do
     token = Otp.gen_totp("MFRGGZDFMZTWQ2LK")
     user = %{"totp" => token, "id" => "5"}
-    conn = call(user, {EctoDB, []})
+    conn = call(user, {TestRepo, TestUser, []})
     assert conn.private[:openmaize_user]
     refute conn.private[:openmaize_error]
   end
@@ -67,22 +67,22 @@ defmodule Openmaize.OnetimePassTest do
   test "disallow totp check with same token" do
     token = Otp.gen_totp("MFRGGZDFMZTWQ2LK")
     user = %{"totp" => token, "id" => "5"}
-    conn = call(user, {EctoDB, []})
+    conn = call(user, {TestRepo, TestUser, []})
     %{otp_last: otp_last} = conn.private[:openmaize_user]
     update_repo(5, otp_last)
-    conn = call(user, {EctoDB, []})
+    conn = call(user, {TestRepo, TestUser, []})
     assert conn.private[:openmaize_error]
   end
 
   test "disallow totp check with earlier token that is still valid" do
     token = Otp.gen_totp("MFRGGZDFMZTWQ2LK")
     user = %{"totp" => token, "id" => "5"}
-    conn = call(user, {EctoDB, []})
+    conn = call(user, {TestRepo, TestUser, []})
     %{otp_last: otp_last} = conn.private[:openmaize_user]
     update_repo(5, otp_last)
     new_token = Otp.gen_hotp("MFRGGZDFMZTWQ2LK", otp_last - 1)
     user = %{"totp" => new_token, "id" => "5"}
-    conn = call(user, {EctoDB, []})
+    conn = call(user, {TestRepo, TestUser, []})
     assert conn.private[:openmaize_error]
   end
 

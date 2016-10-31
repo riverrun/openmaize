@@ -2,7 +2,7 @@ defmodule Openmaize.RememberTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.{Authenticate, EctoDB, Remember, SessionHelper}
+  alias Openmaize.{Authenticate, Remember, SessionHelper, TestRepo, TestUser}
 
   setup do
     conn = conn(:get, "/")
@@ -17,11 +17,11 @@ defmodule Openmaize.RememberTest do
   end
 
   test "init function" do
-    assert Remember.init([]) == Openmaize.OpenmaizeEcto
+    assert Remember.init([]) == {Openmaize.Repo, Openmaize.User}
   end
 
   test "call remember with default options", %{newconn: newconn} do
-    newconn = Remember.call(newconn, EctoDB)
+    newconn = Remember.call(newconn, {TestRepo, TestUser})
     %{current_user: user} = newconn.assigns
     assert user.id == 1
     assert user.username == "fred"
@@ -35,7 +35,7 @@ defmodule Openmaize.RememberTest do
     newconn = conn(:get, "/")
               |> recycle_cookies(conn)
               |> SessionHelper.sign_conn
-              |> Remember.call(EctoDB)
+              |> Remember.call({TestRepo, TestUser})
     assert newconn.private[:openmaize_error] == "Invalid cookie"
     refute newconn.assigns[:current_user]
   end
@@ -43,15 +43,15 @@ defmodule Openmaize.RememberTest do
   test "call remember with no remember cookie" do
     conn = conn(:get, "/")
             |> SessionHelper.sign_conn
-            |> Remember.call(EctoDB)
+            |> Remember.call({TestRepo, TestUser})
     refute conn.assigns[:current_user]
   end
 
   test "call remember with current_user already set", %{newconn: newconn} do
     newconn = newconn
               |> put_session(:user_id, 2)
-              |> Authenticate.call(EctoDB)
-              |> Remember.call(EctoDB)
+              |> Authenticate.call({TestRepo, TestUser})
+              |> Remember.call({TestRepo, TestUser})
     %{current_user: user} = newconn.assigns
     assert user.id == 2
     assert user.username == "dim"
