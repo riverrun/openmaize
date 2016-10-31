@@ -23,7 +23,7 @@ If you have `sed` installed, you can do this by running the following commands:
 
     ```elixir
     defp deps do
-      [{:openmaize, "~> 2.1"}]
+      [{:openmaize, "~> 2.2"}]
     end
     ```
 
@@ -48,8 +48,7 @@ the `--confirm` option:
 
     mix openmaize.gen.phoenixauth --confirm
 
-There is also a `no-ecto` option if you are not using ecto and a
-`no-html` option if you do not want to generate any html files.
+There is also a `no-html` option if you do not want to generate any html files.
 
 ## Create the database and run the migration
 
