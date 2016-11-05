@@ -3,7 +3,7 @@ defmodule Openmaize.Database do
   Functions that are used to access the database.
   """
 
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
   alias Openmaize.{Config, Password}
 
   @doc """
@@ -80,6 +80,27 @@ defmodule Openmaize.Database do
     Password.valid_password?(password, Config.password_strength)
     |> reset_update_repo(user, repo)
   end
+
+  @doc """
+  Get user and lock the database.
+
+  This is used when updating the HOTP token.
+  """
+  def get_user_with_lock(repo, user_model, id) do
+    from(u in user_model, where: u.id == ^id, lock: "FOR UPDATE")
+    |> repo.one!
+  end
+
+  @doc """
+  Update the database with the new value for otp_last.
+
+  This is used with both HOTP and TOTP tokens.
+  """
+  def update_otp({_, false}, _), do: nil
+  def update_otp({%{otp_last: otp_last} = user, last}, repo) when last > otp_last do
+    change(user, %{otp_last: last}) |> repo.update!
+  end
+  def update_otp(_, _), do: nil
 
   @doc """
   Function used to check if a token has expired.
