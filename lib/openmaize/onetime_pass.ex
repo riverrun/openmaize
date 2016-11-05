@@ -46,6 +46,7 @@ defmodule Openmaize.OnetimePass do
 
   import Plug.Conn
   alias Comeonin.Otp
+  alias Openmaize.Database, as: DB
 
   def init(opts) do
     {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
@@ -59,28 +60,35 @@ defmodule Openmaize.OnetimePass do
   If the one-time password check is successful, the user will be added
   to the session.
   """
-  def call(%Plug.Conn{params: %{"user" => %{"id" => id} = user_params}} = conn,
-  {repo, user_model, opts}) do
+  def call(%Plug.Conn{params: %{"user" => %{"id" => id, "hotp" => hotp}}} = conn,
+    {repo, user_model, opts}) do
+    {:ok, result} = repo.transaction(fn ->
+      DB.get_user_with_lock(repo, user_model, id)
+      |> check_hotp(hotp, opts)
+      |> DB.update_otp(repo)
+    end)
+    handle_auth(result, conn)
+  end
+  def call(%Plug.Conn{params: %{"user" => %{"id" => id, "totp" => totp}}} = conn,
+    {repo, user_model, opts}) do
     repo.get(user_model, id)
-    |> check_key(user_params, opts)
+    |> check_totp(totp, opts)
+    |> DB.update_otp(repo)
     |> handle_auth(conn)
   end
 
-  defp check_key(user, %{"hotp" => hotp}, opts) do
+  defp check_hotp(user, hotp, opts) do
     {user, Otp.check_hotp(hotp, user.otp_secret, [last: user.otp_last] ++ opts)}
   end
-  defp check_key(user, %{"totp" => totp}, opts) do
+
+  defp check_totp(user, totp, opts) do
     {user, Otp.check_totp(totp, user.otp_secret, opts)}
   end
 
-  defp handle_auth({_, false}, conn) do
+  defp handle_auth(nil, conn) do
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  defp handle_auth({%{otp_last: otp_last} = user, last}, conn)
-  when last > otp_last do
-    put_private(conn, :openmaize_user, %{user | otp_last: last})
-  end
-  defp handle_auth(_, conn) do
-    put_private(conn, :openmaize_error, "Invalid credentials")
+  defp handle_auth(user, conn) do
+    put_private(conn, :openmaize_user, user)
   end
 end
