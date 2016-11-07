@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.0
+
+* Bug fixes
+    * Added database lock to HOTP update function
+
 ## v2.2.0
 
 * Changes
