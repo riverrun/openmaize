@@ -35,16 +35,16 @@ defmodule Openmaize.Login do
 
   Add the following command to the `session_controller.ex` file:
 
-      plug Openmaize.Login when action in [:login_user]
+      plug Openmaize.Login when action in [:create]
 
   If you want to use `email` to identify the user:
 
-      plug Openmaize.Login, [unique_id: :email] when action in [:login_user]
+      plug Openmaize.Login, [unique_id: :email] when action in [:create]
 
   If you want to use `email` or `username` to identify the user (allowing the
   end user a choice):
 
-      plug Openmaize.Login, [unique_id: &Openmaize.Login.Name.email_username/1] when action in [:login_user]
+      plug Openmaize.Login, [unique_id: &Openmaize.Login.Name.email_username/1] when action in [:create]
 
   """
 
