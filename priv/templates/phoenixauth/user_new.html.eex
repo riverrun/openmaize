@@ -1,6 +1,6 @@
 <h2>New user</h2>
 
-<%= form_for @conn, user_path(@conn, :create), [as: :user], fn f -> %>
+<%= form_for @changeset, user_path(@conn, :create), [as: :user], fn f -> %>
   <%= if f.errors != [] do %>
     <div class="alert alert-danger">
       <p>Please check the errors below:</p>
