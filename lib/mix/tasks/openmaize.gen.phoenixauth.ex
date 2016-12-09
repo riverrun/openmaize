@@ -12,8 +12,9 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
     * confirm - add functions for email confirmation and password resets
       * the default is false
-    * html - add html files
-      * the default is false
+    * html - create files to authenticate a html app
+      * the default is true
+      * use `--no-html` if you want authentication files for an api
 
   ## Examples
 
@@ -45,7 +46,8 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       {:eex, "router.ex", "web/router.ex"}
     ] ++ get_html(opts[:html]) ++ get_confirm(opts[:confirm], opts[:html])
 
-    Mix.Openmaize.copy_files(srcdir, files, base: base_module(), confirm: opts[:confirm])
+    Mix.Openmaize.copy_files(srcdir, files,
+      base: base_module(), confirm: opts[:confirm], html: opts[:html])
 
     Mix.shell.info """
 
@@ -57,7 +59,11 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     """
   end
 
-  defp get_html(false), do: []
+  defp get_html(false) do
+    [{:eex, "auth_view.ex", "web/views/auth_view.ex"},
+     {:eex, "auth.ex", "web/controllers/auth.ex"},
+     {:eex, "changeset_view.ex", "web/views/changeset_view.ex"}]
+  end
   defp get_html(_) do
     [{:eex, "authorize.ex", "web/controllers/authorize.ex"},
      {:text, "app.html.eex", "web/templates/layout/app.html.eex"},
@@ -67,8 +73,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
      {:text, "user_form.html.eex", "web/templates/user/form.html.eex"},
      {:text, "user_index.html.eex", "web/templates/user/index.html.eex"},
      {:text, "user_new.html.eex", "web/templates/user/new.html.eex"},
-     {:text, "user_show.html.eex", "web/templates/user/show.html.eex"},
-   ]
+     {:text, "user_show.html.eex", "web/templates/user/show.html.eex"}]
   end
 
   defp get_confirm(true, false) do
