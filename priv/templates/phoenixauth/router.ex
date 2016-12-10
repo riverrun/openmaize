@@ -1,6 +1,20 @@
 defmodule <%= base %>.Router do
   use <%= base %>.Web, :router
-<%= if html != false do %>
+<%= if api do %>
+  import <%= base %>.Auth
+
+  pipeline :api do
+    plug :accepts, ["json"]
+    plug :verify_token
+  end
+
+  scope "/api", <%= base %> do
+    pipe_through :api
+
+    post "/sessions/create", SessionController, :create
+    resources "/users", UserController, except: [:new, :edit]
+  end
+<% else %>
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -19,20 +33,6 @@ defmodule <%= base %>.Router do
     resources "/sessions", SessionController, only: [:new, :create, :delete]<%= if confirm do %>
     get "/sessions/confirm_email", SessionController, :confirm_email
     resources "/password_resets", PasswordResetController, only: [:new, :create, :edit, :update]<% end %>
-  end
-<% else %>
-  import <%= base %>.Auth
-
-  pipeline :api do
-    plug :accepts, ["json"]
-    plug :verify_token
-  end
-
-  scope "/api", <%= base %> do
-    pipe_through :api
-
-    post "/sessions/create", SessionController, :create
-    resources "/users", UserController, except: [:new, :edit]
   end
 <% end %>
 end

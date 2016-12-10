@@ -8,25 +8,29 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   ## Options
 
-  There are three options:
+  There are two options:
 
     * confirm - add functions for email confirmation and password resets
       * the default is false
-    * html - create files to authenticate a html app
-      * the default is true
-      * use `--no-html` if you want authentication files for an api
+    * api - create files to authenticate an api instead of a html application
+      * the default is false
 
   ## Examples
 
-  In the root directory of your project, run the following command:
+  In the root directory of your project, run the following command (add `--confirm`
+  if you want to create functions for email confirmation):
 
       mix openmaize.gen.phoenixauth
+
+  If you want to create files for an api, run the following command:
+
+      mix openmaize.gen.phoenixauth --api
 
   """
 
   @doc false
   def run(args) do
-    switches = [confirm: :boolean, html: :boolean]
+    switches = [confirm: :boolean, api: :boolean]
     {opts, _argv, _} = OptionParser.parse(args, switches: switches)
 
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"),
@@ -44,10 +48,10 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       {:eex, "user_model.ex", "web/models/user.ex"},
       {:eex, "user_model_test.exs", "test/models/user.exs"},
       {:eex, "router.ex", "web/router.ex"}
-    ] ++ get_html(opts[:html]) ++ get_confirm(opts[:confirm], opts[:html])
+    ] ++ html_or_api(opts[:api]) ++ get_confirm(opts[:confirm], opts[:api])
 
     Mix.Openmaize.copy_files(srcdir, files,
-      base: base_module(), confirm: opts[:confirm], html: opts[:html])
+      base: base_module(), confirm: opts[:confirm], api: opts[:api])
 
     Mix.shell.info """
 
@@ -59,12 +63,12 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     """
   end
 
-  defp get_html(false) do
+  defp html_or_api(true) do
     [{:eex, "auth_view.ex", "web/views/auth_view.ex"},
      {:eex, "auth.ex", "web/controllers/auth.ex"},
      {:eex, "changeset_view.ex", "web/views/changeset_view.ex"}]
   end
-  defp get_html(_) do
+  defp html_or_api(_) do
     [{:eex, "authorize.ex", "web/controllers/authorize.ex"},
      {:text, "app.html.eex", "web/templates/layout/app.html.eex"},
      {:text, "index.html.eex", "web/templates/page/index.html.eex"},
@@ -76,7 +80,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
      {:text, "user_show.html.eex", "web/templates/user/show.html.eex"}]
   end
 
-  defp get_confirm(true, false) do
+  defp get_confirm(true, true) do
     [{:eex, "mailer.ex", "lib/#{base_name()}/mailer.ex"},
      {:eex, "password_reset_controller.ex", "web/controllers/password_reset_controller.ex"},
      {:eex, "password_reset_controller_test.exs", "test/controllers/password_reset_controller_test.exs"},
@@ -85,7 +89,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   defp get_confirm(true, _) do
      [{:text, "password_reset_new.html.eex", "web/templates/password_reset/new.html.eex"},
      {:text, "password_reset_edit.html.eex", "web/templates/password_reset/edit.html.eex"}] ++
-    get_confirm(true, false)
+    get_confirm(true, true)
   end
   defp get_confirm(_, _), do: []
 

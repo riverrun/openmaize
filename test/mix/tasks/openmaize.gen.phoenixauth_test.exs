@@ -64,7 +64,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates api files" do
     in_tmp "generates api files", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--no-html"]
+      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--api"]
 
       assert_file "web/views/auth_view.ex"
       assert_file "web/views/changeset_view.ex"

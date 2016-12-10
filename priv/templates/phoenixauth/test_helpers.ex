@@ -1,4 +1,4 @@
-defmodule <%= base %>.TestHelpers do<%= if html == false do %>
+defmodule <%= base %>.TestHelpers do<%= if api do %>
   use Phoenix.ConnTest<% end %>
 <%= if confirm do %>
   import Ecto.Changeset
@@ -31,7 +31,7 @@ defmodule <%= base %>.TestHelpers do<%= if html == false do %>
     |> User.reset_changeset(user, key)
     |> Repo.insert!
   end<% end %>
-<%= if html == false do %>
+<%= if api do %>
   def add_token_conn(conn, user) do
     user_token = Phoenix.Token.sign(<%= base %>.Endpoint, "user token", user.id)
     conn
