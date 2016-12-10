@@ -21,9 +21,8 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
         refute file =~ "def confirm_email(%Plug.Conn{private: %{openmaize_error: message}}"
       end
 
-      assert_file "web/controllers/user_controller.ex", fn file ->
-        assert file =~ "plug :user_check when action in [:index, :show]"
-        assert file =~ "plug :id_check when action in [:edit, :update, :delete]"
+      assert_file "web/views/user_view.ex", fn file ->
+        refute file =~ "%{info: %{detail: message}}"
       end
 
       assert_file "web/router.ex", fn file ->
@@ -73,12 +72,11 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
       assert_file "web/controllers/session_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:create]"
-        assert file =~ ~s(TodoApp.AuthView, "401.json", [])
+        assert file =~ ~s(Openmaize.AuthView, "401.json", [])
       end
 
-      assert_file "web/controllers/user_controller.ex", fn file ->
-        assert file =~ "plug :user_check when action in [:index, :show]"
-        assert file =~ "plug :id_check when action in [:update, :delete]"
+      assert_file "web/views/user_view.ex", fn file ->
+        assert file =~ "%{info: %{detail: message}}"
       end
 
       assert_file "web/router.ex", fn file ->

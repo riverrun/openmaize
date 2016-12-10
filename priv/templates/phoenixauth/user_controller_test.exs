@@ -96,7 +96,7 @@ defmodule <%= base %>.UserControllerTest do
 <% else %>
   import <%= base %>.TestHelpers
 
-  alias TodoApp.{Repo, User}
+  alias <%= base %>.{Repo, User}
 
   @valid_attrs %{username: "bill", email: "bill@mail.com", password: "^hEsdg*F899"}
   @invalid_attrs %{email: "", password: ""}

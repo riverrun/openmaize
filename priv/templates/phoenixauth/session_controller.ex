@@ -39,11 +39,11 @@ defmodule <%= base %>.SessionController do
 
   def create(%Plug.Conn{private: %{openmaize_error: _message}} = conn, _params) do
     put_status(conn, :unauthorized)
-    |> render(TodoApp.AuthView, "401.json", [])
+    |> render(<%= base %>.AuthView, "401.json", [])
   end
   def create(%Plug.Conn{private: %{openmaize_user: user}} = conn, _params) do
-    token = Phoenix.Token.sign(TodoApp.Endpoint, "user token", user.id)
-    render(conn, TodoApp.SessionView, "info.json", %{info: token})
+    token = Phoenix.Token.sign(<%= base %>.Endpoint, "user token", user.id)
+    render(conn, <%= base %>.SessionView, "info.json", %{info: token})
   end
 <% end %>
 end

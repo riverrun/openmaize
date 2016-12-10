@@ -48,7 +48,9 @@ the `--confirm` option:
 
     mix openmaize.gen.phoenixauth --confirm
 
-There is also a `no-html` option if you do not want to generate any html files.
+If you want to create authentication files for an api, use the `--no-html` option:
+
+    mix openmaize.gen.phoenixauth --no-html
 
 ## Create the database and run the migration
 

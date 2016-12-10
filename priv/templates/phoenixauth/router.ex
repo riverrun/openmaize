@@ -21,7 +21,7 @@ defmodule <%= base %>.Router do
     resources "/password_resets", PasswordResetController, only: [:new, :create, :edit, :update]<% end %>
   end
 <% else %>
-  import TodoApp.Auth
+  import <%= base %>.Auth
 
   pipeline :api do
     plug :accepts, ["json"]

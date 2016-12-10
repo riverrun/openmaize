@@ -1,5 +1,5 @@
 defmodule <%= base %>.UserView do
-  use <%= base %>.Web, :view<%= if html != false do %>
+  use <%= base %>.Web, :view<%= if html == false do %>
 
   def render("index.json", %{users: users}) do
     %{data: render_many(users, <%= base %>.UserView, "user.json")}
