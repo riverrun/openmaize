@@ -36,6 +36,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"),
      "templates", "phoenixauth"]
 
+    confirm = if opts[:api], do: false, else: opts[:confirm]
     files = [
       {:eex, "session_controller.ex", "web/controllers/session_controller.ex"},
       {:eex, "session_controller_test.exs", "test/controllers/session_controller_test.exs"},
@@ -48,10 +49,12 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       {:eex, "user_model.ex", "web/models/user.ex"},
       {:eex, "user_model_test.exs", "test/models/user.exs"},
       {:eex, "router.ex", "web/router.ex"}
-    ] ++ html_or_api(opts[:api]) ++ get_confirm(opts[:confirm], opts[:api])
+      #] ++ html_or_api(opts[:api]) ++ get_confirm(opts[:confirm], opts[:api])
+    ] ++ html_or_api(opts[:api]) ++ get_confirm(confirm, opts[:api])
 
     Mix.Openmaize.copy_files(srcdir, files,
-      base: base_module(), confirm: opts[:confirm], api: opts[:api])
+                             #base: base_module(), confirm: opts[:confirm], api: opts[:api])
+      base: base_module(), confirm: confirm, api: opts[:api])
 
     Mix.shell.info """
 

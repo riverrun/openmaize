@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.4.0
+
+* Enhancements
+    * Added basic `--api` option for the phoenixauth generator
+
 ## v2.3.0
 
 * Bug fixes

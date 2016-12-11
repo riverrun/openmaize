@@ -2,12 +2,6 @@
 
 Authentication library for Plug-based applications in Elixir
 
-## Upgrading to the newest version
-
-Please check the `UPGRADE_2.2.md` guide in this directory for details.
-
-## Goals
-
 Openmaize is an authentication library that aims to be:
 
 * secure
@@ -24,7 +18,7 @@ tested with the Phoenix Web Framework.
 
     ```elixir
     defp deps do
-      [{:openmaize, "~> 2.2"}]
+      [{:openmaize, "~> 2.4"}]
     end
     ```
 
@@ -44,8 +38,8 @@ To set up user authorization in a new Phoenix app, run the following command:
 
     mix openmaize.gen.phoenixauth
 
-See the `phoenix_new_openmaize.md` file for details about all the available
-options.
+See the [wiki](https://github.com/riverrun/openmaize/wiki/Openmaize-with-a-new-phoenix-project)
+for more details.
 
 You then need to configure Openmaize. For more information, see the documentation
 for the Openmaize.Config module.
