@@ -36,9 +36,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"),
      "templates", "phoenixauth"]
 
-    confirm = if opts[:api], do: false, else: opts[:confirm]
-    files = [
-      {:eex, "session_controller.ex", "web/controllers/session_controller.ex"},
+    files = [{:eex, "session_controller.ex", "web/controllers/session_controller.ex"},
       {:eex, "session_controller_test.exs", "test/controllers/session_controller_test.exs"},
       {:eex, "session_view.ex", "web/views/session_view.ex"},
       {:eex, "user_controller.ex", "web/controllers/user_controller.ex"},
@@ -48,13 +46,11 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       {:eex, "user_migration.exs", "priv/repo/migrations/#{timestamp()}_create_user.exs"},
       {:eex, "user_model.ex", "web/models/user.ex"},
       {:eex, "user_model_test.exs", "test/models/user.exs"},
-      {:eex, "router.ex", "web/router.ex"}
-      #] ++ html_or_api(opts[:api]) ++ get_confirm(opts[:confirm], opts[:api])
-    ] ++ html_or_api(opts[:api]) ++ get_confirm(confirm, opts[:api])
+      {:eex, "router.ex", "web/router.ex"}] ++
+      api_or_html(opts[:api]) ++ get_confirm(opts[:confirm], opts[:api])
 
-    Mix.Openmaize.copy_files(srcdir, files,
-                             #base: base_module(), confirm: opts[:confirm], api: opts[:api])
-      base: base_module(), confirm: confirm, api: opts[:api])
+    Mix.Openmaize.copy_files(srcdir, files, base: base_module(),
+    confirm: opts[:confirm], api: opts[:api])
 
     Mix.shell.info """
 
@@ -66,12 +62,12 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     """
   end
 
-  defp html_or_api(true) do
+  defp api_or_html(true) do
     [{:eex, "auth_view.ex", "web/views/auth_view.ex"},
      {:eex, "auth.ex", "web/controllers/auth.ex"},
      {:eex, "changeset_view.ex", "web/views/changeset_view.ex"}]
   end
-  defp html_or_api(_) do
+  defp api_or_html(_) do
     [{:eex, "authorize.ex", "web/controllers/authorize.ex"},
      {:text, "app.html.eex", "web/templates/layout/app.html.eex"},
      {:text, "index.html.eex", "web/templates/page/index.html.eex"},

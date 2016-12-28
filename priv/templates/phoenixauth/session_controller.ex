@@ -1,6 +1,11 @@
 defmodule <%= base %>.SessionController do
   use <%= base %>.Web, :controller
-<%= if api do %>
+<%= if api do %><%= if confirm do %>
+  alias <%= base %>.Mailer
+
+  plug Openmaize.ConfirmEmail,
+    [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm_email]<% end %>
+
   plug Openmaize.Login when action in [:create]
   #plug Openmaize.Login, [unique_id: :email] when action in [:create]
 
@@ -11,7 +16,12 @@ defmodule <%= base %>.SessionController do
   def create(%Plug.Conn{private: %{openmaize_user: user}} = conn, _params) do
     token = Phoenix.Token.sign(<%= base %>.Endpoint, "user token", user.id)
     render(conn, <%= base %>.SessionView, "info.json", %{info: token})
+  end<%= if confirm do %>
+
+  def confirm_email(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
   end
+  def confirm_email(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
+  end<% end %>
 <% else %>
   import <%= base %>.Authorize<%= if confirm do %>
   alias <%= base %>.Mailer

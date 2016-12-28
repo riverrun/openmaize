@@ -12,7 +12,9 @@ defmodule <%= base %>.Router do
     pipe_through :api
 
     post "/sessions/create", SessionController, :create
-    resources "/users", UserController, except: [:new, :edit]
+    resources "/users", UserController, except: [:new, :edit]<%= if confirm do %>
+    get "/sessions/confirm_email", SessionController, :confirm_email
+    resources "/password_resets", PasswordResetController, only: [:new, :create, :edit, :update]<% end %>
   end
 <% else %>
   pipeline :browser do

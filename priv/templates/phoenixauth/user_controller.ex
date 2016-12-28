@@ -1,7 +1,9 @@
 defmodule <%= base %>.UserController do
   use <%= base %>.Web, :controller
-<%= if api do %>
-  alias <%= base %>.User
+<%= if api do %><%= if confirm do %>
+  alias <%= base %>.{Mailer, User}
+  alias Openmaize.ConfirmEmail<% else %>
+  alias <%= base %>.User<% end %>
 
   plug :user_check when action in [:index, :show]
   plug :id_check when action in [:update, :delete]

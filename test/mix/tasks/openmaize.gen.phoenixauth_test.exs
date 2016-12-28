@@ -87,4 +87,28 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
     end
   end
 
+  test "generates api files with confirm" do
+    in_tmp "generates api files with confirm", fn ->
+      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--api", "--confirm"]
+
+      assert_file "web/views/auth_view.ex"
+      assert_file "web/views/changeset_view.ex"
+      assert_file "web/controllers/auth.ex"
+
+      assert_file "web/controllers/session_controller.ex", fn file ->
+        assert file =~ "plug Openmaize.Login when action in [:create]"
+        assert file =~ ~s(Openmaize.AuthView, "401.json", [])
+      end
+
+      assert_file "web/views/user_view.ex", fn file ->
+        assert file =~ "%{info: %{detail: message}}"
+      end
+
+      assert_file "web/router.ex", fn file ->
+        assert file =~ "plug :verify_token"
+        assert file =~ ~s(post "/sessions/create", SessionController, :create)
+        assert file =~ ~s(resources "/users", UserController, except: [:new, :edit])
+      end
+    end
+  end
 end

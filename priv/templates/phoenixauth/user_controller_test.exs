@@ -1,17 +1,18 @@
 defmodule <%= base %>.UserControllerTest do
   use <%= base %>.ConnCase
-<%= if api do %>
-  import <%= base %>.TestHelpers
 
+  import <%= base %>.TestHelpers
   alias <%= base %>.{Repo, User}
 
   @valid_attrs %{username: "bill", email: "bill@mail.com", password: "^hEsdg*F899"}
   @invalid_attrs %{email: "", password: ""}
-
+<%= if api do %>
   setup %{conn: conn} = config do
-    if username = config[:login] do
+    if username = config[:login] do<%= if confirm do %>
+      user = add_user_confirmed(username)
+      other = add_user_confirmed("tony")<% else %>
       user = add_user(username)
-      other = add_user("tony")
+      other = add_user("tony")<% end %>
 
       conn = conn |> add_token_conn(user)
       {:ok, %{conn: conn, user: user, other: other}}
@@ -77,12 +78,6 @@ defmodule <%= base %>.UserControllerTest do
     assert Repo.get(User, other.id)
   end
 <% else %>
-  import <%= base %>.TestHelpers
-  alias <%= base %>.User
-
-  @valid_attrs %{username: "bill", email: "bill@mail.com", password: "^hEsdg*F899"}
-  @invalid_attrs %{email: "albert@mail.com", password: "password"}
-
   setup %{conn: conn} = config do
     conn = conn |> bypass_through(<%= base %>.Router, :browser) |> get("/")
 
