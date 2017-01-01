@@ -9,9 +9,6 @@ defmodule <%= base %>.SessionControllerTest do
   @valid_attrs %{username: "robin", password: "mangoes&g0oseberries"}
   @invalid_attrs %{username: "robin", password: "maaaangoes&g00zeberries"}
 
-  test "confirmation fails for incorrect key", %{conn: conn} do
-  end<% end %>
-
   setup %{conn: conn} do
     conn = conn |> bypass_through(<%= base %>.Router, :browser) |> get("/")<%= if confirm do %>
 
