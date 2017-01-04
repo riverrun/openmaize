@@ -1,18 +1,18 @@
 defmodule <%= base %>.SessionControllerTest do
   use <%= base %>.ConnCase
 
-  import <%= base %>.TestHelpers<%= if confirm do %>
-
-  @valid_link "email=arthur%40mail.com&key=pu9-VNdgE8V9qZo19rlcg3KUNjpxuixg"
-  @invalid_link "email=arthur%40mail.com&key=pu9-VNdgE8V9QzO19RLCG3KUNjpxuixg"<% end %>
+  import <%= base %>.TestHelpers
 
   @valid_attrs %{username: "robin", password: "mangoes&g0oseberries"}
   @invalid_attrs %{username: "robin", password: "maaaangoes&g00zeberries"}
 
-  setup %{conn: conn} do
-    user = add_user("robin")
+  setup %{conn: conn} do<%= if confirm do %>
+    add_user("arthur")
+    user = add_user_confirmed("robin")<% else %>
+    user = add_user("robin")<% end %>
+
     conn = conn |> add_token_conn(user)
-    {:ok, %{conn: conn, user: user}}
+    {:ok, %{conn: conn}}
   end
 
   test "login succeeds", %{conn: conn} do

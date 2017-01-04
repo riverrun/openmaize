@@ -16,7 +16,7 @@ defmodule <%= base %>.PasswordResetController do
         message = "Check your inbox for instructions on how to reset your password"
         conn
         |> put_status(:created)
-        |> render("info.json", message: message)
+        |> render(<%= base %>.PasswordResetView, "info.json", %{info: message})
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -24,12 +24,12 @@ defmodule <%= base %>.PasswordResetController do
     end
   end
 
-  def update(%Plug.Conn{private: %{openmaize_error: message}} = conn, %{"id" => user) do
+  def update(%Plug.Conn{private: %{openmaize_error: message}} = conn, %{"id" => user}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> render(<%= base %>.ChangesetView, "error.json", error: message)
+    |> render(<%= base %>.PasswordResetView, "error.json", error: message)
   end
   def update(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    render(conn, "info.json", message: message)
+    render(conn, <%= base %>.PasswordResetView, "info.json", %{info: message})
   end
 end

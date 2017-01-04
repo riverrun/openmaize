@@ -1,6 +1,6 @@
 defmodule <%= base %>.SessionController do
-  use <%= base %>.Web, :controller
-<%= if confirm do %>
+  use <%= base %>.Web, :controller<%= if confirm do %>
+
   alias <%= base %>.Mailer
 
   plug Openmaize.ConfirmEmail,
