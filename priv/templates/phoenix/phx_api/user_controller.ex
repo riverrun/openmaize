@@ -1,6 +1,6 @@
 defmodule <%= base %>.UserController do
-  use <%= base %>.Web, :controller
-<%= if confirm do %>
+  use <%= base %>.Web, :controller<%= if confirm do %>
+
   alias <%= base %>.{Mailer, User}
   alias Openmaize.ConfirmEmail<% else %>
   alias <%= base %>.User<% end %>
@@ -11,18 +11,26 @@ defmodule <%= base %>.UserController do
   def index(conn, _params) do
     users = Repo.all(User)
     render(conn, "index.json", users: users)
-  end
+  end<%= if confirm do %>
+
+  def create(conn, %{"user" => %{"email" => email} = user_params}) do
+    {key, link} = ConfirmEmail.gen_token_link(email)
+    changeset = User.auth_changeset(%User{}, user_params, key)
+
+    case Repo.insert(changeset) do
+      {:ok, _user} ->
+        Mailer.ask_confirm(email, link)<% else %>
 
   def create(conn, %{"user" => user_params}) do
     changeset = User.auth_changeset(%User{}, user_params)
 
     case Repo.insert(changeset) do
-      {:ok, user} ->
+      {:ok, _user} -><% end %>
         conn
         |> put_status(:created)
         |> put_resp_header("location", user_path(conn, :show, user))
         |> render("show.json", user: user)
-      {:error, _changeset} ->
+      {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
         |> render(<%= base %>.ChangesetView, "error.json", changeset: changeset)

@@ -26,8 +26,16 @@ defmodule <%= base %>.SessionControllerTest do
   end<%= if confirm do %>
 
   test "confirmation succeeds for correct key", %{conn: conn} do
+    email = "arthur@mail.com"
+    key = "pu9-VNdgE8V9qZo19rlcg3KUNjpxuixg"
+    conn = get(conn, session_path(conn, :confirm_email, email: email, key: key))
+    assert json_response(conn, 200)["info"]["detail"]
   end
 
   test "confirmation fails for incorrect key", %{conn: conn} do
+    email = "arthur@mail.com"
+    key = "pu9-VNdgE8V9QzO19RLCG3KUNjpxuixg"
+    conn = get(conn, session_path(conn, :confirm_email, email: email, key: key))
+    assert json_response(conn, 401)["errors"]["detail"] =~ "need to login"
   end<% end %>
 end

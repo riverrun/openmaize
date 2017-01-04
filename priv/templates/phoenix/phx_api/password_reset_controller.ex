@@ -1,7 +1,6 @@
 defmodule <%= base %>.PasswordResetController do
   use <%= base %>.Web, :controller
 
-  import <%= base %>.Authorize
   alias <%= base %>.{Mailer, User}
 
   plug Openmaize.ResetPassword,
@@ -25,15 +24,12 @@ defmodule <%= base %>.PasswordResetController do
     end
   end
 
-  def update(%Plug.Conn{private: %{openmaize_error: message}} = conn,
-   %{"id" => user, "password_reset" => %{"email" => email, "key" => key}}) do
+  def update(%Plug.Conn{private: %{openmaize_error: message}} = conn, %{"id" => user) do
     conn
     |> put_status(:unprocessable_entity)
     |> render(<%= base %>.ChangesetView, "error.json", error: message)
   end
   def update(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    conn
-    |> put_status(:updated)
-    |> render("info.json", message: message)
+    render(conn, "info.json", message: message)
   end
 end

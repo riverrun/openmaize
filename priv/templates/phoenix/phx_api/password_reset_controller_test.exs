@@ -22,12 +22,11 @@ defmodule <%= base %>.PasswordResetControllerTest do
 
   test "reset password fails for incorrect key", %{conn: conn, user: user} do
     conn = put(conn, password_reset_path(conn, :update, user), password_reset: @invalid_attrs)
-    assert json_response(conn, 200)["info"]["detail"]
-    #assert json_response(conn, 401)["errors"]["detail"] =~ "need to login"
+    assert json_response(conn, 422)["errors"] != %{}
   end
 
   test "reset password fails for invalid password", %{conn: conn, user: user} do
     conn = put(conn, password_reset_path(conn, :update, user), password_reset: @invalid_pass)
-    assert json_response(conn, 200)["info"]["detail"]
+    assert json_response(conn, 422)["errors"] != %{}
   end
 end

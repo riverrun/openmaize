@@ -18,8 +18,11 @@ defmodule <%= base %>.SessionController do
     render(conn, <%= base %>.SessionView, "info.json", %{info: token})
   end<%= if confirm do %>
 
-  def confirm_email(%Plug.Conn{private: %{openmaize_error: message}} = conn, _params) do
+  def confirm_email(%Plug.Conn{private: %{openmaize_error: _message}} = conn, _params) do
+    put_status(conn, :unauthorized)
+    |> render(<%= base %>.AuthView, "401.json", [])
   end
   def confirm_email(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
+    render(conn, <%= base %>.SessionView, "info.json", %{info: message})
   end<% end %>
 end
