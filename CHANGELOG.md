@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.5.0
+
+* Enhancements
+    * Added `--api --confirm` option for the phoenixauth generator
+
 ## v2.4.0
 
 * Enhancements
