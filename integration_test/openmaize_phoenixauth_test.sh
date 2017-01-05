@@ -8,8 +8,8 @@ function new_project {
     sed -i 's/username: "postgres"/username: "dev"/g' config/dev.exs config/test.exs
     sed -i 's/password: "postgres"/password: System.get_env("POSTGRES_PASS")/g' config/dev.exs config/test.exs
     sed -i 's/:postgrex]/:postgrex, :openmaize]/g' mix.exs
-    #sed -i 's/{:postgrex, ">= 0.0.0"},/{:postgrex, ">= 0.0.0"},\n     {:openmaize, "~> 2.4"},/g' mix.exs
-    sed -i 's/{:postgrex, ">= 0.0.0"},/{:postgrex, ">= 0.0.0"},\n     {:openmaize, git: "https:\/\/github.com\/riverrun\/openmaize.git", branch: "api_confirm"},/g' mix.exs
+    #sed -i 's/{:postgrex, ">= 0.0.0"},/{:postgrex, ">= 0.0.0"},\n     {:openmaize, "~> 2.5"},/g' mix.exs
+    sed -i 's/{:postgrex, ">= 0.0.0"},/{:postgrex, ">= 0.0.0"},\n     {:openmaize, git: "https:\/\/github.com\/riverrun\/openmaize.git"},/g' mix.exs
 }
 
 function enter_cave {
