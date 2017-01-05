@@ -14,7 +14,7 @@ function new_project {
 
 function enter_cave {
     mix deps.get
-    echo -e "\nDATE: $(date) OPTIONS: $1\n" >> $LOG
+    echo -e "\nDATE: $(date) OPTIONS: $@\n" >> $LOG
     echo y | mix openmaize.gen.phoenixauth $@
 }
 
