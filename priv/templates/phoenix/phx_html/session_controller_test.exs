@@ -1,38 +1,13 @@
 defmodule <%= base %>.SessionControllerTest do
   use <%= base %>.ConnCase
-<%= if api do %>
+
   import <%= base %>.TestHelpers
 
   @valid_attrs %{username: "robin", password: "mangoes&g0oseberries"}
   @invalid_attrs %{username: "robin", password: "maaaangoes&g00zeberries"}
 
   setup %{conn: conn} do
-    user = add_user("robin")
-    conn = conn |> add_token_conn(user)
-    {:ok, %{conn: conn, user: user}}
-  end
-
-  test "login succeeds", %{conn: conn} do
-    conn = post conn, session_path(conn, :create), session: @valid_attrs
-    assert json_response(conn, 200)["info"]["detail"]
-  end
-
-  test "login fails", %{conn: conn} do
-    conn = post conn, session_path(conn, :create), session: @invalid_attrs
-    assert json_response(conn, 401)["errors"]["detail"] =~ "need to login"
-  end
-<% else %>
-  import <%= base %>.TestHelpers<%= if confirm do %>
-
-  @valid_link "email=arthur%40mail.com&key=pu9-VNdgE8V9qZo19rlcg3KUNjpxuixg"
-  @invalid_link "email=arthur%40mail.com&key=pu9-VNdgE8V9QzO19RLCG3KUNjpxuixg"<% end %>
-
-  @valid_attrs %{username: "robin", password: "mangoes&g0oseberries"}
-  @invalid_attrs %{username: "robin", password: "maaaangoes&g00zeberries"}
-
-  setup %{conn: conn} do
     conn = conn |> bypass_through(<%= base %>.Router, :browser) |> get("/")<%= if confirm do %>
-
     add_user("arthur")
     confirmed = add_user_confirmed("robin")
 
@@ -77,5 +52,4 @@ defmodule <%= base %>.SessionControllerTest do
     assert conn.private.phoenix_flash["error"] =~ "failed"
     assert redirected_to(conn) == session_path(conn, :new)
   end<% end %>
-<% end %>
 end

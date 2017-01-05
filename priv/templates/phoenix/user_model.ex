@@ -38,7 +38,8 @@ defmodule <%= base %>.User do
 
   def reset_changeset(struct, params, key) do
     struct
-    |> cast(params, [:email], [])
+    |> cast(params, [:email])
+    |> validate_required([:email])
     |> DB.add_reset_token(key)
   end<% end %>
 end
