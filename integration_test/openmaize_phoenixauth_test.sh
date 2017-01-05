@@ -32,15 +32,15 @@ function openmaize_project {
     new_project
     enter_cave $@
     run_tests
-    #clean
+    clean
 }
 
 cd $(dirname "$0")/../tmp
-#echo y | mix phoenix.new alibaba
-#openmaize_project
-#echo y | mix phoenix.new alibaba
-#openmaize_project --confirm
-#echo y | mix phoenix.new alibaba --no-html --no-brunch
-#openmaize_project --api
+echo y | mix phoenix.new alibaba
+openmaize_project
+echo y | mix phoenix.new alibaba
+openmaize_project --confirm
+echo y | mix phoenix.new alibaba --no-html --no-brunch
+openmaize_project --api
 echo y | mix phoenix.new alibaba --no-html --no-brunch
 openmaize_project --api --confirm
