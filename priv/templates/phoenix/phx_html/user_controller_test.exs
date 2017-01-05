@@ -77,7 +77,7 @@ defmodule <%= base %>.UserControllerTest do
   @tag login: "reg"
   test "PUT /users/:id with invalid data", %{conn: conn, user: user} do
     conn = put conn, user_path(conn, :update, user), user: @invalid_attrs
-    assert redirected_to(conn) == user_path(conn, :show, user)
+    assert html_response(conn, 200)
   end
 
   @tag login: "reg"
