@@ -5,10 +5,11 @@ defmodule <%= base %>.SessionController do
 
   plug Openmaize.ConfirmEmail,
     [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm_email]<% end %>
-
+<%= if unique_id == ":username" do %>
   plug Openmaize.Login when action in [:create]
-  #plug Openmaize.Login, [unique_id: :email] when action in [:create]
-
+<% else %>
+  plug Openmaize.Login, [unique_id: <%= unique_id %>] when action in [:create]
+<% end %>
   def create(%Plug.Conn{private: %{openmaize_error: _message}} = conn, _params) do
     put_status(conn, :unauthorized)
     |> render(<%= base %>.AuthView, "401.json", [])

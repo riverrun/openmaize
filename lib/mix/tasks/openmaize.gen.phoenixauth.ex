@@ -8,6 +8,12 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
   ## Options
 
+  There is an optional argument which is used to set how the user
+  is indexed. The default value is "username". Calling this generator
+  with a different value will make the necessary changes to the user
+  file in the models directory, the user migrations file and the
+  session controller.
+
   There are two options:
 
     * confirm - add functions for email confirmation and password resets
@@ -22,6 +28,11 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
 
       mix openmaize.gen.phoenixauth
 
+  If you are using :email to identify (search for) your users, you need
+  to add email to the command:
+
+      mix openmaize.gen.phoenixauth email
+
   If you want to create files for an api, run the following command:
 
       mix openmaize.gen.phoenixauth --api
@@ -31,7 +42,11 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   @doc false
   def run(args) do
     switches = [confirm: :boolean, api: :boolean]
-    {opts, _argv, _} = OptionParser.parse(args, switches: switches)
+    {opts, argv, _} = OptionParser.parse(args, switches: switches)
+    unique_id = case List.first(argv) do
+      nil -> ":username"
+      uniq -> ":#{uniq}"
+    end
 
     srcdir = Path.join [Application.app_dir(:openmaize, "priv"),
      "templates", "phoenix"]
@@ -44,7 +59,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
     end
 
     Mix.Openmaize.copy_files(srcdir, files, base: base_module(),
-      confirm: opts[:confirm], api: opts[:api])
+      unique_id: unique_id, confirm: opts[:confirm], api: opts[:api])
 
     Mix.shell.info """
 
