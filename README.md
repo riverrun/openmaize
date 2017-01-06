@@ -2,12 +2,8 @@
 
 Authentication library for Plug-based applications in Elixir
 
-Openmaize is an authentication library that aims to be:
-
-* secure
-* lightweight
-* easy to use
-* well documented
+See the [wiki](https://github.com/riverrun/openmaize/wiki) for more
+information about Openmaize.
 
 It should work with any application that uses Plug, but it has only been
 tested with the Phoenix Web Framework.

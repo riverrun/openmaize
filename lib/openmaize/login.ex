@@ -83,8 +83,8 @@ defmodule Openmaize.Login do
   added to `conn.private.openmaize_error`.
   """
   def call(%Plug.Conn{params: %{"session" => user_params}} = conn,
-   {repo, user_model, uniq_id}) do
-    {uniq, user_id, password} = get_params(user_params, uniq_id)
+   {repo, user_model, unique_id}) do
+    {uniq, user_id, password} = get_params(user_params, unique_id)
     repo.get_by(user_model, [{uniq, user_id}])
     |> check_pass(password, Config.hash_name)
     |> handle_auth(conn)
