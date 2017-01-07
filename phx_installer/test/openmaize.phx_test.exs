@@ -1,6 +1,6 @@
-Code.require_file "../../support/mix_helper.exs", __DIR__
+Code.require_file "mix_helper.exs", __DIR__
 
-defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
+defmodule Mix.Tasks.Openmaize.PhxTest do
   use ExUnit.Case
   import MixHelper
 
@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates default html resource" do
     in_tmp "generates default html resource", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run []
+      Mix.Tasks.Openmaize.Phx.run []
 
       assert_file "web/controllers/authorize.ex"
       assert_file "web/templates/session/new.html.eex"
@@ -26,7 +26,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
       end
 
       assert_file "web/router.ex", fn file ->
-        assert file =~ "defmodule Openmaize.Router"
+        assert file =~ "defmodule OpenmaizePhx.Router"
         assert file =~ "plug Openmaize.Authenticate"
         assert file =~ ~s(resources "/sessions", SessionController)
         assert file =~ ~s(resources "/users", UserController)
@@ -39,9 +39,9 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates confirm functionality" do
     in_tmp "generates confirm functionality", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--confirm"]
+      Mix.Tasks.Openmaize.Phx.run ["--confirm"]
 
-      assert_file "lib/openmaize/mailer.ex"
+      assert_file "lib/openmaize_phx/mailer.ex"
       assert_file "web/controllers/authorize.ex"
 
       assert_file "web/controllers/session_controller.ex", fn file ->
@@ -64,7 +64,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates api files" do
     in_tmp "generates api files", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--api"]
+      Mix.Tasks.Openmaize.Phx.run ["--api"]
 
       assert_file "web/views/auth_view.ex"
       assert_file "web/views/changeset_view.ex"
@@ -72,7 +72,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
       assert_file "web/controllers/session_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:create]"
-        assert file =~ ~s(Openmaize.AuthView, "401.json", [])
+        assert file =~ ~s(OpenmaizePhx.AuthView, "401.json", [])
       end
 
       assert_file "web/views/user_view.ex", fn file ->
@@ -89,7 +89,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates api files with confirm" do
     in_tmp "generates api files with confirm", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["--api", "--confirm"]
+      Mix.Tasks.Openmaize.Phx.run ["--api", "--confirm"]
 
       assert_file "web/views/auth_view.ex"
       assert_file "web/views/changeset_view.ex"
@@ -97,7 +97,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
       assert_file "web/controllers/session_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login when action in [:create]"
-        assert file =~ ~s(Openmaize.AuthView, "401.json", [])
+        assert file =~ ~s(OpenmaizePhx.AuthView, "401.json", [])
       end
 
       assert_file "web/views/user_view.ex", fn file ->
@@ -114,7 +114,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates resource with email unique_id" do
     in_tmp "generates default html resource", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["email"]
+      Mix.Tasks.Openmaize.Phx.run ["email"]
 
       assert_file "web/controllers/session_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login, [unique_id: :email] when action in [:create]"
@@ -131,7 +131,7 @@ defmodule Mix.Tasks.Openmaize.Gen.PhoenixauthTest do
 
   test "generates resource with custom unique_id" do
     in_tmp "generates default html resource", fn ->
-      Mix.Tasks.Openmaize.Gen.Phoenixauth.run ["aaarrgh"]
+      Mix.Tasks.Openmaize.Phx.run ["aaarrgh"]
 
       assert_file "web/controllers/session_controller.ex", fn file ->
         assert file =~ "plug Openmaize.Login, [unique_id: :aaarrgh] when action in [:create]"

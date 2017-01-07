@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
+defmodule Mix.Tasks.Openmaize.Phx do
   use Mix.Task
 
   import Mix.Openmaize
@@ -26,16 +26,16 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
   In the root directory of your project, run the following command (add `--confirm`
   if you want to create functions for email confirmation):
 
-      mix openmaize.gen.phoenixauth
+      mix openmaize.phx
 
   If you are using :email to identify (search for) your users, you need
   to add email to the command:
 
-      mix openmaize.gen.phoenixauth email
+      mix openmaize.phx email
 
   If you want to create files for an api, run the following command:
 
-      mix openmaize.gen.phoenixauth --api
+      mix openmaize.phx --api
 
   """
 
@@ -48,8 +48,7 @@ defmodule Mix.Tasks.Openmaize.Gen.Phoenixauth do
       uniq -> ":#{uniq}"
     end
 
-    srcdir = Path.join [Application.app_dir(:openmaize, "priv"),
-     "templates", "phoenix"]
+    srcdir = Path.expand("../templates", __DIR__)
 
     files = phx(opts[:api]) ++ case {opts[:api], opts[:confirm]} do
       {true, true} -> phx_api() ++ phx_confirm(true)
