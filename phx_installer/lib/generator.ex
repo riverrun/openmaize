@@ -1,4 +1,4 @@
-defmodule Mix.Openmaize do
+defmodule Mix.Openmaize.Phx.Generator do
   @moduledoc """
   Helper functions for the mix generators.
 

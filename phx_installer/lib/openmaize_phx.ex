@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.Openmaize.Phx do
   use Mix.Task
 
-  import Mix.Openmaize
+  import Mix.Openmaize.Phx.Generator
 
   @moduledoc """
   Create modules for authorization and, optionally, email confirmation.
@@ -57,8 +57,8 @@ defmodule Mix.Tasks.Openmaize.Phx do
       _ -> phx_html()
     end
 
-    Mix.Openmaize.copy_files(srcdir, files, base: base_module(),
-      unique_id: unique_id, confirm: opts[:confirm], api: opts[:api])
+    copy_files(srcdir, files, base: base_module(), unique_id: unique_id,
+      confirm: opts[:confirm], api: opts[:api])
 
     Mix.shell.info """
 
