@@ -3,7 +3,7 @@
 ## v2.7.0
 
 * Enhancements
-    * Moved generator to separate installer
+    * Moved generator to separate installer - `openmaize.phx`
 
 ## v2.6.0
 

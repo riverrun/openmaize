@@ -6,13 +6,15 @@ defmodule Mix.Tasks.Openmaize.Phx do
   @moduledoc """
   Create modules for authorization and, optionally, email confirmation.
 
-  ## Options
+  ## Options and arguments
 
-  There is an optional argument which is used to set how the user
-  is indexed. The default value is "username". Calling this generator
-  with a different value will make the necessary changes to the user
-  file in the models directory, the user migrations file and the
-  session controller.
+  There is one argument:
+
+    * unique_id - "username", "email", etc.
+      * the default is "username"
+
+  This value will be used in the user file in the models directory,
+  the user migrations file and the session controller.
 
   There are two options:
 
@@ -62,11 +64,21 @@ defmodule Mix.Tasks.Openmaize.Phx do
 
     Mix.shell.info """
 
-    Please check the generated files. You might need to uncomment certain
-    lines and / or change certain details, such as paths or user details.
+    We're almost done!
 
-    Before you use Openmaize, you need to configure Openmaize.
-    See the documentation for Openmaize.Config for details.
+    Now edit the `mix.exs` file, adding `:openmaize` to the list of
+    `applications` and `{:openmaize, {"~> 2.7"}},` to the deps.
+    Then run `mix deps.get`.
+
+    You might also need to edit the database details in the `config`
+    files.
+
+    After that, run `mix test` to run all the tests.
+
+    If you are not using "username" or "email" to index / identify
+    the user, and if any of the session_controller tests fail, you
+    might need to edit the `test/controllers/session_controller_test.exs`
+    and `test/support/test_helpers.ex` files.
     """
   end
 

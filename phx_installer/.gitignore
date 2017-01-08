@@ -4,6 +4,5 @@
 /config
 /tmp
 erl_crash.dump
-*.ez
 mix.lock
 tags
