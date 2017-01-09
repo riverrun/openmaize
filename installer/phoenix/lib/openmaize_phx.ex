@@ -64,7 +64,7 @@ defmodule Mix.Tasks.Openmaize.Phx do
 
     Mix.shell.info """
 
-    We're almost done!
+    We are almost ready!
 
     Now edit the `mix.exs` file, adding `:openmaize` to the list of
     `applications` and `{:openmaize, {"~> 2.7"}},` to the deps.

@@ -1,8 +1,7 @@
 _build
+tmp
 /deps
 /doc
-/config
-/tmp
 erl_crash.dump
 mix.lock
 tags
