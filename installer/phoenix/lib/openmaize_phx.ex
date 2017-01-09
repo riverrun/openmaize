@@ -73,7 +73,13 @@ defmodule Mix.Tasks.Openmaize.Phx do
     You might also need to edit the database details in the `config`
     files.
 
-    After that, run `mix test` to run all the tests.
+    Then, to run the tests:
+
+        mix test
+
+    And to start the server:
+
+        mix phoenix.server
 
     If you are not using "username" or "email" to index / identify
     the user, and if any of the session_controller tests fail, you

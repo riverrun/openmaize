@@ -3,18 +3,17 @@ set -x
 
 LOG="../openmaize_phoenixauth_test.log"
 
-function new_project {
-    cd alibaba || exit $?
+function enter_cave {
+    echo -e "\nDATE: $(date) OPTIONS: $@\n" >> $LOG
+    echo y | mix openmaize.phx $@
+}
+
+function edit_mix_config {
     sed -i 's/username: "postgres"/username: "dev"/g' config/dev.exs config/test.exs
     sed -i 's/password: "postgres"/password: System.get_env("POSTGRES_PASS")/g' config/dev.exs config/test.exs
     sed -i 's/:postgrex]/:postgrex, :openmaize]/g' mix.exs
-    sed -i 's/{:postgrex, ">= 0.0.0"},/{:postgrex, ">= 0.0.0"},\n     {:openmaize, "~> 2.7"},/g' mix.exs
-}
-
-function enter_cave {
+    sed -i 's/{:postgrex, ">= 0.0.0"},/{:postgrex, ">= 0.0.0"},\n     {:openmaize, "~> 2.6"},/g' mix.exs
     mix deps.get
-    echo -e "\nDATE: $(date) OPTIONS: $@\n" >> $LOG
-    echo y | mix openmaize.phx $@
 }
 
 function run_tests {
@@ -28,8 +27,9 @@ function clean {
 }
 
 function openmaize_project {
-    new_project
+    cd alibaba || exit $?
     enter_cave $@
+    edit_mix_config
     run_tests
     clean
 }
