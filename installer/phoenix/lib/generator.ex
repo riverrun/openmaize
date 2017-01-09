@@ -1,9 +1,9 @@
-defmodule Mix.Openmaize do
+defmodule Mix.Openmaize.Phx.Generator do
   @moduledoc """
   Helper functions for the mix generators.
 
-  There is one mix generator available - `openmaize.gen.phoenixauth`.
-  See the documentation for Mix.Tasks.Openmaize.Gen.Phoenixauth.
+  There is one mix generator available - `openmaize.phx`.
+  See the documentation for Mix.Tasks.Openmaize.phx.
   """
 
   @doc """

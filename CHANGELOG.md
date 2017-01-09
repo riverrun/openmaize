@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.7.0
+
+* Enhancements
+    * Moved generator to separate installer - `openmaize.phx`
+
+## v2.6.0
+
+* Enhancements
+    * Added option to change the unique_id when using the phoenixauth generator
+
 ## v2.5.0
 
 * Enhancements
