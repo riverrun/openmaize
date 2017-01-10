@@ -34,7 +34,7 @@ defmodule Mix.Tasks.Openmaize.PhxTest do
 
       assert_received {:mix_shell, :info, ["\nWe are almost ready!" <> _ = message]}
       assert message =~ ~s({:openmaize, {"~> 2.7"}})
-      assert message =~ ~s(After that, run `mix test` to run all the tests)
+      assert message =~ ~s(And to start the server)
     end
   end
 

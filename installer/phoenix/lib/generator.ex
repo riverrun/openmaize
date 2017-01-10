@@ -20,6 +20,15 @@ defmodule Mix.Openmaize.Phx.Generator do
   end
 
   @doc """
+  Check that the current directory has a Mix project.
+  """
+  def check_directory do
+    if Mix.Project.config |> Keyword.fetch(:app) == :error do
+      Mix.raise "Not in a Mix project. Please make sure you are in the correct directory."
+    end
+  end
+
+  @doc """
   Get the mix project module name.
   """
   def base_module do

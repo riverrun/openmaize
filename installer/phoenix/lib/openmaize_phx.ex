@@ -43,6 +43,7 @@ defmodule Mix.Tasks.Openmaize.Phx do
 
   @doc false
   def run(args) do
+    check_directory()
     switches = [confirm: :boolean, api: :boolean]
     {opts, argv, _} = OptionParser.parse(args, switches: switches)
     unique_id = case List.first(argv) do
