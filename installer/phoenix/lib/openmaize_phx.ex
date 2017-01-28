@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.Openmaize.Phx do
   use Mix.Task
 
-  import Mix.Openmaize.Phx.Generator
+  import Mix.Generator
 
   @moduledoc """
   Create modules for authorization and, optionally, email confirmation.
@@ -41,6 +41,58 @@ defmodule Mix.Tasks.Openmaize.Phx do
 
   """
 
+  @phx_base [{:eex, "test_helpers.ex", "test/support/test_helpers.ex"},
+    {:eex, "user_migration.exs", "priv/repo/migrations/timestamp_create_user.exs"},
+    {:eex, "user_model.ex", "web/models/user.ex"},
+    {:eex, "user_model_test.exs", "test/models/user.exs"}]
+
+  @phx_api [{:eex, "phx_api/session_controller.ex", "web/controllers/session_controller.ex"},
+    {:eex, "phx_api/session_controller_test.exs", "test/controllers/session_controller_test.exs"},
+    {:eex, "phx_api/session_view.ex", "web/views/session_view.ex"},
+    {:eex, "phx_api/user_controller.ex", "web/controllers/user_controller.ex"},
+    {:eex, "phx_api/user_controller_test.exs", "test/controllers/user_controller_test.exs"},
+    {:eex, "phx_api/user_view.ex", "web/views/user_view.ex"},
+    {:eex, "phx_api/router.ex", "web/router.ex"},
+    {:eex, "phx_api/auth_view.ex", "web/views/auth_view.ex"},
+    {:eex, "phx_api/auth.ex", "web/controllers/auth.ex"},
+    {:eex, "phx_api/changeset_view.ex", "web/views/changeset_view.ex"}]
+
+  @phx_html [{:eex, "phx_html/session_controller.ex", "web/controllers/session_controller.ex"},
+    {:eex, "phx_html/session_controller_test.exs", "test/controllers/session_controller_test.exs"},
+    {:eex, "phx_html/session_view.ex", "web/views/session_view.ex"},
+    {:eex, "phx_html/user_controller.ex", "web/controllers/user_controller.ex"},
+    {:eex, "phx_html/user_controller_test.exs", "test/controllers/user_controller_test.exs"},
+    {:eex, "phx_html/user_view.ex", "web/views/user_view.ex"},
+    {:eex, "phx_html/router.ex", "web/router.ex"},
+    {:eex, "phx_html/authorize.ex", "web/controllers/authorize.ex"},
+    {:text, "phx_html/app.html.eex", "web/templates/layout/app.html.eex"},
+    {:text, "phx_html/index.html.eex", "web/templates/page/index.html.eex"},
+    {:text, "phx_html/session_new.html.eex", "web/templates/session/new.html.eex"},
+    {:text, "phx_html/user_edit.html.eex", "web/templates/user/edit.html.eex"},
+    {:text, "phx_html/user_form.html.eex", "web/templates/user/form.html.eex"},
+    {:text, "phx_html/user_index.html.eex", "web/templates/user/index.html.eex"},
+    {:text, "phx_html/user_new.html.eex", "web/templates/user/new.html.eex"},
+    {:text, "phx_html/user_show.html.eex", "web/templates/user/show.html.eex"}]
+
+  @phx_confirm [{:eex, "mailer.ex", "lib/base_name/mailer.ex"}]
+
+  @phx_api_confirm [{:eex, "phx_api/password_reset_controller.ex", "web/controllers/password_reset_controller.ex"},
+    {:eex, "phx_api/password_reset_controller_test.exs", "test/controllers/password_reset_controller_test.exs"},
+    {:eex, "phx_api/password_reset_view.ex", "web/views/password_reset_view.ex"}]
+
+  @phx_html_confirm [{:eex, "phx_api/password_reset_controller.ex", "web/controllers/password_reset_controller.ex"},
+    {:eex, "phx_html/password_reset_controller_test.exs", "test/controllers/password_reset_controller_test.exs"},
+    {:eex, "phx_html/password_reset_view.ex", "web/views/password_reset_view.ex"},
+    {:text, "phx_html/password_reset_new.html.eex", "web/templates/password_reset/new.html.eex"},
+    {:text, "phx_html/password_reset_edit.html.eex", "web/templates/password_reset/edit.html.eex"}]
+
+  root = Path.expand("../templates", __DIR__)
+  all_files = @phx_base ++ @phx_api ++ @phx_html ++ @phx_confirm ++ @phx_api_confirm ++ @phx_html_confirm
+
+  for {_, source, _} <- all_files do
+    def render(unquote(source)), do: unquote(File.read!(Path.join(root, source)))
+  end
+
   @doc false
   def run(args) do
     check_directory()
@@ -51,16 +103,14 @@ defmodule Mix.Tasks.Openmaize.Phx do
       uniq -> ":#{uniq}"
     end
 
-    srcdir = Path.expand("../templates", __DIR__)
-
-    files = phx(opts[:api]) ++ case {opts[:api], opts[:confirm]} do
-      {true, true} -> phx_api() ++ phx_confirm(true)
-      {true, _} -> phx_api()
-      {_, true} -> phx_html() ++ phx_confirm(false)
-      _ -> phx_html()
+    files = @phx_base ++ case {opts[:api], opts[:confirm]} do
+      {true, true} -> @phx_api ++ @phx_confirm ++ @phx_api_confirm
+      {true, _} -> @phx_api
+      {_, true} -> @phx_html ++ @phx_confirm ++ @phx_html_confirm
+      _ -> @phx_html
     end
 
-    copy_files(srcdir, files, base: base_module(), unique_id: unique_id,
+    copy_files(files, base: base_module(), unique_id: unique_id,
       confirm: opts[:confirm], api: opts[:api])
 
     Mix.shell.info """
@@ -89,58 +139,38 @@ defmodule Mix.Tasks.Openmaize.Phx do
     """
   end
 
-  defp phx(api_or_html) do
-    dir = if api_or_html, do: "phx_api", else: "phx_html"
-    [
-      {:eex, "#{dir}/session_controller.ex", "web/controllers/session_controller.ex"},
-      {:eex, "#{dir}/session_controller_test.exs", "test/controllers/session_controller_test.exs"},
-      {:eex, "#{dir}/session_view.ex", "web/views/session_view.ex"},
-      {:eex, "#{dir}/user_controller.ex", "web/controllers/user_controller.ex"},
-      {:eex, "#{dir}/user_controller_test.exs", "test/controllers/user_controller_test.exs"},
-      {:eex, "#{dir}/user_view.ex", "web/views/user_view.ex"},
-      {:eex, "#{dir}/router.ex", "web/router.ex"},
-      {:eex, "test_helpers.ex", "test/support/test_helpers.ex"},
-      {:eex, "user_migration.exs", "priv/repo/migrations/#{timestamp()}_create_user.exs"},
-      {:eex, "user_model.ex", "web/models/user.ex"},
-      {:eex, "user_model_test.exs", "test/models/user.exs"}
-    ]
-  end
-
-  defp phx_api do
-    [
-      {:eex, "phx_api/auth_view.ex", "web/views/auth_view.ex"},
-      {:eex, "phx_api/auth.ex", "web/controllers/auth.ex"},
-      {:eex, "phx_api/changeset_view.ex", "web/views/changeset_view.ex"}
-    ]
-  end
-
-  defp phx_html do
-    [
-      {:eex, "phx_html/authorize.ex", "web/controllers/authorize.ex"},
-      {:text, "phx_html/app.html.eex", "web/templates/layout/app.html.eex"},
-      {:text, "phx_html/index.html.eex", "web/templates/page/index.html.eex"},
-      {:text, "phx_html/session_new.html.eex", "web/templates/session/new.html.eex"},
-      {:text, "phx_html/user_edit.html.eex", "web/templates/user/edit.html.eex"},
-      {:text, "phx_html/user_form.html.eex", "web/templates/user/form.html.eex"},
-      {:text, "phx_html/user_index.html.eex", "web/templates/user/index.html.eex"},
-      {:text, "phx_html/user_new.html.eex", "web/templates/user/new.html.eex"},
-      {:text, "phx_html/user_show.html.eex", "web/templates/user/show.html.eex"}
-    ]
-  end
-
-  defp phx_confirm(api_or_html) do
-    {dir, files} = if api_or_html do
-      {"phx_api", []}
-    else
-      {"phx_html",
-      [{:text, "phx_html/password_reset_new.html.eex", "web/templates/password_reset/new.html.eex"},
-        {:text, "phx_html/password_reset_edit.html.eex", "web/templates/password_reset/edit.html.eex"}]}
+  defp check_directory do
+    if Mix.Project.config |> Keyword.fetch(:app) == :error do
+      Mix.raise "Not in a Mix project. Please make sure you are in the correct directory."
     end
-    files ++ [
-      {:eex, "mailer.ex", "lib/#{base_name()}/mailer.ex"},
-      {:eex, "#{dir}/password_reset_controller.ex", "web/controllers/password_reset_controller.ex"},
-      {:eex, "#{dir}/password_reset_controller_test.exs", "test/controllers/password_reset_controller_test.exs"},
-      {:eex, "#{dir}/password_reset_view.ex", "web/views/password_reset_view.ex"}
-    ]
   end
+
+  defp copy_files(files, opts) do
+    for {format, source, target} <- files do
+      target = target
+               |> String.replace("base_name", base_name())
+               |> String.replace("timestamp", timestamp())
+      contents = case format do
+        :text -> render(source)
+        :eex  -> EEx.eval_string(render(source), opts)
+      end
+      create_file target, contents
+    end
+  end
+
+  defp base_module do
+    base_name() |> Macro.camelize
+  end
+
+  defp base_name do
+    Mix.Project.config |> Keyword.fetch!(:app) |> to_string
+  end
+
+  defp timestamp do
+    {{y, m, d}, {hh, mm, ss}} = :calendar.universal_time()
+    "#{y}#{pad(m)}#{pad(d)}#{pad(hh)}#{pad(mm)}#{pad(ss)}"
+  end
+
+  defp pad(i) when i < 10, do: << ?0, ?0 + i >>
+  defp pad(i), do: to_string(i)
 end
