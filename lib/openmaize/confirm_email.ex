@@ -4,7 +4,7 @@ defmodule Openmaize.ConfirmEmail do
 
   ## Options
 
-  There are five options:
+  There are four options:
 
     * repo - the name of the repo
       * the default is MyApp.Repo - using the name of the project
@@ -12,8 +12,6 @@ defmodule Openmaize.ConfirmEmail do
       * the default is MyApp.User - using the name of the project
     * key_expires_after - the length, in minutes, that the token is valid for
       * the default is 60 minutes (1 hour)
-    * unique_id - the identifier in the query string, or the parameters
-      * the default is :email
     * mail_function - the emailing function that you need to define
 
   ## Email function
@@ -47,23 +45,7 @@ defmodule Openmaize.ConfirmEmail do
 
   """
 
-  import Openmaize.Confirm.Base
-
-  @behaviour Plug
-
-  def init(opts) do
-    {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
-    Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model),
-    {Keyword.get(opts, :key_expires_after, 60),
-    Keyword.get(opts, :unique_id, :email),
-    Keyword.get(opts, :mail_function)}}
-  end
-
-  def call(%Plug.Conn{params: %{"key" => key} = user_params} = conn, opts)
-  when byte_size(key) == 32 do
-    check_user_key(conn, user_params, key, :nopassword, opts)
-  end
-  def call(conn, _opts), do: invalid_link_error(conn)
+  use Openmaize.Confirm.Base
 
   @doc """
   Generate a confirmation token and a link containing the email address

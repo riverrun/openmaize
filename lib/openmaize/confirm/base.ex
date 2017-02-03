@@ -6,36 +6,47 @@ defmodule Openmaize.Confirm.Base do
   modules.
   """
 
+  @doc false
+  defmacro __using__(_) do
+    quote do
+      @behaviour Plug
+
+      import unquote(__MODULE__)
+
+      @doc false
+      def init(opts) do
+        {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
+        Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model),
+        {Keyword.get(opts, :key_expires_after, 60),
+        Keyword.get(opts, :mail_function, &IO.puts/1)}}
+      end
+
+      @doc false
+      def call(%Plug.Conn{params: params} = conn, opts) do
+        check_confirm conn, unpack_params(params), opts
+      end
+
+      def unpack_params(%{"email" => email, "key" => key}), do: {:email, email, key, :nopassword}
+      def unpack_params(_), do: nil
+
+      defoverridable [init: 1, call: 2, unpack_params: 1]
+    end
+  end
+
   import Plug.Conn
   import Comeonin.Tools
   alias Openmaize.Database, as: DB
 
-  @doc """
-  Check the user key and, if necessary, the user password.
-
-  If this function is successful, the database will be updated, and an
-  `openmaize_info` message will be added to the conn. If there is an error,
-  an `openmaize_error` message will be added to the conn.
-  """
-  def check_user_key(conn, user_params, key, password,
-   {repo, user_model, {key_expiry, uniq, mail_func}}) do
-    case Map.get(user_params, to_string(uniq)) do
-      nil -> finalize(nil, conn, nil, mail_func)
-      user_id ->
-        repo.get_by(user_model, [{uniq, user_id}])
-        |> check_key(repo, key, key_expiry * 60, password)
-        |> finalize(conn, user_id, mail_func)
-    end
+  def check_confirm(conn, {uniq, user_id, key, password},
+    {repo, user_model, {key_expiry, mail_func}}) when byte_size(key) == 32 do
+    repo.get_by(user_model, [{uniq, user_id}])
+    |> check_key(repo, key, key_expiry * 60, password)
+    |> finalize(conn, user_id, mail_func)
   end
-
-  @doc """
-  Error message in the case of an invalid link.
-  """
-  def invalid_link_error(conn) do
+  def check_confirm(conn, _, _) do
     put_private(conn, :openmaize_error, "Invalid link")
   end
 
-  defp check_key(_, nil, _, _, _), do: false
   defp check_key(%{confirmed_at: nil} = user, repo, key, valid_secs, :nopassword) do
     DB.check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
@@ -49,7 +60,7 @@ defmodule Openmaize.Confirm.Base do
   end
 
   defp finalize({:ok, user}, conn, _, mail_func) do
-    mail_func && mail_func.(user.email)
+    mail_func.(user.email)
     put_private(conn, :openmaize_info, "Account successfully confirmed")
   end
   defp finalize({:error, message}, conn, _user_id, _) do
