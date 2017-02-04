@@ -3,7 +3,7 @@ defmodule Openmaize.Phx.Mixfile do
 
   def project do
     [app: :openmaize_phx,
-     version: "2.7.0",
+     version: "2.8.0",
      elixir: "~> 1.3"]
   end
 

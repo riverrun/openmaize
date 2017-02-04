@@ -1,5 +1,34 @@
 defmodule Openmaize.Login.Base do
   @moduledoc """
+  Base module for handling logins.
+
+  This is used by the Openmaize Plug and can also be used to create
+  custom Plugs.
+
+  ## Customization
+
+  In this module, the `init/1`, `call/2` and `unpack_params/1` functions
+  can all be overriden.
+
+  The following is an example of a custom login Plug that uses `phone` to
+  identify the user, instead of `username` or `email`:
+
+      defmodule MyApp.CustomLogin do
+        use Openmaize.Login.Base
+
+        def unpack_params(%{"phone" => phone, "password" => password}), do: {:phone, phone, password}
+      end
+
+  And here is an example where the user is identified depending on the input:
+
+      defmodule MyApp.CustomLogin.Phonename do
+        use Openmaize.Login.Base
+
+        def unpack_params(%{"phone" => phone, "password" => password}) do
+          {Regex.match?(~r/^[0-9]+$/, phone) and :phone || :username, phone, password}
+        end
+      end
+
   """
 
   @doc false
@@ -9,13 +38,11 @@ defmodule Openmaize.Login.Base do
 
       import unquote(__MODULE__)
 
-      @doc false
       def init(opts) do
         {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
         Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model)}
       end
 
-      @doc false
       def call(%Plug.Conn{params: %{"session" => params}} = conn, opts) do
         check_user_pass conn, unpack_params(params), opts
       end
@@ -33,6 +60,7 @@ defmodule Openmaize.Login.Base do
   alias Openmaize.Config
 
   @doc """
+  Check the user's password.
   """
   def check_user_pass(conn, {uniq, user_id, password}, {repo, user_model}) do
     repo.get_by(user_model, [{uniq, user_id}])

@@ -17,24 +17,14 @@ defmodule Openmaize.ResetPassword do
   ## Email function
 
   Emailing the end user is the developer's responsibility. If you have
-  generated files with the `mix openmaize.gen.phoenixauth --confirm`
+  generated files with the `mix openmaize.phx --confirm`
   command, then you will have a template at `lib/your_project_name/mailer.ex`.
   You need to complete this template with the mailing library of your
   choice.
 
-  This file, `mailer.ex`, uses the following functions for password resetting:
-
-    * ask_reset/2 - send an email with the link to reset the password to the user
-    * receipt_confirm/1 - send an email stating that the password has been changed
-
   ## Examples with Phoenix
 
-  The easiest way to use this plug is to run the
-  `mix openmaize.gen.phoenixauth --confirm` command, which will create
-  all the files you need.
-
-  If you do not want to run the above command, you need to create the
-  following files:
+  Create the following files:
 
     * controllers/password_reset_controller.ex
     * views/password_reset_view.ex

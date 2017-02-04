@@ -1,8 +1,8 @@
 defmodule Openmaize.Confirm.Base do
   @moduledoc """
-  Functions used with email confirmation.
+  Base module for handling email confirmation.
 
-  This is used by both the Openmaize.Confirm and Openmaize.ResetPassword
+  This is used by both the Openmaize.ConfirmEmail and Openmaize.ResetPassword
   modules.
   """
 
@@ -13,7 +13,6 @@ defmodule Openmaize.Confirm.Base do
 
       import unquote(__MODULE__)
 
-      @doc false
       def init(opts) do
         {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
         Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model),
@@ -21,7 +20,6 @@ defmodule Openmaize.Confirm.Base do
         Keyword.get(opts, :mail_function, &IO.puts/1)}}
       end
 
-      @doc false
       def call(%Plug.Conn{params: params} = conn, opts) do
         check_confirm conn, unpack_params(params), opts
       end
@@ -47,6 +45,7 @@ defmodule Openmaize.Confirm.Base do
     put_private(conn, :openmaize_error, "Invalid link")
   end
 
+  defp check_key(nil, _, _, _, _), do: {:error, "Invalid credentials"}
   defp check_key(%{confirmed_at: nil} = user, repo, key, valid_secs, :nopassword) do
     DB.check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and

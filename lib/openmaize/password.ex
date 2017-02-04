@@ -6,8 +6,8 @@ defmodule Openmaize.Password do
   The functions in this module can be called directly, and they are
   also used by the Openmaize.ResetPassword plug.
 
-  To perform the password strength checks, you need to have NotQwerty123
-  installed.
+  To perform the more advanced password strength checks, you need to
+  have NotQwerty123 installed.
 
   ## Basic checks
 
@@ -22,23 +22,15 @@ defmodule Openmaize.Password do
 
   ## Password strength checks
 
-  If you have NotQwerty123 installed, there are three options:
+  If you have NotQwerty123 installed, there is one option:
 
     * min_length - the minimum length of the password
-    * extra_chars - check for punctuation characters (including spaces) and digits
-    * common - check to see if the password is too common (too easy to guess)
 
-  The default value for `min_length` is 8 characters if `extra_chars` is true,
-  but 12 characters if `extra_chars` is false. This is because the password
-  should be longer if the character set is restricted to upper and lower case
-  letters.
+  The default value for `min_length` is 8 characters.
 
-  `extra_chars` and `common` are true by default.
+      Openmaize.Password.valid_password?("verylongpassword", [min_length: 16])
 
-      Openmaize.Password.valid_password?("verylongpassword", [min_length: 16, extra_chars: false])
-
-  The above command will check that the password is at least 16 characters long and
-  will skip the check for punctuation characters or digits.
+  The above command will check that the password is at least 16 characters long.
   """
 
   if Code.ensure_loaded?(NotQwerty123) do

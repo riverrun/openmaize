@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.8.0-dev
+
+* Enhancements
+    * Made Login, ConfirmEmail and ResetPassword modules more configurable
+
 ## v2.7.0
 
 * Enhancements
