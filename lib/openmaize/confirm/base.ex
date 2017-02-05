@@ -24,13 +24,14 @@ defmodule Openmaize.Confirm.Base do
         check_confirm conn, unpack_params(params), opts
       end
 
-      def unpack_params(%{"email" => email, "key" => key}), do: {:email, email, key, :nopassword}
+      def unpack_params(%{"email" => email, "key" => key}), do: {:email, email, key, :nopass}
       def unpack_params(_), do: nil
 
       defoverridable [init: 1, call: 2, unpack_params: 1]
     end
   end
 
+  require Logger
   import Plug.Conn
   import Comeonin.Tools
   alias Openmaize.Database, as: DB
@@ -39,33 +40,34 @@ defmodule Openmaize.Confirm.Base do
     {repo, user_model, {key_expiry, mail_func}}) when byte_size(key) == 32 do
     repo.get_by(user_model, [{uniq, user_id}])
     |> check_key(repo, key, key_expiry * 60, password)
-    |> finalize(conn, user_id, mail_func)
+    |> finalize(conn, user_id, mail_func, password)
   end
   def check_confirm(conn, _, _) do
-    put_private(conn, :openmaize_error, "Invalid link")
+    Logger.warn "#{conn.request_path} - #{conn.query_string} invalid query string"
+    put_private(conn, :openmaize_error, "Invalid credentials")
   end
 
-  defp check_key(nil, _, _, _, _), do: {:error, "Invalid credentials"}
-  defp check_key(%{confirmed_at: nil} = user, repo, key, valid_secs, :nopassword) do
+  defp check_key(nil, _, _, _, _), do: {:error, "invalid credentials"}
+  defp check_key(%{confirmed_at: nil} = user, repo, key, valid_secs, :nopass) do
     DB.check_time(user.confirmation_sent_at, valid_secs) and
     secure_check(user.confirmation_token, key) and
-    DB.user_confirmed(user, repo)
+    DB.user_confirmed(user, repo) || {:error, "invalid token"}
   end
-  defp check_key(_, _, _, _, :nopassword), do: {:error, "User account already confirmed"}
+  defp check_key(_, _, _, _, :nopass), do: {:error, "user account already confirmed"}
   defp check_key(user, repo, key, valid_secs, password) do
     DB.check_time(user.reset_sent_at, valid_secs) and
     secure_check(user.reset_token, key) and
-    DB.password_reset(user, password, repo)
+    DB.password_reset(user, password, repo) || {:error, "invalid token"}
   end
 
-  defp finalize({:ok, user}, conn, _, mail_func) do
+  defp finalize({:ok, user}, conn, user_id, mail_func, password) do
+    message = if password == :nopass, do: "account confirmed", else: "password reset"
+    Logger.info "#{conn.request_path} #{user_id} - #{message}"
     mail_func.(user.email)
-    put_private(conn, :openmaize_info, "Account successfully confirmed")
+    put_private(conn, :openmaize_info, String.capitalize(message))
   end
-  defp finalize({:error, message}, conn, _user_id, _) do
-    put_private(conn, :openmaize_error, message)
-  end
-  defp finalize(_, conn, user_id, _) do
-    put_private(conn, :openmaize_error, "Confirmation for #{user_id} failed")
+  defp finalize({:error, message}, conn, user_id, _, _) do
+    Logger.warn "#{conn.request_path} #{user_id} - #{message}"
+    put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

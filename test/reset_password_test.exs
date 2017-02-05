@@ -28,21 +28,22 @@ defmodule Openmaize.ResetPasswordTest do
   end
 
   test "init function" do
-    assert ResetPassword.init([]) == {Openmaize.Repo, Openmaize.User, {60, &IO.puts/1}}
+    assert ResetPassword.init([]) ==
+      {Openmaize.Repo, Openmaize.User, {60, &IO.puts/1}}
   end
 
   test "reset password succeeds" do
     password = "my N1pples expl0de with the light!"
     conn = call_reset(password, {TestRepo, TestUser, {120, &IO.puts/1}})
     assert password_changed(password)
-    assert conn.private.openmaize_info =~ "Account successfully confirmed"
+    assert conn.private.openmaize_info =~ "Password reset"
   end
 
   test "reset password fails with expired token" do
     password = "C'est bon, la vie"
     conn = call_reset(password, {TestRepo, TestUser, {0, &IO.puts/1}})
     refute password_changed(password)
-    assert conn.private.openmaize_error =~ "Confirmation for"
+    assert conn.private.openmaize_error =~ "Invalid credentials"
   end
 
   test "reset password fails when reset_sent_at is nil" do
@@ -50,7 +51,7 @@ defmodule Openmaize.ResetPasswordTest do
     change(user, %{reset_sent_at: nil})
     |> Openmaize.TestRepo.update
     conn = call_reset("password", {TestRepo, TestUser, {120, &IO.puts/1}})
-    assert conn.private.openmaize_error =~ "Confirmation for"
+    assert conn.private.openmaize_error =~ "Invalid credentials"
   end
 
 end

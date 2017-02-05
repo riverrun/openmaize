@@ -51,4 +51,11 @@ defmodule Openmaize.LoginTest do
     assert conn.private[:openmaize_error]
   end
 
+  test "error raised for incorrect params" do
+    opts = {TestRepo, TestUser}
+    assert_raise ArgumentError, "invalid params or options", fn ->
+      call("081555555", "h4rd2gU3$$", "phone", opts)
+    end
+  end
+
 end

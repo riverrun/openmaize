@@ -28,38 +28,39 @@ defmodule Openmaize.ConfirmEmailTest do
   end
 
   test "init function" do
-    assert ConfirmEmail.init([]) == {Openmaize.Repo, Openmaize.User, {60, &IO.puts/1}}
+    assert ConfirmEmail.init([]) ==
+      {Openmaize.Repo, Openmaize.User, {60, &IO.puts/1}}
   end
 
   test "confirmation succeeds for valid token" do
     conn = call_confirm(@valid_link, {TestRepo, TestUser, {120, &IO.puts/1}})
     assert user_confirmed()
-    assert conn.private.openmaize_info =~ "Account successfully confirmed"
+    assert conn.private.openmaize_info =~ "Account confirmed"
   end
 
   test "confirmation fails for invalid token" do
     conn = call_confirm(@invalid_link, {TestRepo, TestUser, {120, &IO.puts/1}})
     refute user_confirmed()
-    assert conn.private.openmaize_error =~ "Confirmation for"
+    assert conn.private.openmaize_error =~ "Invalid credentials"
   end
 
   test "confirmation fails for expired token" do
     conn = call_confirm(@valid_link, {TestRepo, TestUser, {0, &IO.puts/1}})
     refute user_confirmed()
-    assert conn.private.openmaize_error =~ "Confirmation for"
+    assert conn.private.openmaize_error =~ "Invalid credentials"
   end
 
   test "invalid link error" do
     conn = call_confirm(@incomplete_link, {TestRepo, TestUser, {120, &IO.puts/1}})
     refute user_confirmed()
-    assert conn.private.openmaize_error =~ "Invalid link"
+    assert conn.private.openmaize_error =~ "Invalid credentials"
   end
 
   test "confirmation fails for already confirmed account" do
     call_confirm(@valid_link, {TestRepo, TestUser, {120, &IO.puts/1}})
     conn = call_confirm(@valid_link, {TestRepo, TestUser, {120, &IO.puts/1}})
     assert user_confirmed()
-    assert conn.private.openmaize_error =~ "User account already confirmed"
+    assert conn.private.openmaize_error =~ "Invalid credentials"
   end
 
   test "gen_token_link" do

@@ -96,11 +96,11 @@ defmodule Openmaize.Database do
 
   This is used with both HOTP and TOTP tokens.
   """
-  def update_otp({_, false}, _), do: nil
+  def update_otp({_, false}, _), do: {:error, "invalid one-time password"}
   def update_otp({%{otp_last: otp_last} = user, last}, repo) when last > otp_last do
     change(user, %{otp_last: last}) |> repo.update!
   end
-  def update_otp(_, _), do: nil
+  def update_otp(_, _), do: {:error, "invalid user-identifier"}
 
   @doc """
   Function used to check if a token has expired.

@@ -3,6 +3,7 @@
 ## v2.8.0-dev
 
 * Enhancements
+    * Added logging to the Login, OnetimePass, ConfirmEmail and ResetPassword modules
     * Made Login, ConfirmEmail and ResetPassword modules more configurable
 
 ## v2.7.0
