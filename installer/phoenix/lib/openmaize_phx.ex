@@ -80,7 +80,7 @@ defmodule Mix.Tasks.Openmaize.Phx do
     {:eex, "phx_api/password_reset_controller_test.exs", "test/controllers/password_reset_controller_test.exs"},
     {:eex, "phx_api/password_reset_view.ex", "web/views/password_reset_view.ex"}]
 
-  @phx_html_confirm [{:eex, "phx_api/password_reset_controller.ex", "web/controllers/password_reset_controller.ex"},
+  @phx_html_confirm [{:eex, "phx_html/password_reset_controller.ex", "web/controllers/password_reset_controller.ex"},
     {:eex, "phx_html/password_reset_controller_test.exs", "test/controllers/password_reset_controller_test.exs"},
     {:eex, "phx_html/password_reset_view.ex", "web/views/password_reset_view.ex"},
     {:text, "phx_html/password_reset_new.html.eex", "web/templates/password_reset/new.html.eex"},
