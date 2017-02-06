@@ -57,9 +57,8 @@ defmodule Openmaize.Login.Base do
     end
   end
 
-  require Logger
   import Plug.Conn
-  alias Openmaize.Config
+  alias Openmaize.{Config, Logger}
 
   @doc """
   Check the user's password.
@@ -89,7 +88,7 @@ defmodule Openmaize.Login.Base do
     put_private(conn, :openmaize_user, user)
   end
   defp handle_auth({:error, message}, conn, user_id) do
-    Logger.warn "#{conn.request_path} #{user_id} - #{message}"
+    Logger.warn conn, user_id, message
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end
