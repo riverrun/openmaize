@@ -43,8 +43,7 @@ defmodule Openmaize.Confirm.Base do
     |> finalize(conn, user_id, mail_func, password)
   end
   def check_confirm(conn, _, _) do
-    #Logger.warn "#{conn.request_path} - #{conn.query_string} invalid query string"
-    Logger.warn conn, "-", "invalid query string", conn.query_string
+    Logger.warn conn, "-", "invalid query string", "query:#{conn.query_string}"
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 
@@ -63,12 +62,12 @@ defmodule Openmaize.Confirm.Base do
 
   defp finalize({:ok, user}, conn, user_id, mail_func, password) do
     message = if password == :nopass, do: "account confirmed", else: "password reset"
-    Logger.info conn, user_id, message
+    Logger.info conn, user_id, message, Logger.current_user_info(conn)
     mail_func.(user.email)
     put_private(conn, :openmaize_info, String.capitalize(message))
   end
   defp finalize({:error, message}, conn, user_id, _, _) do
-    Logger.warn conn, user_id, message
+    Logger.warn conn, user_id, message, Logger.current_user_info(conn)
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end
