@@ -15,7 +15,7 @@ defmodule Openmaize.LoginTest do
   def login_email(name, password) do
     conn(:post, "/login",
          %{"session" => %{"email" => name, "password" => password}})
-    |> Openmaize.Login.Email.call(@opts)
+    |> Openmaize.EmailLogin.call(@opts)
   end
 
   test "init function" do

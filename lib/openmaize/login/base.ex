@@ -10,23 +10,16 @@ defmodule Openmaize.Login.Base do
   In this module, the `init/1`, `call/2` and `unpack_params/1` functions
   can all be overriden.
 
-  The following is an example of a custom login Plug that uses `phone` to
-  identify the user, instead of `username` or `email`:
+  The following is an example where the user is identified depending on
+  the input (phone number or username):
 
       defmodule MyApp.CustomLogin do
-        use Openmaize.Login.Base
-
-        def unpack_params(%{"phone" => phone, "password" => password}), do: {:phone, phone, password}
-      end
-
-  And here is an example where the user is identified depending on the input:
-
-      defmodule MyApp.CustomLogin.Phonename do
         use Openmaize.Login.Base
 
         def unpack_params(%{"phone" => phone, "password" => password}) do
           {Regex.match?(~r/^[0-9]+$/, phone) and :phone || :username, phone, password}
         end
+        def unpack_params(_), do: nil
       end
 
   """
