@@ -47,7 +47,6 @@ defmodule Openmaize.Login.Base do
         check_user_pass conn, unpack_params(params), opts
       end
 
-      def unpack_params(%{"email" => email, "password" => password}), do: {:email, email, password}
       def unpack_params(%{"username" => username, "password" => password}) do
         {:username, username, password}
       end
@@ -86,6 +85,10 @@ defmodule Openmaize.Login.Base do
   end
   defp handle_auth({:ok, user}, conn, _) do
     put_private(conn, :openmaize_user, user)
+  end
+  defp handle_auth({:error, "acc" <> _ = message}, conn, user_id) do
+    Logger.warn conn, user_id, message
+    put_private(conn, :openmaize_error, "You have to confirm your account")
   end
   defp handle_auth({:error, message}, conn, user_id) do
     Logger.warn conn, user_id, message

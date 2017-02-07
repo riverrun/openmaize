@@ -2,29 +2,35 @@ defmodule Openmaize.LoginTest do
   use ExUnit.Case
   use Plug.Test
 
-  alias Openmaize.{DummyCrypto, Login, TestRepo, TestUser}
+  alias Openmaize.{DummyCrypto, TestRepo, TestUser}
 
-  def call(name, password, uniq, opts) do
+  @opts {TestRepo, TestUser}
+
+  def login_name(name, password, user_id \\ "username") do
     conn(:post, "/login",
-         %{"session" => %{uniq => name, "password" => password}})
-    |> Login.call(opts)
+         %{"session" => %{user_id => name, "password" => password}})
+    |> Openmaize.Login.call(@opts)
+  end
+
+  def login_email(name, password) do
+    conn(:post, "/login",
+         %{"session" => %{"email" => name, "password" => password}})
+    |> Openmaize.Login.Email.call(@opts)
   end
 
   test "init function" do
-    assert Login.init([]) == {Openmaize.Repo, Openmaize.User}
+    assert Openmaize.Login.init([]) == {Openmaize.Repo, Openmaize.User}
   end
 
   test "login succeeds with username" do
-    opts = {TestRepo, TestUser}
-    conn = call("ray", "h4rd2gU3$$", "username", opts)
+    conn = login_name("ray", "h4rd2gU3$$")
     %{id: id, role: role} = conn.private[:openmaize_user]
     assert id == 4
     assert role == "user"
   end
 
   test "login succeeds with email" do
-    opts = {TestRepo, TestUser}
-    conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
+    conn = login_email("ray@mail.com", "h4rd2gU3$$")
     %{id: id, role: role} = conn.private[:openmaize_user]
     assert id == 4
     assert role == "user"
@@ -32,29 +38,35 @@ defmodule Openmaize.LoginTest do
 
   test "login fails when crypto mod changes" do
     Application.put_env(:openmaize, :crypto_mod, DummyCrypto)
-    opts = {TestRepo, TestUser}
-    conn = call("ray@mail.com", "h4rd2gU3$$", "email", opts)
+    conn = login_name("ray", "h4rd2gU3$$")
     assert conn.private[:openmaize_error]
   after
     Application.delete_env(:openmaize, :crypto_mod)
   end
 
   test "login fails for incorrect password" do
-    opts = {TestRepo, TestUser}
-    conn = call("ray@mail.com", "oohwhatwasitagain", "email", opts)
-    assert conn.private[:openmaize_error]
+    conn = login_name("ray", "oohwhatwasitagain")
+    assert conn.private[:openmaize_error] =~ "Invalid credentials"
+  end
+
+  test "login fails when account is not yet confirmed" do
+    conn = login_name("fred", "mangoes&g0oseberries")
+    assert conn.private[:openmaize_error] =~ "have to confirm your account"
+  end
+
+  test "login fails for invalid username" do
+    conn = login_name("dick", "h4rd2gU3$$")
+    assert conn.private[:openmaize_error] =~ "Invalid credentials"
   end
 
   test "login fails for invalid email" do
-    opts = {TestRepo, TestUser}
-    conn = call("dick@mail.com", "h4rd2gU3$$", "email", opts)
-    assert conn.private[:openmaize_error]
+    conn = login_email("dick@mail.com", "h4rd2gU3$$")
+    assert conn.private[:openmaize_error] =~ "Invalid credentials"
   end
 
   test "error raised for incorrect params" do
-    opts = {TestRepo, TestUser}
     assert_raise ArgumentError, "invalid params or options", fn ->
-      call("081555555", "h4rd2gU3$$", "phone", opts)
+      login_name("081555555", "h4rd2gU3$$", "phone")
     end
   end
 

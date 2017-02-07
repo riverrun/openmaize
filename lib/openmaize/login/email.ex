@@ -1,6 +1,6 @@
-defmodule Openmaize.Login do
+defmodule Openmaize.Login.Email do
   @moduledoc """
-  Module to handle login using `username` as user id.
+  Module to handle login with email address.
 
   There are two options:
 
@@ -15,4 +15,8 @@ defmodule Openmaize.Login do
 
   use Openmaize.Login.Base
 
+  def unpack_params(%{"email" => email, "password" => password}) do
+    {:email, email, password}
+  end
+  def unpack_params(_), do: nil
 end
