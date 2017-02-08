@@ -2,13 +2,10 @@ defmodule <%= base %>.SessionControllerTest do
   use <%= base %>.ConnCase
 
   import <%= base %>.TestHelpers
-<%= if unique_id == ":email" do %>
+
   @valid_attrs %{email: "robin@mail.com", password: "mangoes&g0oseberries"}
   @invalid_attrs %{email: "robin@mail.com", password: "maaaangoes&g00zeberries"}
-<% else %>
-  @valid_attrs %{<%= String.trim_leading(unique_id, ":") <> ":" %> "robin", password: "mangoes&g0oseberries"}
-  @invalid_attrs %{<%= String.trim_leading(unique_id, ":") <> ":" %> "robin", password: "maaaangoes&g00zeberries"}
-<% end %>
+
   setup %{conn: conn} do<%= if confirm do %>
     add_user("arthur")
     user = add_user_confirmed("robin")<% else %>

@@ -8,14 +8,6 @@ defmodule Mix.Tasks.Openmaize.Phx do
 
   ## Options and arguments
 
-  There is one argument:
-
-    * unique_id - "username", "email", etc.
-      * the default is "username"
-
-  This value will be used in the user file in the models directory,
-  the user migrations file and the session controller.
-
   There are two options:
 
     * confirm - add functions for email confirmation and password resets
@@ -97,11 +89,7 @@ defmodule Mix.Tasks.Openmaize.Phx do
   def run(args) do
     check_directory()
     switches = [confirm: :boolean, api: :boolean]
-    {opts, argv, _} = OptionParser.parse(args, switches: switches)
-    unique_id = case List.first(argv) do
-      nil -> ":username"
-      uniq -> ":#{uniq}"
-    end
+    {opts, _, _} = OptionParser.parse(args, switches: switches)
 
     files = @phx_base ++ case {opts[:api], opts[:confirm]} do
       {true, true} -> @phx_api ++ @phx_confirm ++ @phx_api_confirm
@@ -110,8 +98,7 @@ defmodule Mix.Tasks.Openmaize.Phx do
       _ -> @phx_html
     end
 
-    copy_files(files, base: base_module(), unique_id: unique_id,
-      confirm: opts[:confirm], api: opts[:api])
+    copy_files(files, base: base_module(), confirm: opts[:confirm], api: opts[:api])
 
     Mix.shell.info """
 

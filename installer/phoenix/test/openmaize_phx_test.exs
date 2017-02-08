@@ -113,47 +113,4 @@ defmodule Mix.Tasks.Openmaize.PhxTest do
     end
   end
 
-  test "generates resource with email unique_id" do
-    in_tmp "generates resource with email unique_id", fn ->
-      Mix.Tasks.Openmaize.Phx.run ["email"]
-
-      assert_file "web/controllers/session_controller.ex", fn file ->
-        assert file =~ "plug Openmaize.Login, [unique_id: :email] when action in [:create]"
-        refute file =~ "def confirm_email(%Plug.Conn{private: %{openmaize_error: message}}"
-      end
-
-      assert_file "test/controllers/session_controller_test.exs", fn file ->
-        assert file =~ ~s(@valid_attrs %{email: "robin@mail.com")
-        assert file =~ ~s(@invalid_attrs %{email: "robin@mail.com")
-      end
-
-      assert_file "web/models/user.ex", fn file ->
-        assert file =~ "field :email, :string"
-        assert file =~ "unique_constraint(:email)"
-        refute file =~ "unique_constraint(:username)"
-      end
-    end
-  end
-
-  test "generates resource with custom unique_id" do
-    in_tmp "generates resource with custom unique_id", fn ->
-      Mix.Tasks.Openmaize.Phx.run ["aaarrgh"]
-
-      assert_file "web/controllers/session_controller.ex", fn file ->
-        assert file =~ "plug Openmaize.Login, [unique_id: :aaarrgh] when action in [:create]"
-        refute file =~ "def confirm_email(%Plug.Conn{private: %{openmaize_error: message}}"
-      end
-
-      assert_file "test/controllers/session_controller_test.exs", fn file ->
-        assert file =~ ~s(@valid_attrs %{aaarrgh: "robin")
-        assert file =~ ~s(@invalid_attrs %{aaarrgh: "robin")
-      end
-
-      assert_file "web/models/user.ex", fn file ->
-        assert file =~ "field :aaarrgh, :string"
-        assert file =~ "unique_constraint(:aaarrgh)"
-        refute file =~ "unique_constraint(:username)"
-      end
-    end
-  end
 end

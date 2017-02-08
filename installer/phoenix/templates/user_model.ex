@@ -5,8 +5,7 @@ defmodule <%= base %>.User do
 
   schema "users" do
     field :username, :string
-    field :email, :string<%= if not unique_id in [":username", ":email"] do %>
-    field <%= unique_id %>, :string<% end %>
+    field :email, :string
     field :password, :string, virtual: true
     field :password_hash, :string<%= if confirm do %>
     field :confirmed_at, Ecto.DateTime
@@ -22,12 +21,10 @@ defmodule <%= base %>.User do
   Builds a changeset based on the `struct` and `params`.
   """
   def changeset(struct, params \\ %{}) do
-    struct<%= if unique_id in [":username", ":email"] do %>
+    struct
     |> cast(params, [:username, :email])
-    |> validate_required([:username, :email])<% else %>
-    |> cast(params, [<%= unique_id %>, :username, :email])
-    |> validate_required([<%= unique_id %>, :username, :email])<% end %>
-    |> unique_constraint(<%= unique_id %>)
+    |> validate_required([:username, :email])
+    |> unique_constraint(:username)
   end<%= if confirm do %>
 
   def auth_changeset(struct, params, key) do<% else %>

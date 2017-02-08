@@ -4,8 +4,7 @@ defmodule <%= base %>.Repo.Migrations.CreateUser do
   def change do
     create table(:users) do
       add :username, :string
-      add :email, :string<%= if not unique_id in [":username", ":email"] do %>
-      add <%= unique_id %>, :string<% end %>
+      add :email, :string
       add :password_hash, :string<%= if confirm do %>
       add :confirmed_at, :utc_datetime
       add :confirmation_token, :string
@@ -16,6 +15,6 @@ defmodule <%= base %>.Repo.Migrations.CreateUser do
       timestamps()
     end
 
-    create unique_index :users, [<%= unique_id %>]
+    create unique_index :users, [:username]
   end
 end
