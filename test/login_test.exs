@@ -10,8 +10,8 @@ defmodule Openmaize.LoginTest do
     |> Openmaize.Login.call({uniq, user_params, TestRepo, TestUser})
   end
 
-  def phone_name(%{"phone" => phone, "password" => password}) do
-    {Regex.match?(~r/^[0-9]+$/, phone) and :phone || :username, phone, password}
+  def phone_name(%{"username" => username, "password" => password}) do
+    {Regex.match?(~r/^[0-9]+$/, username) and :phone || :username, username, password}
   end
 
   test "init function" do
@@ -58,6 +58,18 @@ defmodule Openmaize.LoginTest do
   test "login fails for invalid email" do
     conn = login("dick@mail.com", "h4rd2gU3$$", :email, "email")
     assert conn.private[:openmaize_error] =~ "Invalid credentials"
+  end
+
+  test "function unique_id with username" do
+    conn = login("ray", "h4rd2gU3$$", &phone_name/1, "username")
+    %{id: id} = conn.private[:openmaize_user]
+    assert id == 4
+  end
+
+  test "function unique_id with phone" do
+    conn = login("081555555", "h4rd2gU3$$", &phone_name/1, "username")
+    %{id: id} = conn.private[:openmaize_user]
+    assert id == 4
   end
 
 end

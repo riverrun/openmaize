@@ -4,6 +4,12 @@ defmodule Openmaize.Remember do
   access enabled.
 
   This needs to be run after `plug Openmaize.Authenticate`.
+
+  This Plug checks for a `remember_me` cookie, and if the current_user
+  is not set, authenticate the user using this cookie. If the check is
+  successful, the user will be added to the current session and to
+  the current_user. If the check is unsuccessful, an error message
+  will be sent to `conn.private.openmaize_error`.
   """
 
   @behaviour Plug
@@ -12,21 +18,13 @@ defmodule Openmaize.Remember do
   alias Openmaize.Config
   alias Plug.Crypto.{KeyGenerator, MessageVerifier}
 
+  @doc false
   def init(opts) do
     {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
     Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model)}
   end
 
-  @doc """
-  Check for a `remember_me` cookie, and if the current_user is not set,
-  authenticate the user using this cookie.
-
-  If the check is successful, the user will be added to the current
-  session and to the current_user.
-
-  If the check is unsuccessful, an error message will be sent to
-  `conn.private.openmaize_error`.
-  """
+  @doc false
   def call(%Plug.Conn{req_cookies: %{"remember_me" => remember}} = conn, {repo, user_model}) do
     if conn.assigns[:current_user] do
       conn

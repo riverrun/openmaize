@@ -13,6 +13,7 @@ defmodule Openmaize.Confirm.Base do
 
       import unquote(__MODULE__)
 
+      @doc false
       def init(opts) do
         {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
         Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model),
@@ -20,6 +21,7 @@ defmodule Openmaize.Confirm.Base do
         Keyword.get(opts, :mail_function, &IO.puts/1)}}
       end
 
+      @doc false
       def call(%Plug.Conn{params: params} = conn, opts) do
         check_confirm conn, unpack_params(params), opts
       end

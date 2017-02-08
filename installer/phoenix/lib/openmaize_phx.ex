@@ -105,7 +105,7 @@ defmodule Mix.Tasks.Openmaize.Phx do
     We are almost ready!
 
     Now edit the `mix.exs` file, adding `:openmaize` to the list of
-    `applications` and `{:openmaize, {"~> 2.7"}},` to the deps.
+    `applications` and `{:openmaize, "~> 2.7"},` to the deps.
     Then run `mix deps.get`.
 
     You might also need to edit the database details in the `config`

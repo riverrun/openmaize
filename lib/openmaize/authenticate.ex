@@ -23,14 +23,13 @@ defmodule Openmaize.Authenticate do
 
   @behaviour Plug
 
+  @doc false
   def init(opts) do
     {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
     Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model)}
   end
 
-  @doc """
-  Authenticate the current user.
-  """
+  @doc false
   def call(conn, {repo, user_model}) do
     get_session(conn, :user_id) |> get_user(conn, repo, user_model)
   end

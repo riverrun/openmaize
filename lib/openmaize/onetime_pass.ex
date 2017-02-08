@@ -49,18 +49,14 @@ defmodule Openmaize.OnetimePass do
   alias Openmaize.Database, as: DB
   alias Openmaize.Logger
 
+  @doc false
   def init(opts) do
     {Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
     Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model),
     opts}
   end
 
-  @doc """
-  Handle the one-time password POST request.
-
-  If the one-time password check is successful, the user will be added
-  to the session.
-  """
+  @doc false
   def call(%Plug.Conn{params: %{"user" => %{"id" => id, "hotp" => hotp}}} = conn,
     {repo, user_model, opts}) do
     {:ok, result} = repo.transaction(fn ->
