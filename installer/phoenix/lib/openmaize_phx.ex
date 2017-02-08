@@ -82,6 +82,7 @@ defmodule Mix.Tasks.Openmaize.Phx do
   all_files = @phx_base ++ @phx_api ++ @phx_html ++ @phx_confirm ++ @phx_api_confirm ++ @phx_html_confirm
 
   for {_, source, _} <- all_files do
+    @external_resource Path.join(root, source)
     def render(unquote(source)), do: unquote(File.read!(Path.join(root, source)))
   end
 
@@ -108,8 +109,11 @@ defmodule Mix.Tasks.Openmaize.Phx do
     `applications` and `{:openmaize, "~> 2.7"},` to the deps.
     Then run `mix deps.get`.
 
-    You might also need to edit the database details in the `config`
-    files.
+    You will probably need to edit the database username and password
+    in the `config` files, and you might need to edit `web/models/user.ex`,
+    `priv/repo/migrations/*_create_user.exs` and `web/controllers/session_controller.ex`,
+    together with the test files, especially if you are not using `username` to
+    identify the user.
 
     Then, to run the tests:
 
@@ -119,10 +123,6 @@ defmodule Mix.Tasks.Openmaize.Phx do
 
         mix phoenix.server
 
-    If you are not using "username" or "email" to index / identify
-    the user, and if any of the session_controller tests fail, you
-    might need to edit the `test/controllers/session_controller_test.exs`
-    and `test/support/test_helpers.ex` files.
     """
   end
 
