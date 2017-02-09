@@ -70,4 +70,11 @@ defmodule Openmaize.LoginTest do
     assert id == 4
   end
 
+  test "output to current_user does not contain password_hash or otp_secret" do
+    conn = login("ray", "h4rd2gU3$$")
+    user = conn.private[:openmaize_user]
+    refute Map.has_key?(user, :password_hash)
+    refute Map.has_key?(user, :otp_secret)
+  end
+
 end

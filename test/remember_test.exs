@@ -64,4 +64,11 @@ defmodule Openmaize.RememberTest do
     assert remember.value == "SFMyNTY.MQ.yX9edPVZtRiJwMsoARY8QJqXfKnQpicssKlqGPjtoUw"
   end
 
+  test "output to current_user does not contain password_hash or otp_secret" , %{newconn: newconn} do
+    newconn = Remember.call(newconn, {TestRepo, TestUser})
+    %{current_user: user} = newconn.assigns
+    refute Map.has_key?(user, :password_hash)
+    refute Map.has_key?(user, :otp_secret)
+  end
+
 end

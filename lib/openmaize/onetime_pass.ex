@@ -2,6 +2,16 @@ defmodule Openmaize.OnetimePass do
   @moduledoc """
   Module to handle one-time passwords for use in two factor authentication.
 
+  `Openmaize.OnetimePass` checks the one-time password, and returns an
+  `openmaize_user` message (the user model) if the one-time password is
+  correct or an `openmaize_error` message if there is an error.
+
+  After this function has been called, you need to add the user to the
+  session, by running `put_session(conn, :user_id, id)`, or send an API
+  token to the user.
+
+  ## Options
+
   There are two options related to the database:
 
     * repo - the name of the repo
@@ -47,7 +57,7 @@ defmodule Openmaize.OnetimePass do
   import Plug.Conn
   alias Comeonin.Otp
   alias Openmaize.Database, as: DB
-  alias Openmaize.Logger
+  alias Openmaize.{Config, Logger}
 
   @doc false
   def init(opts) do
@@ -86,7 +96,7 @@ defmodule Openmaize.OnetimePass do
     Logger.warn conn, "-", message
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  defp handle_auth(%{id: id, otp_last: otp_last}, conn) do
-    put_private(conn, :openmaize_user, %{id: id, otp_last: otp_last})
+  defp handle_auth(user, conn) do
+    put_private(conn, :openmaize_user, Map.drop(user, Config.drop_user_keys))
   end
 end

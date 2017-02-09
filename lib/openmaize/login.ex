@@ -4,15 +4,14 @@ defmodule Openmaize.Login do
 
   `Openmaize.Login` checks the user's password, making sure that the
   account has been confirmed, if necessary, and returns an `openmaize_user`
-  message if login is successful (unless you are using two-factor authentication)
-  or an `openmaize_error` message if there is an error.
+  message (the user model) if login is successful or an `openmaize_error`
+  message if there is an error.
 
-  ## Two-factor authentication
-
-  If two-factor authentication is enabled and `otp_required` for the
-  user is true, an `openmaize_otpdata` message is returned. This contains
-  the user id, which is then used when authenticating the one-time
-  password.
+  After this function has been called, you need to add the user to the
+  session, by running `put_session(conn, :user_id, id)`, or send an API
+  token to the user. If you are using two-factor authentication, you
+  need to first check the user model for `otp_required: true` and, if
+  necessary, redirect the user to the one-time password input page.
 
   ## Options
 
@@ -96,11 +95,8 @@ defmodule Openmaize.Login do
     {:ok, user} || {:error, "invalid password"}
   end
 
-  #defp handle_auth({:ok, %{id: id, otp_required: true}}, conn, _) do
-  #put_private(conn, :openmaize_otpdata, id)
-    #end
-  defp handle_auth({:ok, %{id: id}}, conn, _) do
-    put_private(conn, :openmaize_user, %{id: id})
+  defp handle_auth({:ok, user}, conn, _) do
+    put_private(conn, :openmaize_user, Map.drop(user, Config.drop_user_keys))
   end
   defp handle_auth({:error, "acc" <> _ = message}, conn, user_id) do
     Logger.warn conn, user_id, message

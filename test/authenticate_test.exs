@@ -32,4 +32,11 @@ defmodule Openmaize.AuthenticateTest do
     assert newconn.assigns == %{current_user: nil}
   end
 
+  test "output to current_user does not contain password_hash or otp_secret" do
+    conn = call(1)
+    %{current_user: user} = conn.assigns
+    refute Map.has_key?(user, :password_hash)
+    refute Map.has_key?(user, :otp_secret)
+  end
+
 end

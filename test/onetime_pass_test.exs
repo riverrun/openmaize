@@ -84,4 +84,12 @@ defmodule Openmaize.OnetimePassTest do
     assert conn.private[:openmaize_error]
   end
 
+  test "output to current_user does not contain password_hash or otp_secret" do
+    user = %{"hotp" => "816065", "id" => "5"}
+    conn = call(user, {TestRepo, TestUser, []})
+    user = conn.private[:openmaize_user]
+    refute Map.has_key?(user, :password_hash)
+    refute Map.has_key?(user, :otp_secret)
+  end
+
 end
