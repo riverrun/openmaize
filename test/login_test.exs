@@ -20,16 +20,14 @@ defmodule Openmaize.LoginTest do
 
   test "login succeeds with username" do
     conn = login("ray", "h4rd2gU3$$")
-    %{id: id, role: role} = conn.private[:openmaize_user]
+    %{id: id} = conn.private[:openmaize_user]
     assert id == 4
-    assert role == "user"
   end
 
   test "login succeeds with email" do
     conn = login("ray@mail.com", "h4rd2gU3$$", :email, "email")
-    %{id: id, role: role} = conn.private[:openmaize_user]
+    %{id: id} = conn.private[:openmaize_user]
     assert id == 4
-    assert role == "user"
   end
 
   test "login fails when crypto mod changes" do

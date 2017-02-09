@@ -86,7 +86,7 @@ defmodule Openmaize.OnetimePass do
     Logger.warn conn, "-", message
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  defp handle_auth(user, conn) do
-    put_private(conn, :openmaize_user, user)
+  defp handle_auth(%{id: id, otp_last: otp_last}, conn) do
+    put_private(conn, :openmaize_user, %{id: id, otp_last: otp_last})
   end
 end

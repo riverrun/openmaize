@@ -96,6 +96,7 @@ defmodule Openmaize.Remember do
     put_private(conn, :openmaize_error, "Invalid user id")
   end
   defp handle_auth(%{id: id} = user, conn) do
+    user = Map.drop(user, Config.drop_user_keys)
     put_session(conn, :user_id, id) |> assign(:current_user, user)
   end
 end

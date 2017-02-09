@@ -31,9 +31,8 @@ defmodule Openmaize.OnetimePassTest do
   test "check hotp with default options" do
     user = %{"hotp" => "816065", "id" => "5"}
     conn = call(user, {TestRepo, TestUser, []})
-    %{id: id, role: role, otp_last: otp_last} = conn.private[:openmaize_user]
+    %{id: id, otp_last: otp_last} = conn.private[:openmaize_user]
     assert id == 5
-    assert role == "user"
     assert otp_last == 2
     refute conn.private[:openmaize_error]
     fail = %{"hotp" => "816066", "id" => "5"}
@@ -45,9 +44,8 @@ defmodule Openmaize.OnetimePassTest do
   test "check hotp with updated last" do
     user = %{"hotp" => "088239", "id" => "5"}
     conn = call(user, {TestRepo, TestUser, []})
-    %{id: id, role: role, otp_last: otp_last} = conn.private[:openmaize_user]
+    %{id: id, otp_last: otp_last} = conn.private[:openmaize_user]
     assert id == 5
-    assert role == "user"
     assert otp_last == 19
     assert conn.private[:openmaize_user]
     refute conn.private[:openmaize_error]

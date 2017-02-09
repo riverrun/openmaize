@@ -1,9 +1,14 @@
 # Changelog
 
+## v2.9.0-dev
+
+* Enhancements
+    * Now filtering output from Openmaize.Authenticate
+
 ## v2.8.0
 
 * Enhancements
-    * Added logging to the Login, OnetimePass, ConfirmEmail and ResetPassword modules
+    * Added basic logging to the Login, OnetimePass, ConfirmEmail and ResetPassword modules
     * Made ConfirmEmail and ResetPassword modules more configurable
 
 ## v2.7.0

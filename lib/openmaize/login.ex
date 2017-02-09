@@ -96,11 +96,11 @@ defmodule Openmaize.Login do
     {:ok, user} || {:error, "invalid password"}
   end
 
-  defp handle_auth({:ok, %{id: id, otp_required: true}}, conn, _) do
-    put_private(conn, :openmaize_otpdata, id)
-  end
-  defp handle_auth({:ok, user}, conn, _) do
-    put_private(conn, :openmaize_user, user)
+  #defp handle_auth({:ok, %{id: id, otp_required: true}}, conn, _) do
+  #put_private(conn, :openmaize_otpdata, id)
+    #end
+  defp handle_auth({:ok, %{id: id}}, conn, _) do
+    put_private(conn, :openmaize_user, %{id: id})
   end
   defp handle_auth({:error, "acc" <> _ = message}, conn, user_id) do
     Logger.warn conn, user_id, message

@@ -21,7 +21,7 @@ defmodule Openmaize.Database do
   """
   def add_password_hash(user, params) do
     (params[:password] || params["password"])
-    |> Password.valid_password?(Config.password_strength)
+    |> Password.valid_password?(Config.password_min_len)
     |> add_hash_changeset(user)
   end
 
@@ -77,7 +77,7 @@ defmodule Openmaize.Database do
   values will be set to nil.
   """
   def password_reset(user, password, repo) do
-    Password.valid_password?(password, Config.password_strength)
+    Password.valid_password?(password, Config.password_min_len)
     |> reset_update_repo(user, repo)
   end
 

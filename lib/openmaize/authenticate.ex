@@ -20,6 +20,7 @@ defmodule Openmaize.Authenticate do
   """
 
   import Plug.Conn
+  alias Openmaize.Config
 
   @behaviour Plug
 
@@ -40,5 +41,8 @@ defmodule Openmaize.Authenticate do
   end
 
   defp set_current_user(nil, conn), do: assign(conn, :current_user, nil)
-  defp set_current_user(user, conn), do: assign(conn, :current_user, user)
+  defp set_current_user(user, conn) do
+    user = Map.drop(user, Config.drop_user_keys)
+    assign(conn, :current_user, user)
+  end
 end

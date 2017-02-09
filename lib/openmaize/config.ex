@@ -5,12 +5,13 @@ defmodule Openmaize.Config do
   The following are valid configuration items.
 
 
-  | name               | type         | default          |
-  | :----------------- | :----------- | ---------------: |
-  | crypto_mod         | module       | Comeonin.Bcrypt  |
-  | hash_name          | atom         | :password_hash   |
-  | password_strength  | keyword list | []               |
-  | remember_salt      | string       | N/A              |
+  | name               | type          | default          |
+  | :----------------- | :-----------  | ---------------: |
+  | crypto_mod         | module        | Comeonin.Bcrypt  |
+  | hash_name          | atom          | :password_hash   |
+  | drop_user_keys     | list of atoms | []               |
+  | password_min_len   | integer       | 8                |
+  | remember_salt      | string        | N/A              |
 
   ## Examples
 
@@ -21,7 +22,8 @@ defmodule Openmaize.Config do
       config :openmaize,
         crypto_mod: Comeonin.Bcrypt,
         hash_name: :encrypted_password,
-        password_strength: [min_length: 12]
+        drop_user_keys: [:shoe_size],
+        password_min_len: 12
 
   """
 
@@ -49,33 +51,32 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  Options for the password strength check.
+  The keys that are removed from the user struct before it is passed
+  on to another function.
 
-  The basic check will just check the minimum length, which is 8 characters
-  by default. For a more advanced check, you need to have the optional
-  dependency NotQwerty123 installed.
+  This should be a list of atoms.
 
-  ## Advanced password strength check
-
-  If you have NotQwerty123 installed, there are three options:
-
-    * min_length - the minimum length of the password
-    * extra_chars - check for punctuation characters (including spaces) and digits
-    * common - check to see if the password is too common (too easy to guess)
-
-  See the documentation for Openmaize.Password for more information about
-  these options.
-
-  ## Examples
-
-  In the following example, the password strength check will set the minimum
-  length to 16 characters and will skip the `extra_chars` check:
-
-      password_strength: [min_length: 16, extra_chars: false]
-
+  By default, :password_hash (or the value for hash_name), :password,
+  :otp_secret, :confirmation_token and :reset_token are removed, and
+  this option allows you to add to this list.
   """
-  def password_strength do
-    Application.get_env(:openmaize, :password_strength, [])
+  def drop_user_keys do
+    Application.get_env(:openmaize, :drop_user_keys, []) ++
+    [hash_name(), :password, :otp_secret, :confirmation_token, :reset_token]
+  end
+
+  @doc """
+  Minimum length for the password strength check.
+
+  The default minimum length is 8.
+
+  The Openmaize.Password module provides a basic check and an advanced
+  check, both of which use the `password_min_len` value. For more
+  information about the advanced check, see the documentation for
+  the Openmaize.Password module.
+  """
+  def password_min_len do
+    Application.get_env(:openmaize, :password_min_len, 8)
   end
 
   @doc """
