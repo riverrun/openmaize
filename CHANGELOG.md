@@ -3,7 +3,8 @@
 ## v2.9.0-dev
 
 * Enhancements
-    * Now filtering output from Openmaize.Authenticate
+    * Filtering output from Openmaize.Authenticate, Openmaize.Login, Openmaize.OnetimePass and Openmaize.Remember
+    * Removed otp_required check from Openmaize.Login
 
 ## v2.8.0
 

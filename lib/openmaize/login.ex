@@ -47,7 +47,7 @@ defmodule Openmaize.Login do
 
   require Logger
   import Plug.Conn
-  alias Openmaize.{Config, LoggerUtils, LogEntry}
+  alias Openmaize.{Config, Log}
 
   @doc false
   def init(opts) do
@@ -100,19 +100,19 @@ defmodule Openmaize.Login do
     put_private(conn, :openmaize_user, Map.drop(user, Config.drop_user_keys))
   end
   defp handle_auth({:error, "acc" <> _ = message}, conn, user_id) do
-    log_entry = %LogEntry{
+    log_entry = %Log{
       user: user_id,
       message: message}
 
-    conn |> LoggerUtils.logfmt(log_entry) |> Logger.warn
+    conn |> Log.logfmt(log_entry) |> Logger.warn
     put_private(conn, :openmaize_error, "You have to confirm your account")
   end
   defp handle_auth({:error, message}, conn, user_id) do
-    log_entry = %LogEntry{
+    log_entry = %Log{
       user: user_id,
       message: message}
 
-    conn |> LoggerUtils.logfmt(log_entry) |> Logger.warn
+    conn |> Log.logfmt(log_entry) |> Logger.warn
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

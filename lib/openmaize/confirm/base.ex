@@ -37,7 +37,7 @@ defmodule Openmaize.Confirm.Base do
   import Plug.Conn
   import Comeonin.Tools
   alias Openmaize.Database, as: DB
-  alias Openmaize.{LoggerUtils, LogEntry}
+  alias Openmaize.Log
 
   def check_confirm(conn, {uniq, user_id, key, password},
     {repo, user_model, {key_expiry, mail_func}}) when byte_size(key) == 32 do
@@ -46,11 +46,11 @@ defmodule Openmaize.Confirm.Base do
     |> finalize(conn, user_id, mail_func, password)
   end
   def check_confirm(conn, _, _) do
-    log_entry = %LogEntry{
+    log_entry = %Log{
       message: "invalid query string.",
       meta: [{"query", conn.query_string}]}
 
-    conn |> LoggerUtils.logfmt(log_entry) |> Logger.warn
+    conn |> Log.logfmt(log_entry) |> Logger.warn
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 
@@ -69,20 +69,20 @@ defmodule Openmaize.Confirm.Base do
 
   defp finalize({:ok, user}, conn, user_id, mail_func, password) do
     message = if password == :nopass, do: "account confirmed", else: "password reset"
-    log_entry = %LogEntry{user: user_id, message: message}
-    conn |> LoggerUtils.logfmt(log_entry) |> Logger.info
+    log_entry = %Log{user: user_id, message: message}
+    conn |> Log.logfmt(log_entry) |> Logger.info
 
     mail_func.(user.email)
     put_private(conn, :openmaize_info, String.capitalize(message))
   end
   defp finalize({:error, message}, conn, user_id, _, _) do
-    current_user_id = conn |> LoggerUtils.current_user_id
-    log_entry = %LogEntry{
+    current_user_id = conn |> Log.current_user_id
+    log_entry = %Log{
       user: user_id,
       message: message,
       meta: [{"current_user_id", current_user_id}]}
 
-    conn |> LoggerUtils.logfmt(log_entry) |> Logger.warn
+    conn |> Log.logfmt(log_entry) |> Logger.warn
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end
