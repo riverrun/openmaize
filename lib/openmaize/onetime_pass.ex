@@ -94,9 +94,7 @@ defmodule Openmaize.OnetimePass do
   end
 
   defp handle_auth({:error, message}, conn) do
-    log_entry = %Log{message: message}
-
-    conn |> Log.logfmt(log_entry) |> Logger.warn
+    Log.logfmt(conn, %Log{message: message}) |> Logger.warn
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
   defp handle_auth(user, conn) do

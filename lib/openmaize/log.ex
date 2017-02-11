@@ -30,9 +30,20 @@ defmodule Openmaize.Log do
   def logfmt(%Plug.Conn{request_path: request_path},
     %Openmaize.Log{user: user, message: message, meta: meta}) do
     log = [{"path", request_path}, {"user", user}, {"message", message}] ++ meta
-    Enum.map_join(log, " ", fn {k, v} -> "#{k}=#{v}" end)
+    Enum.map_join(log, " ", &format/1)
   end
 
+  @doc """
+  Returns the id of the currently logged-in user, if present.
+  """
   def current_user_id(%Plug.Conn{assigns: %{current_user: %{id: id}}}), do: "#{id}"
   def current_user_id(_), do: "nil"
+
+  defp format({key, val}) do
+    if String.contains?(val, [" ", "="]) do
+      ~s(#{key}="#{val}")
+    else
+      ~s(#{key}=#{val})
+    end
+  end
 end

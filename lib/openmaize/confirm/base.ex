@@ -39,6 +39,12 @@ defmodule Openmaize.Confirm.Base do
   alias Openmaize.Database, as: DB
   alias Openmaize.Log
 
+  @doc """
+  Function to confirm email by checking the token.
+
+  This function is used by the Openmaize.ConfirmEmail and
+  Openmaize.ResetPassword Plugs.
+  """
   def check_confirm(conn, {uniq, user_id, key, password},
     {repo, user_model, {key_expiry, mail_func}}) when byte_size(key) == 32 do
     repo.get_by(user_model, [{uniq, user_id}])
@@ -46,11 +52,10 @@ defmodule Openmaize.Confirm.Base do
     |> finalize(conn, user_id, mail_func, password)
   end
   def check_confirm(conn, _, _) do
-    log_entry = %Log{
-      message: "invalid query string.",
-      meta: [{"query", conn.query_string}]}
-
-    conn |> Log.logfmt(log_entry) |> Logger.warn
+    Log.logfmt(conn, %Log{
+                 message: "invalid query string",
+                 meta: [{"query", conn.query_string}]})
+    |> Logger.warn
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 
@@ -69,20 +74,17 @@ defmodule Openmaize.Confirm.Base do
 
   defp finalize({:ok, user}, conn, user_id, mail_func, password) do
     message = if password == :nopass, do: "account confirmed", else: "password reset"
-    log_entry = %Log{user: user_id, message: message}
-    conn |> Log.logfmt(log_entry) |> Logger.info
+    Log.logfmt(conn, %Log{user: user_id, message: message}) |> Logger.info
 
     mail_func.(user.email)
     put_private(conn, :openmaize_info, String.capitalize(message))
   end
   defp finalize({:error, message}, conn, user_id, _, _) do
-    current_user_id = conn |> Log.current_user_id
-    log_entry = %Log{
-      user: user_id,
-      message: message,
-      meta: [{"current_user_id", current_user_id}]}
-
-    conn |> Log.logfmt(log_entry) |> Logger.warn
+    Log.logfmt(conn, %Log{
+                 user: user_id,
+                 message: message,
+                 meta: [{"current_user_id", Log.current_user_id(conn)}]})
+    |> Logger.warn
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

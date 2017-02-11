@@ -100,19 +100,11 @@ defmodule Openmaize.Login do
     put_private(conn, :openmaize_user, Map.drop(user, Config.drop_user_keys))
   end
   defp handle_auth({:error, "acc" <> _ = message}, conn, user_id) do
-    log_entry = %Log{
-      user: user_id,
-      message: message}
-
-    conn |> Log.logfmt(log_entry) |> Logger.warn
+    Log.logfmt(conn, %Log{user: user_id, message: message}) |> Logger.warn
     put_private(conn, :openmaize_error, "You have to confirm your account")
   end
   defp handle_auth({:error, message}, conn, user_id) do
-    log_entry = %Log{
-      user: user_id,
-      message: message}
-
-    conn |> Log.logfmt(log_entry) |> Logger.warn
+    Log.logfmt(conn, %Log{user: user_id, message: message}) |> Logger.warn
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end
