@@ -46,16 +46,17 @@ defmodule Openmaize.Confirm.Base do
   Openmaize.ResetPassword Plugs.
   """
   def check_confirm(conn, {uniq, user_id, key, password},
-    {repo, user_model, {key_expiry, mail_func}}) when byte_size(key) == 32 do
+      {repo, user_model, {key_expiry, mail_func}}) when byte_size(key) == 32 do
     repo.get_by(user_model, [{uniq, user_id}])
     |> check_key(repo, key, key_expiry * 60, password)
     |> finalize(conn, user_id, mail_func, password)
   end
   def check_confirm(conn, _, _) do
-    Log.logfmt(conn, %Log{
-                 message: "invalid query string",
-                 meta: [{"query", conn.query_string}]})
-    |> Logger.warn
+    Logger.warn fn ->
+      Log.logfmt conn.request_path,
+                 %Log{message: "invalid query string",
+                   meta: [{"query", conn.query_string}]}
+    end
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 
@@ -74,17 +75,19 @@ defmodule Openmaize.Confirm.Base do
 
   defp finalize({:ok, user}, conn, user_id, mail_func, password) do
     message = if password == :nopass, do: "account confirmed", else: "password reset"
-    Log.logfmt(conn, %Log{user: user_id, message: message}) |> Logger.info
-
+    Logger.info fn ->
+      Log.logfmt conn.request_path, %Log{user: user_id, message: message}
+    end
     mail_func.(user.email)
     put_private(conn, :openmaize_info, String.capitalize(message))
   end
   defp finalize({:error, message}, conn, user_id, _, _) do
-    Log.logfmt(conn, %Log{
-                 user: user_id,
-                 message: message,
-                 meta: [{"current_user_id", Log.current_user_id(conn)}]})
-    |> Logger.warn
+    Logger.warn fn ->
+      Log.logfmt conn.request_path,
+                 %Log{user: user_id,
+                   message: message,
+                   meta: [{"current_user_id", Log.current_user_id(conn.assigns)}]}
+    end
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

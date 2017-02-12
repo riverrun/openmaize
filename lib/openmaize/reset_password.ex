@@ -47,7 +47,7 @@ defmodule Openmaize.ResetPassword do
   use Openmaize.Confirm.Base
 
   def unpack_params(%{"password_reset" =>
-    %{"email" => email, "key" => key, "password" => password}}) do
+      %{"email" => email, "key" => key, "password" => password}}) do
     {:email, email, key, password}
   end
 end

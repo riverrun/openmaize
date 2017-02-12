@@ -25,7 +25,8 @@ defmodule Openmaize.Remember do
   end
 
   @doc false
-  def call(%Plug.Conn{req_cookies: %{"remember_me" => remember}} = conn, {repo, user_model}) do
+  def call(%Plug.Conn{req_cookies: %{"remember_me" => remember}} = conn,
+      {repo, user_model}) do
     if conn.assigns[:current_user] do
       conn
     else

@@ -60,12 +60,12 @@ defmodule Openmaize.Login do
 
   @doc false
   def call(%Plug.Conn{params: %{"session" => params}} = conn,
-    {uniq, user_params, repo, user_model}) when is_atom(uniq) do
+      {uniq, user_params, repo, user_model}) when is_atom(uniq) do
     %{^user_params => user_id, "password" => password} = params
     check_user_pass conn, {uniq, user_id, password}, {repo, user_model}
   end
   def call(%Plug.Conn{params: %{"session" => params}} = conn,
-    {uniq, _, repo, user_model}) do
+      {uniq, _, repo, user_model}) do
     check_user_pass conn, uniq.(params), {repo, user_model}
   end
 
@@ -100,11 +100,17 @@ defmodule Openmaize.Login do
     put_private(conn, :openmaize_user, Map.drop(user, Config.drop_user_keys))
   end
   defp handle_auth({:error, "acc" <> _ = message}, conn, user_id) do
-    Log.logfmt(conn, %Log{user: user_id, message: message}) |> Logger.warn
+    Logger.warn fn ->
+      Log.logfmt conn.request_path,
+                 %Log{user: user_id, message: message}
+    end
     put_private(conn, :openmaize_error, "You have to confirm your account")
   end
   defp handle_auth({:error, message}, conn, user_id) do
-    Log.logfmt(conn, %Log{user: user_id, message: message}) |> Logger.warn
+    Logger.warn fn ->
+      Log.logfmt conn.request_path,
+                 %Log{user: user_id, message: message}
+    end
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

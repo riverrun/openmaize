@@ -23,20 +23,19 @@ defmodule Openmaize.Log do
 
       iex> conn = %Plug.Conn{request_path: "/"}
       ...> log_entry = %Openmaize.Log{user: "johnny", message: "logged", meta: [{"query", "something"}]}
-      ...> conn |> Openmaize.Log.logfmt(log_entry)
+      ...> Openmaize.Log.logfmt(conn.request_path, log_entry)
       "path=/ user=johnny message=logged query=something"
 
   """
-  def logfmt(%Plug.Conn{request_path: request_path},
-    %Openmaize.Log{user: user, message: message, meta: meta}) do
-    log = [{"path", request_path}, {"user", user}, {"message", message}] ++ meta
-    Enum.map_join(log, " ", &format/1)
+  def logfmt(path, %Openmaize.Log{user: user, message: message, meta: meta}) do
+    ([{"path", path}, {"user", user}, {"message", message}] ++ meta)
+    |> Enum.map_join(" ", &format/1)
   end
 
   @doc """
   Returns the id of the currently logged-in user, if present.
   """
-  def current_user_id(%Plug.Conn{assigns: %{current_user: %{id: id}}}), do: "#{id}"
+  def current_user_id(%{current_user: %{id: id}}), do: "#{id}"
   def current_user_id(_), do: "nil"
 
   defp format({key, val}) do
