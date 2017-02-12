@@ -75,14 +75,14 @@ defmodule Openmaize.OnetimePass do
       |> check_hotp(hotp, opts)
       |> DB.update_otp(repo)
     end)
-    handle_auth(result, conn)
+    handle_auth(result, conn, id)
   end
   def call(%Plug.Conn{params: %{"user" => %{"id" => id, "totp" => totp}}} = conn,
       {repo, user_model, opts}) do
     repo.get(user_model, id)
     |> check_totp(totp, opts)
     |> DB.update_otp(repo)
-    |> handle_auth(conn)
+    |> handle_auth(conn, id)
   end
 
   defp check_hotp(user, hotp, opts) do
@@ -93,14 +93,18 @@ defmodule Openmaize.OnetimePass do
     {user, Otp.check_totp(totp, user.otp_secret, opts)}
   end
 
-  defp handle_auth({:error, message}, conn) do
+  defp handle_auth({:error, message}, conn, user_id) do
     Logger.warn fn ->
-      Log.logfmt conn.request_path,
-                 %Log{message: message}
+      Log.logfmt conn.request_path, %Log{user: user_id, message: message}
     end
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
-  defp handle_auth(user, conn) do
+  defp handle_auth(user, conn, user_id) do
+    Logger.info fn ->
+      Log.logfmt conn.request_path,
+                 %Log{user: user_id,
+                   message: "successful one-time password login"}
+    end
     put_private(conn, :openmaize_user, Map.drop(user, Config.drop_user_keys))
   end
 end
