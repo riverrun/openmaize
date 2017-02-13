@@ -2,7 +2,6 @@ defmodule Openmaize.LogTest do
   use ExUnit.Case
   use Plug.Test
   import ExUnit.CaptureLog
-  doctest Openmaize.Log
 
   require Logger
   alias Openmaize.{Config, Log}

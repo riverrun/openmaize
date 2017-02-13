@@ -19,7 +19,19 @@ defmodule Openmaize.Log do
   defstruct user: "nil", message: "", meta: []
 
   @doc """
-  Print out the log message.
+  Returns the log message.
+
+  The level at which logging starts can be configured by changing
+  the `log_level` value in the config file.
+
+  The default log_level is :info, but if you only want warnings printed
+  out, add the following to the config file:
+
+      config :openmaize,
+        log_level: :warn
+
+  And if you do not want Openmaize to print out any logs, set the
+  log_level to false.
   """
   def log(_, false, _, _), do: :ok
   def log(level, log_level, path, %Openmaize.Log{user: user, message: message, meta: meta}) do

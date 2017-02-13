@@ -9,6 +9,7 @@ defmodule Openmaize.Config do
   | :----------------- | :-----------  | ---------------: |
   | crypto_mod         | module        | Comeonin.Bcrypt  |
   | hash_name          | atom          | :password_hash   |
+  | log_level          | atom          | :info            |
   | drop_user_keys     | list of atoms | []               |
   | password_min_len   | integer       | 8                |
   | remember_salt      | string        | N/A              |
@@ -51,7 +52,13 @@ defmodule Openmaize.Config do
   end
 
   @doc """
-  The log level.
+  The log level for Openmaize logs.
+
+  This should either be an atom, :debug, :info, :warn or :error, or
+  false.
+
+  The default is :info, which means that :info, :warn and :error logs
+  will be returned.
   """
   def log_level do
     Application.get_env(:openmaize, :log_level, :info)

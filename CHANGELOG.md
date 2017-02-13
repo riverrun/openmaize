@@ -1,9 +1,11 @@
 # Changelog
 
-## v2.9.0-dev
+## v2.9.0
 
 * Enhancements
+    * Added `log_level` value to the Config module so that developers have more control what is logged
     * Filtering output from Openmaize.Authenticate, Openmaize.Login, Openmaize.OnetimePass and Openmaize.Remember
+* Changes
     * Removed otp_required check from Openmaize.Login
 
 ## v2.8.0
