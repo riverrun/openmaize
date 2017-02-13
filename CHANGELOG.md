@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.0.0
+
+* Changes
+    * Changed default `unique_id` for Openmaize.Login and the installer to `:email`
+
 ## v2.9.0
 
 * Enhancements

@@ -1,7 +1,7 @@
 defmodule Openmaize.Mixfile do
   use Mix.Project
 
-  @version "2.9.0"
+  @version "3.0.0-dev"
 
   @description """
   Authentication library for Elixir using Plug
