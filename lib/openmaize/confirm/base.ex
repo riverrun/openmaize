@@ -33,11 +33,10 @@ defmodule Openmaize.Confirm.Base do
     end
   end
 
-  require Logger
   import Plug.Conn
   import Comeonin.Tools
   alias Openmaize.Database, as: DB
-  alias Openmaize.Log
+  alias Openmaize.{Config, Log}
 
   @doc """
   Function to confirm email by checking the token.
@@ -52,11 +51,9 @@ defmodule Openmaize.Confirm.Base do
     |> finalize(conn, user_id, mail_func, password)
   end
   def check_confirm(conn, _, _) do
-    Logger.warn fn ->
-      Log.logfmt conn.request_path,
-                 %Log{message: "invalid query string",
-                   meta: [{"query", conn.query_string}]}
-    end
+    Log.log(:warn, Config.log_level, conn.request_path,
+            %Log{message: "invalid query string",
+              meta: [{"query", conn.query_string}]})
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 
@@ -75,19 +72,15 @@ defmodule Openmaize.Confirm.Base do
 
   defp finalize({:ok, user}, conn, user_id, mail_func, password) do
     message = if password == :nopass, do: "account confirmed", else: "password reset"
-    Logger.info fn ->
-      Log.logfmt conn.request_path, %Log{user: user_id, message: message}
-    end
+    Log.log(:info, Config.log_level, conn.request_path, %Log{user: user_id, message: message})
     mail_func.(user.email)
     put_private(conn, :openmaize_info, String.capitalize(message))
   end
   defp finalize({:error, message}, conn, user_id, _, _) do
-    Logger.warn fn ->
-      Log.logfmt conn.request_path,
-                 %Log{user: user_id,
-                   message: message,
-                   meta: [{"current_user_id", Log.current_user_id(conn.assigns)}]}
-    end
+    Log.log(:warn, Config.log_level, conn.request_path,
+            %Log{user: user_id,
+              message: message,
+              meta: [{"current_user_id", Log.current_user_id(conn.assigns)}]})
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
 end

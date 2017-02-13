@@ -14,22 +14,22 @@ defmodule Openmaize.Log do
     * meta - additional metadata that does not fit into any of the other categories
   """
 
+  require Logger
+
   defstruct user: "nil", message: "", meta: []
 
   @doc """
-  Transforms an Openmaize log entry into standard logfmt
-
-  ## Examples
-
-      iex> conn = %Plug.Conn{request_path: "/"}
-      ...> log_entry = %Openmaize.Log{user: "johnny", message: "logged", meta: [{"query", "something"}]}
-      ...> Openmaize.Log.logfmt(conn.request_path, log_entry)
-      "path=/ user=johnny message=logged query=something"
-
+  Print out the log message.
   """
-  def logfmt(path, %Openmaize.Log{user: user, message: message, meta: meta}) do
-    ([{"path", path}, {"user", user}, {"message", message}] ++ meta)
-    |> Enum.map_join(" ", &format/1)
+  def log(_, false, _, _), do: :ok
+  def log(level, log_level, path, %Openmaize.Log{user: user, message: message, meta: meta}) do
+    if Logger.compare_levels(level, log_level) != :lt do
+      Logger.log level, fn ->
+        Enum.map_join([{"path", path}, {"user", user}, {"message", message}] ++
+                      meta, " ", &format/1)
+      end
+    end
+    :ok
   end
 
   @doc """

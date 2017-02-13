@@ -54,7 +54,6 @@ defmodule Openmaize.OnetimePass do
 
   @behaviour Plug
 
-  require Logger
   import Plug.Conn
   alias Comeonin.Otp
   alias Openmaize.Database, as: DB
@@ -94,17 +93,14 @@ defmodule Openmaize.OnetimePass do
   end
 
   defp handle_auth({:error, message}, conn, user_id) do
-    Logger.warn fn ->
-      Log.logfmt conn.request_path, %Log{user: user_id, message: message}
-    end
+    Log.log(:warn, Config.log_level, conn.request_path,
+            %Log{user: user_id, message: message})
     put_private(conn, :openmaize_error, "Invalid credentials")
   end
   defp handle_auth(user, conn, user_id) do
-    Logger.info fn ->
-      Log.logfmt conn.request_path,
-                 %Log{user: user_id,
-                   message: "successful one-time password login"}
-    end
+    Log.log(:info, Config.log_level, conn.request_path,
+            %Log{user: user_id,
+              message: "successful one-time password login"})
     put_private(conn, :openmaize_user, Map.drop(user, Config.drop_user_keys))
   end
 end

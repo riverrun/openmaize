@@ -45,7 +45,6 @@ defmodule Openmaize.Login do
 
   @behaviour Plug
 
-  require Logger
   import Plug.Conn
   alias Openmaize.{Config, Log}
 
@@ -97,15 +96,12 @@ defmodule Openmaize.Login do
   end
 
   defp handle_auth({:ok, user}, conn, user_id) do
-    Logger.info fn ->
-      Log.logfmt conn.request_path, %Log{user: user_id, message: "successful login"}
-    end
+    Log.log(:info, Config.log_level, conn.request_path,
+            %Log{user: user_id, message: "successful login"})
     put_private(conn, :openmaize_user, Map.drop(user, Config.drop_user_keys))
   end
   defp handle_auth({:error, message}, conn, user_id) do
-    Logger.warn fn ->
-      Log.logfmt conn.request_path, %Log{user: user_id, message: message}
-    end
+    Log.log(:warn, Config.log_level, conn.request_path, %Log{user: user_id, message: message})
     output = case message do
       "acc" <> _ -> "You have to confirm your account"
       _ -> "Invalid credentials"

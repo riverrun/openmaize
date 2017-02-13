@@ -51,6 +51,13 @@ defmodule Openmaize.Config do
   end
 
   @doc """
+  The log level.
+  """
+  def log_level do
+    Application.get_env(:openmaize, :log_level, :info)
+  end
+
+  @doc """
   The keys that are removed from the user struct before it is passed
   on to another function.
 
