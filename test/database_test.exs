@@ -5,11 +5,11 @@ defmodule Openmaize.DatabaseTest do
   alias Openmaize.{Database, DummyCrypto, TestRepo, TestUser}
 
   test "easy password results in an error being added to the changeset" do
-    user = %{email: "bill@mail.com", username: "bill", role: "user", password: "easytoguess",
+    user = %{email: "bill@mail.com", username: "bill", role: "user", password: "qwerty123",
              phone: "081655555", confirmed_at: Ecto.DateTime.utc}
     {:error, changeset} = %TestUser{} |> TestUser.auth_changeset(user) |> TestRepo.insert
     errors = changeset.errors[:password] |> elem(0)
-    assert errors =~ "password should contain at least one number"
+    assert errors =~ "password you have chosen is weak"
   end
 
   test "add_confirm_token" do

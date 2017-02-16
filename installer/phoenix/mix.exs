@@ -7,11 +7,11 @@ defmodule Openmaize.Phx.Mixfile do
     [app: :openmaize_phx,
      version: @version,
      aliases: aliases(),
-     elixir: "~> 1.3"]
+     elixir: "~> 1.4"]
   end
 
   def application do
-    [applications: []]
+    [extra_applications: []]
   end
 
   defp build_releases(_) do
