@@ -6,6 +6,7 @@ defmodule <%= base %>.SessionController do
 
   plug Openmaize.ConfirmEmail,
     [mail_function: &Mailer.receipt_confirm/1] when action in [:confirm_email]<% end %>
+
   plug Openmaize.Login when action in [:create]
 
   def new(conn, _params) do

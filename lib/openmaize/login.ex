@@ -17,7 +17,7 @@ defmodule Openmaize.Login do
 
   There are three options:
     * unique_id - the name which is used to identify the user (in the database)
-      * the default is `:username`
+      * the default is `:email`
       * this can also be a function - see below for an example
     * repo - the name of the repo
       * the default is MyApp.Repo - using the name of the project
@@ -31,10 +31,10 @@ defmodule Openmaize.Login do
 
   The following example is a function that takes the user parameters as
   input and searches for the user by phone number if the input is all digits,
-  but username otherwise.
+  but email otherwise.
 
-      def phone_name(%{"username" => username, "password" => password}) do
-        {Regex.match?(~r/^[0-9]+$/, username) and :phone || :username, username, password}
+      def phone_name(%{"email" => email, "password" => password}) do
+        {Regex.match?(~r/^[0-9]+$/, email) and :phone || :email, email, password}
       end
 
   To use this function, add the following to the session controller:
@@ -50,8 +50,8 @@ defmodule Openmaize.Login do
 
   @doc false
   def init(opts) do
-    uniq = Keyword.get(opts, :unique_id, :username)
-    user_params = if is_atom(uniq), do: to_string(uniq), else: "username"
+    uniq = Keyword.get(opts, :unique_id, :email)
+    user_params = if is_atom(uniq), do: to_string(uniq), else: "email"
     {uniq, user_params,
     Keyword.get(opts, :repo, Openmaize.Utils.default_repo),
     Keyword.get(opts, :user_model, Openmaize.Utils.default_user_model)}

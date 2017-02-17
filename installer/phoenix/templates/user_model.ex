@@ -4,8 +4,8 @@ defmodule <%= base %>.User do
   alias Openmaize.Database, as: DB
 
   schema "users" do
-    field :username, :string
     field :email, :string
+    field :username, :string
     field :password, :string, virtual: true
     field :password_hash, :string<%= if confirm do %>
     field :confirmed_at, Ecto.DateTime
@@ -24,7 +24,7 @@ defmodule <%= base %>.User do
     struct
     |> cast(params, [:username, :email])
     |> validate_required([:username, :email])
-    |> unique_constraint(:username)
+    |> unique_constraint(:email)
   end<%= if confirm do %>
 
   def auth_changeset(struct, params, key) do<% else %>

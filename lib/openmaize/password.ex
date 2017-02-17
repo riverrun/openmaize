@@ -32,10 +32,7 @@ defmodule Openmaize.Password do
 
     def valid_password?(password, min_len \\ 8)
     def valid_password?(password, min_len) when is_binary(password) do
-      case NotQwerty123.PasswordStrength.strong_password?(password, min_length: min_len) do
-        true -> {:ok, password}
-        message -> {:error, message}
-      end
+      NotQwerty123.PasswordStrength.strong_password?(password, min_length: min_len)
     end
     def valid_password?(_, _), do: {:error, "The password should be a string"}
 
