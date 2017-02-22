@@ -14,6 +14,7 @@ defmodule <%= base %>.Router do
     post "/sessions/create", SessionController, :create
     resources "/users", UserController, except: [:new, :edit]<%= if confirm do %>
     get "/sessions/confirm_email", SessionController, :confirm_email
-    resources "/password_resets", PasswordResetController, only: [:new, :create, :edit, :update]<% end %>
+    post "/password_resets/create", PasswordResetController, :create
+    put "/password_resets/update", PasswordResetController, :update<% end %>
   end
 end

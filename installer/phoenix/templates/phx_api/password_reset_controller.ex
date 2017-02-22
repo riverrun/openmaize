@@ -8,8 +8,25 @@ defmodule <%= base %>.PasswordResetController do
 
   def create(conn, %{"password_reset" => %{"email" => email} = user_params}) do
     {key, link} = Openmaize.ConfirmEmail.gen_token_link(email)
-    changeset = User.reset_changeset(Repo.get_by(User, email: email), user_params, key)
+    send_token(conn, Repo.get_by(User, email: email), user_params, {key, email, link})
+  end
 
+  def update(%Plug.Conn{private: %{openmaize_error: message}} = conn, _) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> render(<%= base %>.PasswordResetView, "error.json", error: message)
+  end
+  def update(%Plug.Conn{private: %{openmaize_info: message}} = conn, _) do
+    render(conn, <%= base %>.PasswordResetView, "info.json", %{info: message})
+  end
+
+  defp send_token(conn, nil, _, _) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> render(<%= base %>.ChangesetView, "error.json")
+  end
+  defp send_token(conn, user, user_params, {key, email, link}) do
+    changeset = User.reset_changeset(Repo.get_by(User, email: email), user_params, key)
     case Repo.update(changeset) do
       {:ok, _user} ->
         Mailer.ask_reset(email, link)
@@ -22,14 +39,5 @@ defmodule <%= base %>.PasswordResetController do
         |> put_status(:unprocessable_entity)
         |> render(<%= base %>.ChangesetView, "error.json", changeset: changeset)
     end
-  end
-
-  def update(%Plug.Conn{private: %{openmaize_error: message}} = conn, %{"id" => user}) do
-    conn
-    |> put_status(:unprocessable_entity)
-    |> render(<%= base %>.PasswordResetView, "error.json", error: message)
-  end
-  def update(%Plug.Conn{private: %{openmaize_info: message}} = conn, _params) do
-    render(conn, <%= base %>.PasswordResetView, "info.json", %{info: message})
   end
 end

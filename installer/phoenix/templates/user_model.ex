@@ -22,8 +22,8 @@ defmodule <%= base %>.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:username, :email])
-    |> validate_required([:username, :email])
+    |> cast(params, [:email, :username])
+    |> validate_required([:email, :username])
     |> unique_constraint(:email)
   end<%= if confirm do %>
 
