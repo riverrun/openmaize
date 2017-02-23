@@ -8,7 +8,6 @@ Application.put_env(:openmaize, :pg_test_url,
 Application.put_env(:openmaize, TestRepo,
   adapter: Ecto.Adapters.Postgres,
   url: Application.get_env(:openmaize, :pg_test_url) <> "/openmaize_test",
-  url: "ecto://localhost/openmaize_test",
   pool: Ecto.Adapters.SQL.Sandbox)
 
 defmodule Openmaize.TestRepo do
@@ -82,19 +81,3 @@ defmodule Openmaize.TestUser do
     |> Openmaize.Database.add_confirm_token(key)
   end
 end
-
-defmodule Openmaize.TestCase do
-  use ExUnit.CaseTemplate
-
-  setup do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(TestRepo)
-    #Ecto.Adapters.SQL.Sandbox.mode(TestRepo, {:shared, self()})
-  end
-end
-
-# Load up the repository, start it, and run migrations
-_   = Ecto.Adapters.Postgres.storage_down(TestRepo.config)
-:ok = Ecto.Adapters.Postgres.storage_up(TestRepo.config)
-{:ok, _pid} = TestRepo.start_link
-:ok = Ecto.Migrator.up(TestRepo, 0, UsersMigration, log: false)
-Ecto.Adapters.SQL.Sandbox.mode(TestRepo, {:shared, self()})
