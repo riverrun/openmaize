@@ -1,29 +1,26 @@
 defmodule Openmaize.ResetPasswordTest do
-  use ExUnit.Case
+  use Openmaize.TestCase
   use Plug.Test
 
   import Ecto.Changeset
   alias Comeonin.Bcrypt
-  alias Openmaize.{ResetPassword, TestRepo, TestUser}
+  alias Openmaize.{ResetPassword, TestRepo, TestUser, UserHelpers}
 
   setup do
-    {:ok, _user} = TestRepo.get_by(TestUser, email: "dim@mail.com")
-    |> change(%{reset_token: "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw",
-      reset_sent_at: Ecto.DateTime.utc})
-    |> Openmaize.TestRepo.update
+    UserHelpers.add_reset_user("lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw")
     :ok
   end
 
   def call_reset(password, opts) do
     conn(:post, "/password_reset",
-         %{"password_reset" => %{"email" => "dim@mail.com",
+         %{"password_reset" => %{"email" => "frank@mail.com",
                        "key" => "lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw",
                        "password" => password}})
     |> ResetPassword.call(opts)
   end
 
   def password_changed(password) do
-    user = TestRepo.get_by(TestUser, email: "dim@mail.com")
+    user = TestRepo.get_by(TestUser, email: "frank@mail.com")
     Bcrypt.checkpw(password, user.password_hash)
   end
 
@@ -47,7 +44,7 @@ defmodule Openmaize.ResetPasswordTest do
   end
 
   test "reset password fails when reset_sent_at is nil" do
-    user = TestRepo.get_by(TestUser, email: "dim@mail.com")
+    user = TestRepo.get_by(TestUser, email: "frank@mail.com")
     change(user, %{reset_sent_at: nil})
     |> Openmaize.TestRepo.update
     conn = call_reset("password", {TestRepo, TestUser, {120, &IO.puts/1}})

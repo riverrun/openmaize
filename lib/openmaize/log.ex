@@ -50,11 +50,12 @@ defmodule Openmaize.Log do
   def current_user_id(%{current_user: %{id: id}}), do: "#{id}"
   def current_user_id(_), do: "nil"
 
-  defp format({key, val}) do
+  defp format({key, val}) when is_binary(val) do
     if String.contains?(val, [" ", "="]) do
       ~s(#{key}="#{val}")
     else
       ~s(#{key}=#{val})
     end
   end
+  defp format({key, val}), do: format({key, to_string(val)})
 end

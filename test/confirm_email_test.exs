@@ -1,18 +1,15 @@
 defmodule Openmaize.ConfirmEmailTest do
-  use ExUnit.Case
+  use Openmaize.TestCase
   use Plug.Test
 
-  import Ecto.Changeset
-  alias Openmaize.{ConfirmEmail, TestRepo, TestUser}
+  alias Openmaize.{ConfirmEmail, TestRepo, TestUser, UserHelpers}
 
   @valid_link "email=fred%2B1%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
   @invalid_link "email=wrong%40mail.com&key=lg8UXGNMpb5LUGEDm62PrwW8c20qZmIw"
   @incomplete_link "email=wrong%40mail.com"
 
   setup do
-    {:ok, _user} = TestRepo.get_by(TestUser, email: "fred+1@mail.com")
-    |> change(%{confirmed_at: nil})
-    |> Openmaize.TestRepo.update
+    UserHelpers.add_user()
     :ok
   end
 

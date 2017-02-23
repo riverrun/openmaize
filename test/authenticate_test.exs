@@ -1,8 +1,13 @@
 defmodule Openmaize.AuthenticateTest do
-  use ExUnit.Case
+  use Openmaize.TestCase
   use Plug.Test
 
-  alias Openmaize.{Authenticate, SessionHelper, TestRepo, TestUser}
+  alias Openmaize.{Authenticate, SessionHelper, TestRepo, TestUser, UserHelpers}
+
+  setup do
+    {:ok, user} = UserHelpers.add_confirmed()
+    {:ok, %{user: user}}
+  end
 
   def call(id) do
     conn(:get, "/")
@@ -11,20 +16,20 @@ defmodule Openmaize.AuthenticateTest do
     |> Authenticate.call({TestRepo, TestUser})
   end
 
-  test "current user in session" do
-    conn = call(1)
+  test "current user in session", %{user: user} do
+    conn = call(user.id)
     %{current_user: user} = conn.assigns
-    assert user.username == "fred"
+    assert user.username == "ray"
     assert user.role == "user"
   end
 
-  test "no user found" do
-    conn = call(1000)
+  test "no user found", %{user: user} do
+    conn = call(user.id + 1)
     assert conn.assigns == %{current_user: nil}
   end
 
-  test "user removed from session" do
-    conn = call(1) |> configure_session(drop: true)
+  test "user removed from session", %{user: user} do
+    conn = call(user.id) |> configure_session(drop: true)
     newconn = conn(:get, "/")
               |> recycle_cookies(conn)
               |> SessionHelper.sign_conn
@@ -32,8 +37,8 @@ defmodule Openmaize.AuthenticateTest do
     assert newconn.assigns == %{current_user: nil}
   end
 
-  test "output to current_user does not contain password_hash or otp_secret" do
-    conn = call(1)
+  test "output to current_user does not contain password_hash or otp_secret", %{user: user} do
+    conn = call(user.id)
     %{current_user: user} = conn.assigns
     refute Map.has_key?(user, :password_hash)
     refute Map.has_key?(user, :otp_secret)

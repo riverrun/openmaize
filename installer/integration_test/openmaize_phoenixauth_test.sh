@@ -12,7 +12,7 @@ function edit_mix_config {
     sed -i 's/username: "postgres"/username: "dev"/g' config/dev.exs config/test.exs
     sed -i 's/password: "postgres"/password: System.get_env("POSTGRES_PASS")/g' config/dev.exs config/test.exs
     sed -i 's/:postgrex]/:postgrex, :openmaize]/g' mix.exs
-    sed -i 's/{:postgrex, ">= 0.0.0"},/{:postgrex, ">= 0.0.0"},\n     {:openmaize, "~> 2.6"},/g' mix.exs
+    sed -i 's/{:postgrex, ">= 0.0.0"},/{:postgrex, ">= 0.0.0"},\n     {:openmaize, "~> 3.0"},/g' mix.exs
     mix deps.get
 }
 

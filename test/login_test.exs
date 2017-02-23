@@ -1,8 +1,14 @@
 defmodule Openmaize.LoginTest do
-  use ExUnit.Case
+  use Openmaize.TestCase
   use Plug.Test
 
-  alias Openmaize.{DummyCrypto, TestRepo, TestUser}
+  alias Openmaize.{DummyCrypto, TestRepo, TestUser, UserHelpers}
+
+  setup do
+    {:ok, _} = UserHelpers.add_user()
+    {:ok, _} = UserHelpers.add_confirmed()
+    :ok
+  end
 
   def login(name, password, uniq \\ :email, user_params \\ "email") do
     conn(:post, "/login",
@@ -20,14 +26,14 @@ defmodule Openmaize.LoginTest do
 
   test "login succeeds with username" do
     conn = login("ray", "h4rd2gU3$$", :username, "username")
-    %{id: id} = conn.private[:openmaize_user]
-    assert id == 4
+    %{username: username} = conn.private[:openmaize_user]
+    assert username == "ray"
   end
 
   test "login succeeds with email" do
     conn = login("ray@mail.com", "h4rd2gU3$$")
-    %{id: id} = conn.private[:openmaize_user]
-    assert id == 4
+    %{email: email} = conn.private[:openmaize_user]
+    assert email == "ray@mail.com"
   end
 
   test "login fails when crypto mod changes" do
@@ -60,14 +66,14 @@ defmodule Openmaize.LoginTest do
 
   test "function unique_id with email" do
     conn = login("ray@mail.com", "h4rd2gU3$$", &phone_name/1, "email")
-    %{id: id} = conn.private[:openmaize_user]
-    assert id == 4
+    %{email: email} = conn.private[:openmaize_user]
+    assert email == "ray@mail.com"
   end
 
   test "function unique_id with phone" do
     conn = login("081555555", "h4rd2gU3$$", &phone_name/1, "email")
-    %{id: id} = conn.private[:openmaize_user]
-    assert id == 4
+    %{email: email} = conn.private[:openmaize_user]
+    assert email == "ray@mail.com"
   end
 
   test "output to current_user does not contain password_hash or otp_secret" do
