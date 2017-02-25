@@ -81,3 +81,22 @@ defmodule Openmaize.TestUser do
     |> Openmaize.Database.add_confirm_token(key)
   end
 end
+
+defmodule Openmaize.TestCase do
+  use ExUnit.CaseTemplate
+
+  setup do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(TestRepo)
+  end
+end
+
+{:ok, _} = Ecto.Adapters.Postgres.ensure_all_started(TestRepo, :temporary)
+
+#_   = Ecto.Adapters.Postgres.storage_down(TestRepo.config)
+#:ok = Ecto.Adapters.Postgres.storage_up(TestRepo.config)
+
+{:ok, _pid} = TestRepo.start_link
+
+#:ok = Ecto.Migrator.up(TestRepo, 0, UsersMigration, log: false)
+Ecto.Adapters.SQL.Sandbox.mode(TestRepo, :manual)
+#Process.flag(:trap_exit, true)
