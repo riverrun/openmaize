@@ -1,7 +1,5 @@
 ExUnit.start()
 
-#{:ok, _} = Application.ensure_all_started(:ecto)
-#{:ok, _} = Application.ensure_all_started(:postgrex)
 {:ok, _} = NotQwerty123.WordlistManager.start_link
 
 Application.put_env(:openmaize, :remember_salt, "1234567812345678")
