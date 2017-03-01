@@ -46,6 +46,9 @@ defmodule Openmaize.Config do
 
   @doc """
   The name in the database for the password hash.
+
+  If, for example, you are migrating from Devise, you will need to
+  change this to `encrypted_password`.
   """
   def hash_name do
     Application.get_env(:openmaize, :hash_name, :password_hash)

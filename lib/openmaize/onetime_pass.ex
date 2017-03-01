@@ -12,7 +12,8 @@ defmodule Openmaize.OnetimePass do
 
   ## Options
 
-  There are two options related to the database:
+  There are two options related to the database - in most cases you
+  will not need to change the `repo` and `user_model` options:
 
     * repo - the name of the repo
       * the default is MyApp.Repo - using the name of the project

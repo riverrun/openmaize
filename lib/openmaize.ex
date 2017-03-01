@@ -1,28 +1,29 @@
 defmodule Openmaize do
   @moduledoc """
-  Openmaize is an authentication library for Plug-based applications in Elixir.
+  Openmaize is a collection of functions which can be used to
+  authenticate users in any Plug-based application. It aims to
+  be secure, lightweight and well-documented.
 
-  If you are using Phoenix, the easiest way to get started is to run
-  the following command (add the `--confirm` option to add files
-  for email confirmation):
+  ## Getting started with Openmaize and Phoenix
 
-      mix openmaize.gen.phoenixauth
+  The easiest way to get started is to use the openmaize_phx
+  installer. First, download and install it:
 
-  You then need to configure Openmaize. For more information, see the
-  documentation for the Openmaize.Config module.
+      mix archive.install https://github.com/riverrun/openmaize/raw/master/installer/archives/openmaize_phx.ez
 
-  There is an example of Openmaize being used with Phoenix at
+  Then run the `mix openmaize.phx` command in the main directory
+  of the Phoenix app. The following options are available:
+
+    * `--confirm` - add files for email confirmation
+    * `--api` - create files for an api
+
+  You can find more information at the
+  [Openmaize wiki](https://github.com/riverrun/openmaize/wiki).
+
+  There is also an example of Openmaize being used with Phoenix at
   [Openmaize-phoenix](https://github.com/riverrun/openmaize-phoenix).
 
-  ## Migrating from Devise
-
-  Follow the above instructions for generating authorization modules,
-  and then add the following lines to the config file:
-
-      config :openmaize,
-        hash_name: :encrypted_password
-
-  ## Openmaize plugs
+  ## Openmaize Plugs
 
     * Authentication
       * Openmaize.Authenticate - authenticate the user, using sessions.

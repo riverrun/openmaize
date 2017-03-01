@@ -15,7 +15,8 @@ defmodule Openmaize.Login do
 
   ## Options
 
-  There are three options:
+  There are three options - in most cases you will not need to change
+  the `repo` and `user_model` options:
     * unique_id - the name which is used to identify the user (in the database)
       * the default is `:email`
       * this can also be a function - see below for an example

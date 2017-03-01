@@ -4,7 +4,8 @@ defmodule Openmaize.ResetPassword do
 
   ## Options
 
-  There are four options:
+  There are four options - in most cases you will not need to change
+  the `repo` and `user_model` options:
 
     * repo - the name of the repo
       * the default is MyApp.Repo - using the name of the project
