@@ -37,7 +37,7 @@ defmodule <%= base %>.PasswordResetController do
     changeset = User.reset_changeset(user, user_params, key)
     case Repo.update(changeset) do
       {:ok, _user} ->
-        Email.ask_reset(email, link)
+        Mailer.ask_reset(email, link)
         message = "Check your inbox for instructions on how to reset your password"
         auth_info conn, message, user_path(conn, :index)
       {:error, _changeset} ->
